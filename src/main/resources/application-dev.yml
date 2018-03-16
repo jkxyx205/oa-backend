@@ -1,0 +1,21 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /oa
+
+
+configuration:
+  cdn: e/
+  cdn2: b/
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://114.55.173.102:47801/oa?useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: jkxyx205
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+
