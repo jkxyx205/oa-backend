@@ -31,7 +31,11 @@ public class UserController {
 //        user.setId(id);
 //        user.setName("Rick.Zhang => " + configuration.getCdn() + ",page => " + page);
 //        return user;
-        return userService.findById(id);
+
+        System.out.println("hot.......111");
+        User user = userService.findById(id);
+        user.setName("Sheet");
+        return user;
     }
 
     @GetMapping("/name/{name}")

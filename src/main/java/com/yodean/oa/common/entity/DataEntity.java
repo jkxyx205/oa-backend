@@ -1,5 +1,8 @@
 package com.yodean.oa.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -20,13 +23,14 @@ public class DataEntity implements Serializable {
     @Column(name = "create_by", updatable = false)
     private String createBy;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "create_date", updatable = false)
     private Date createDate;
 
     @Column(name = "update_by")
     private String updateBy;
 
-
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name="update_date")
     private Date updateDate;
 

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../index.css">
+</head>
+<body>
+<div>Hello world Ashley </div>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>姓名</th>
+        <th>Remarks</th>
+    </tr>
+    <tr th:each="user: ${list}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.remarks}"></td>
+    </tr>
+</table>
+</body>
+</html>

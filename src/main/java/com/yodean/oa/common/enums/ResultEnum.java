@@ -6,7 +6,10 @@ package com.yodean.oa.common.enums;
 public enum ResultEnum {
     UNKNOW_ERROR(-1, "未知错误"),
     NOT_FOUND_ERROR(404, "未找到相关纪录"),
-    SUCCESS(200, "成功");
+    SUCCESS(200, "成功"),
+    SERVER_ERROR(500, "程序错误"),
+    VALIDATE_ERROR(501, "验证错误"),
+    TOKEN_ERROR(502, "拦截token出错");
 
     private Integer code;
 

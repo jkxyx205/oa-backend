@@ -1,12 +1,16 @@
 spring:
   profiles:
     active: dev
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/resources
+    livereload:
+      enabled: true
+  thymeleaf:
+    cache: false
 
 mybatis:
   type-aliases-package: com.yodean.oa
   config-locations: classpath*:mybatis-config.xml
   mapper-locations: mapper/*.xml
-
-#mybatis_config_file: mybatis-config.xml
-#mapper_path: mapper/*.xml
-#mybatis
