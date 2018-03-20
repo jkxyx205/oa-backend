@@ -1,6 +1,7 @@
 package com.yodean.oa.task.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
+import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.user.entity.User;
 import com.yodean.oa.task.enums.Priority;
 import org.hibernate.validator.constraints.Length;
@@ -13,8 +14,7 @@ import java.util.Set;
 /**
  * Created by rick on 2018/3/19.
  */
-@Entity
-@Table(name = "t_task")
+@Entity(name = "t_task")
 public class Task extends DataEntity {
     /***
      * 任务名称
@@ -55,15 +55,22 @@ public class Task extends DataEntity {
     /***
      * 优先级
      */
-    @Enumerated(EnumType.ORDINAL)
-    @Column(length = 1)
+    @Enumerated(EnumType.STRING)
+    @Column
     private Priority priority;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="t_task_participant",                       //指定第三张表
             joinColumns={@JoinColumn(name="task_id")},             //本表与中间表的外键对应
             inverseJoinColumns={@JoinColumn(name="user_id")})  //另一张表与第三张表的外键的对应关系
     private Set<User> participants;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="t_task_label",                       //指定第三张表
+            joinColumns={@JoinColumn(name="task_id")},             //本表与中间表的外键对应
+            inverseJoinColumns={@JoinColumn(name="label_id")})  //另一张表与第三张表的外键的对应关系
+    @OrderBy("id")
+    private Set<Label> labels;
 
     public String getTitle() {
         return title;
@@ -126,6 +133,14 @@ public class Task extends DataEntity {
     }
 
     public void setParticipants(Set<User> participants) {
-        participants = participants;
+        this.participants = participants;
+    }
+
+    public Set<Label> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(Set<Label> labels) {
+        this.labels = labels;
     }
 }

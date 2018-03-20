@@ -27,12 +27,13 @@ public class TaskController {
 
     @PostMapping("")
     @ApiOperation(value = "新建任务")
-    public Result<Task> save(@Valid Task task, BindingResult result) {
+    public Result<Task> save(@Valid @RequestBody Task task, BindingResult result) {
         if (result.hasErrors()) {
             return ResultUtil.error(ResultEnum.VALIDATE_ERROR, result.getAllErrors());
         }
 
         taskService.save(task);
+        //TODO
 
         return ResultUtil.success(task);
     }

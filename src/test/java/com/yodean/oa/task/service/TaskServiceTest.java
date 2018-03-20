@@ -27,8 +27,9 @@ public class TaskServiceTest {
     @Test
     public void testSave() throws Exception {
         Task task = new Task();
-        task.setTitle("我的测试任务1");
-        task.setContent("去玩儿吧");
+        task.setId(8);
+        task.setTitle("我的测试任务2222");
+        task.setContent("去玩儿吧2222222222");
         task.setPriority(Priority.PRIORITY_VERY_URGENT);
         Date now = new Date();
         task.setUpdateDate(now);
@@ -42,7 +43,7 @@ public class TaskServiceTest {
 
         User user = new User();
         user.setId(1);
-        user.setName("Rick.Xu");
+        user.setName("BBBBB");
 
         Set<User> participants = new HashSet<>(1);
         participants.add(user);

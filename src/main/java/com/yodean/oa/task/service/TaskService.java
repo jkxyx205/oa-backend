@@ -2,8 +2,11 @@ package com.yodean.oa.task.service;
 
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.service.BaseService;
+import com.yodean.oa.sys.user.entity.User;
+import com.yodean.oa.task.dao.TaskParticipantRepository;
 import com.yodean.oa.task.dao.TaskRepository;
 import com.yodean.oa.task.entity.Task;
+import com.yodean.oa.task.entity.TaskParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,11 +26,22 @@ public class TaskService {
     private TaskRepository taskRepository;
 
     @Resource
+    private TaskParticipantRepository taskParticipantRepository;
+
+    @Resource
     private BaseService baseService;
 
     public Task save(Task task) {
-        task = taskRepository.save(task);
-        logger.info("saved task【{}】,detail is {}",task.getTitle(), task);
+//        task = taskRepository.save(task);
+
+//        for (User user : task.getParticipants()) {
+//            TaskParticipant taskParticipant = new TaskParticipant();
+//            taskParticipant.setTask(task);
+//            taskParticipant.setUser(user);
+//            taskParticipantRepository.save(taskParticipant);
+//        }
+
+//        logger.info("saved task【{}】,detail is {}",task.getTitle(), task);
         return task;
     }
 
