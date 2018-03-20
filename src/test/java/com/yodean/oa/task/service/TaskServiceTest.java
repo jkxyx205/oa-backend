@@ -48,7 +48,7 @@ public class TaskServiceTest {
         Set<User> participants = new HashSet<>(1);
         participants.add(user);
 
-        task.setParticipants(participants);
+//        task.setParticipants(participants);
 
         taskService.save(task);
 

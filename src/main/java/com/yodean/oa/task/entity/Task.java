@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Created by rick on 2018/3/19.
@@ -59,18 +59,11 @@ public class Task extends DataEntity {
     @Column
     private Priority priority;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="t_task_participant",                       //指定第三张表
-            joinColumns={@JoinColumn(name="task_id")},             //本表与中间表的外键对应
-            inverseJoinColumns={@JoinColumn(name="user_id")})  //另一张表与第三张表的外键的对应关系
-    private Set<User> participants;
+    @Transient
+    private List<User> participants;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="t_task_label",                       //指定第三张表
-            joinColumns={@JoinColumn(name="task_id")},             //本表与中间表的外键对应
-            inverseJoinColumns={@JoinColumn(name="label_id")})  //另一张表与第三张表的外键的对应关系
-    @OrderBy("id")
-    private Set<Label> labels;
+    @Transient
+    private List<Label> labels;
 
     public String getTitle() {
         return title;
@@ -128,19 +121,19 @@ public class Task extends DataEntity {
         this.content = content;
     }
 
-    public Set<User> getParticipants() {
+    public List<User> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(Set<User> participants) {
+    public void setParticipants(List<User> participants) {
         this.participants = participants;
     }
 
-    public Set<Label> getLabels() {
+    public List<Label> getLabels() {
         return labels;
     }
 
-    public void setLabels(Set<Label> labels) {
+    public void setLabels(List<Label> labels) {
         this.labels = labels;
     }
 }

@@ -18,4 +18,5 @@ public class LabelService {
     public Label save(Label label) {
         return labelRepository.save(label);
     }
+
 }
