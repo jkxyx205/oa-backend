@@ -18,7 +18,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/user")
-@Api(description = "用户模块")
+@ApiIgnore
 public class UserController {
 
     @Resource

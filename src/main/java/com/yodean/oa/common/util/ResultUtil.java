@@ -25,9 +25,22 @@ public final class ResultUtil {
     }
 
     public static Result error(Integer code, String msg) {
+        return error(code, msg, null);
+    }
+
+    public static Result error(ResultEnum resultEnum) {
+        return error(resultEnum.getCode(), resultEnum.getMessage(), null);
+    }
+
+    public static Result error(ResultEnum resultEnum, Object data) {
+        return error(resultEnum.getCode(), resultEnum.getMessage(), data);
+    }
+
+    public static Result error(Integer code, String msg, Object data) {
         Result<Object> result = new Result();
         result.setCode(code);
         result.setMsg(msg);
+        result.setData(data);
         return result;
     }
 }

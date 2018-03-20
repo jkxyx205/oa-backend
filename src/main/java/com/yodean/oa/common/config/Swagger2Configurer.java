@@ -29,7 +29,7 @@ public class Swagger2Configurer {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("项目OA: Spring Boot中使用Swagger2构建RESTful APIs")
+                .title("项目OA APIs")
                 .description("有问题欢迎联系我")
                 .termsOfServiceUrl("http://xhope.top")
                 .contact(new Contact("Rick.xu", "http://xhope.top", "jkxyx205@163.com"))

@@ -121,4 +121,12 @@ public class UserServiceTest {
         System.out.println(mapGrid);
 
     }
+
+    @Test
+    public void save() {
+        User user = new User();
+        user.setName("Rick");
+        user.setRemarks("hello remak");
+        userService.save(user);
+    }
 }

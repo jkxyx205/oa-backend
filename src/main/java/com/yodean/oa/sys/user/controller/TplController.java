@@ -5,6 +5,7 @@ import com.yodean.oa.sys.user.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/tpl")
+@ApiIgnore
 public class TplController {
 
     @Resource

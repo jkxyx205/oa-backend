@@ -34,14 +34,14 @@ public class GlobalExceptionHandler {
             result = ResultUtil.error(e.getMessage());
         }
 
-        if (isAjaxRequest(request)) {
+//        if (isAjaxRequest(request)) {
             return result;
-        } else {
-            ModelAndView mv = new ModelAndView();
-            mv.addObject("result", result);
-            mv.setViewName("/common/error");
-            return mv;
-        }
+//        } else {
+//            ModelAndView mv = new ModelAndView();
+//            mv.addObject("result", result);
+//            mv.setViewName("/common/error");
+//            return mv;
+//        }
     }
 
     /**
