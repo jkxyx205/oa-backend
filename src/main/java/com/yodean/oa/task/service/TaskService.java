@@ -53,6 +53,7 @@ public class TaskService {
 
         task = taskRepository.save(task);
 
+
         //add Participants
         deleteAllParticipantsByTaskId(task.getId());
 

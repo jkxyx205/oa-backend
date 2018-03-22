@@ -13,16 +13,16 @@ import java.util.Date;
 /**
  * Created by rick on 2018/3/19.
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class JpaSaveAspect {
 
-    @Pointcut("execution(public * com.yodean.oa..service.*Service.save(..))")
+//    @Pointcut("execution(public * com.yodean.oa..service.*Service.save(..))")
     public void save() {
 
     }
 
-    @Before("save()")
+//    @Before("save()")
     public void beforeSave(JoinPoint joinPoint) {
         if (ArrayUtils.isNotEmpty(joinPoint.getArgs())) {
             Object obj = joinPoint.getArgs()[0];

@@ -1,13 +1,19 @@
 server:
-  port: 8080
+  port: 8081
   servlet:
     context-path: /oa
 
 
+
 configuration:
-  cdn: e/
-  cdn2: b/
+  document: /Users/rick/jkxyx205/tmp/oa #文件上传根路径
+  cdn: http://cdnoa.yodean.com
+
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 50MB
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://114.55.173.102:47801/oa?useUnicode=true&characterEncoding=UTF-8
@@ -18,4 +24,5 @@ spring:
       ddl-auto: update
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
-
+    properties:
+      hibernate.format_sql: true

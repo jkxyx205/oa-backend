@@ -1,7 +1,6 @@
 package com.yodean.oa.common.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -20,6 +19,7 @@ public class DataEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name = "id", updatable = false, nullable = false)
     private Integer id;
 
     @Column(name = "create_by", updatable = false)
@@ -95,6 +95,21 @@ public class DataEntity implements Serializable {
 
     public void setDelFlag(String delFlag) {
         this.delFlag = delFlag;
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void changeUpdateInfo() {
+        Date now = new Date();
+        String curUser = "admin";
+        if (this.getId() == null) {
+            this.setCreateBy(curUser);
+            this.setCreateDate(now);
+            this.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
+        }
+
+        this.setUpdateBy(curUser);
+        this.setUpdateDate(now);
     }
 
     public String toString() {

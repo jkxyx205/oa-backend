@@ -1,27 +1,26 @@
 package com.yodean.oa.common.handler;
 
 import com.yodean.oa.common.dto.Result;
+import com.yodean.oa.common.enums.ResultEnum;
 import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.util.ResultUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by rick on 2018/3/15.
  */
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(value = Exception.class)
-    @ResponseBody
     public Object handler(HttpServletRequest request, Exception e) {
         logger.error("发生异常 => {}", e);
 
@@ -30,7 +29,9 @@ public class GlobalExceptionHandler {
         if (e instanceof  OAException) {
             OAException ex = (OAException)e;
             result = ResultUtil.error(ex.getCode(), ex.getMessage());
-         } else {
+         } else if (e instanceof MaxUploadSizeExceededException) {
+            result = ResultUtil.error(ResultEnum.VALIDATE_ERROR, "文件不能超过5M");
+        }else {
             result = ResultUtil.error(e.getMessage());
         }
 
@@ -38,7 +39,7 @@ public class GlobalExceptionHandler {
             return result;
 //        } else {
 //            ModelAndView mv = new ModelAndView();
-//            mv.addObject("result", result);
+//            mv.addObject("result", result);s
 //            mv.setViewName("/common/error");
 //            return mv;
 //        }

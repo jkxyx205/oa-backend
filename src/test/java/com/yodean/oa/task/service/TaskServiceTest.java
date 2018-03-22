@@ -50,6 +50,8 @@ public class TaskServiceTest {
 
 //        task.setParticipants(participants);
 
+        participants.forEach((user1) -> user.getId());
+
         taskService.save(task);
 
     }
