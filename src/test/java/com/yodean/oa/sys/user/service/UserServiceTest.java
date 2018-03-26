@@ -38,7 +38,7 @@ public class UserServiceTest {
     public void findById() throws Exception {
         User user = userService.findById(1);
 
-        Assert.assertEquals(user.getName(), "rick");
+        Assert.assertEquals(user.getChineseName(), "rick");
     }
 
     @Test
@@ -125,7 +125,7 @@ public class UserServiceTest {
     @Test
     public void save() {
         User user = new User();
-        user.setName("Rick");
+        user.setChineseName("Rick");
         user.setRemarks("hello remak");
         userService.save(user);
     }

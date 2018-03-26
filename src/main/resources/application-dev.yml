@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
   servlet:
     context-path: /oa
 
@@ -7,7 +7,7 @@ server:
 
 configuration:
   document: /Users/rick/jkxyx205/tmp/oa #文件上传根路径
-  cdn: http://cdnoa.yodean.com
+  cdn: http://cdn-oa.yodean.com
 
 spring:
   servlet:
@@ -16,9 +16,9 @@ spring:
       max-request-size: 50MB
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://114.55.173.102:47801/oa?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/oa?useUnicode=true&characterEncoding=UTF-8
     username: root
-    password: jkxyx205
+    password: sgcc
   jpa:
     hibernate:
       ddl-auto: update

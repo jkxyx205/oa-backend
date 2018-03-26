@@ -1,14 +1,14 @@
 spring:
   profiles:
     active: dev
-  devtools:
-    restart:
-      enabled: true
-      additional-paths: src/main/resources
-    livereload:
-      enabled: true
-  thymeleaf:
-    cache: false
+#  devtools:
+#    restart:
+#      enabled: true
+#      additional-paths: src/main/resources
+#    livereload:
+#      enabled: true
+#  thymeleaf:
+#    cache: false
 
 mybatis:
   type-aliases-package: com.yodean.oa

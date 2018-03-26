@@ -13,9 +13,9 @@ import java.util.Date;
  */
 @MappedSuperclass
 public class DataEntity implements Serializable {
-    public static String DEL_FLAG_NORMAL = "1";
+    public static Character DEL_FLAG_NORMAL = '1';
 
-    public static String DEL_FLAG_REMOVE = "0";
+    public static Character DEL_FLAG_REMOVE = '0';
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -26,20 +26,20 @@ public class DataEntity implements Serializable {
     private String createBy;
 
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "create_date", updatable = false)
+    @Column(name = "create_date", nullable = false, updatable = false)
     private Date createDate;
 
-    @Column(name = "update_by")
+    @Column(name = "update_by", nullable = false)
     private String updateBy;
 
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name="update_date")
+    @Column(name="update_date", nullable = false)
     private Date updateDate;
 
     private String remarks;
 
-    @Column(name="del_flag")
-    private String delFlag;
+    @Column(name="del_flag", length = 1, nullable = false)
+    private Character delFlag;
 
     public Integer getId() {
         return id;
@@ -89,11 +89,11 @@ public class DataEntity implements Serializable {
         this.remarks = remarks;
     }
 
-    public String getDelFlag() {
+    public Character getDelFlag() {
         return delFlag;
     }
 
-    public void setDelFlag(String delFlag) {
+    public void setDelFlag(Character delFlag) {
         this.delFlag = delFlag;
     }
 

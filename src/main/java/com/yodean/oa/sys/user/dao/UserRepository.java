@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 public interface UserRepository extends JpaRepository<User, Integer> {
     //TODO 这也行都不用实现...
-    User findByName(String name);
+    User findByChineseName(String name);
 
 }

@@ -61,15 +61,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User findByName(String name) {
-        return userRepository.findByName(name);
+    public User findByChineseName(String name) {
+        return userRepository.findByChineseName(name);
     }
 
     //test transaction
     @Transactional
     public void insertTwo() {
         User user1 = new User();
-        user1.setName("C");
+        user1.setChineseName("张三");
         save(user1);
         int a = 2 / 0;
 

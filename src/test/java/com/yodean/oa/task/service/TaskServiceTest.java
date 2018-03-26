@@ -43,7 +43,7 @@ public class TaskServiceTest {
 
         User user = new User();
         user.setId(1);
-        user.setName("BBBBB");
+        user.setChineseName("BBBBB");
 
         Set<User> participants = new HashSet<>(1);
         participants.add(user);
