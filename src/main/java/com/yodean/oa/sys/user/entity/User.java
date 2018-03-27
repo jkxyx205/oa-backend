@@ -1,13 +1,8 @@
 package com.yodean.oa.sys.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.sys.org.entity.Organization;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.LazyCollection;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.context.annotation.Lazy;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

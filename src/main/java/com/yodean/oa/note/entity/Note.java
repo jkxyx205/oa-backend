@@ -1,4 +1,4 @@
-package com.yodean.oa.task.entity;
+package com.yodean.oa.note.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.sys.label.entity.Label;
@@ -11,34 +11,33 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by rick on 2018/3/19.
  */
-@Entity(name = "t_task")
+@Entity(name = "t_note")
 @DynamicUpdate
-public class Task extends DataEntity {
+public class Note extends DataEntity {
     /***
-     * 任务名称
+     * 便签标题
      */
     @NotBlank(message = "名称不能为空")
     @Column(nullable = false)
     private String title;
 
     @Length(max = 10000, message = "正文内容不能超过10000个字符")
-    @NotBlank(message = "任务正文不能为空")
+    @NotBlank(message = "便签正文不能为空")
     @Column(columnDefinition = "text", nullable = false)
     private String content;
 
     /***
-     * 任务开始时间
+     * 便签开始时间
      */
     @Column(name="start_date")
     private Date startDate;
 
     /***
-     * 任务结束时间
+     * 便签结束时间
      */
     @Column(name="end_date")
     private Date endDate;
@@ -61,15 +60,6 @@ public class Task extends DataEntity {
     @Enumerated(EnumType.STRING)
     @Column
     private Priority priority;
-
-    /***
-     * 参与人
-     */
-    @Transient
-    private Set<Integer> userIds;
-
-    @Transient
-    private List<User> users;
 
     @Transient
     private List<Label> labels;
@@ -128,22 +118,6 @@ public class Task extends DataEntity {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public Set<Integer> getUserIds() {
-        return userIds;
-    }
-
-    public void setUserIds(Set<Integer> userIds) {
-        this.userIds = userIds;
-    }
-
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
     }
 
     public List<Label> getLabels() {

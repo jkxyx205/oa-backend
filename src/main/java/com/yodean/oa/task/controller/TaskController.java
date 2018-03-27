@@ -22,8 +22,7 @@ public class TaskController {
     private TaskService taskService;
 
 
-    @PostMapping("")
-//    @ApiOperation(value = "新建任务")
+    @PostMapping
     public Result<Task> save(@Valid @RequestBody Task task, BindingResult result) {
         if (result.hasErrors()) {
             return ResultUtil.error(ResultEnum.VALIDATE_ERROR, result.getAllErrors());
@@ -36,9 +35,20 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-//    @ApiOperation(value = "根据id获取任务")
     public Result<Task> findById(@PathVariable Integer id) {
-        Task task = taskService.findById(id);
+        Task task = taskService.findById(id, false);
         return ResultUtil.success(task);
+    }
+
+    @PostMapping("/{id}/trash")
+    public Result<String> trash(@PathVariable Integer id) {
+        taskService.trash(id);
+        return ResultUtil.success();
+    }
+
+    @PostMapping("/{id}/inbox")
+    public Result<String> move2Inbox(@PathVariable Integer id) {
+        taskService.move2Inbox(id);
+        return ResultUtil.success();
     }
 }
