@@ -1,11 +1,14 @@
 package com.yodean.oa.sys.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.sys.org.entity.Organization;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -13,6 +16,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "sys_user")
+//@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler"})
 public class User extends DataEntity {
 
     @Length(max=20, message = "中文姓名不能超过20个字符串")
@@ -45,13 +49,22 @@ public class User extends DataEntity {
     @Length(max=20, message = "职位不能超过20个字符串")
     private String position;
 
+    @Column(length = 20, nullable = false)
+    @Length(min=6, message = "密码不能少于6个字符")
+    private String password;
+
+
+
+    @Transient
+    private Set<Integer> orgIds;
+
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "sys_user_org",
         joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "org_id", referencedColumnName ="id")}
     )
-//    @JsonManagedReference
     private Set<Organization> organizations;
 
     public String getChineseName() {
@@ -124,5 +137,21 @@ public class User extends DataEntity {
 
     public void setOrganizations(Set<Organization> organizations) {
         this.organizations = organizations;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<Integer> getOrgIds() {
+        return orgIds;
+    }
+
+    public void setOrgIds(Set<Integer> orgIds) {
+        this.orgIds = orgIds;
     }
 }

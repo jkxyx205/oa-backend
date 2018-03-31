@@ -11,34 +11,46 @@ import javax.persistence.*;
  * Created by rick on 3/27/18.
  */
 @Entity
-@Table(name = "sys_workspace")
+@Table(name = "sys_workspace",
+        uniqueConstraints = {@UniqueConstraint(columnNames={"category", "category_id", "user_id", "del_flag"})})
+
 @DynamicUpdate
 public class Workspace extends DataEntity {
 
+    /***
+     * 类型
+     */
     @Enumerated(EnumType.STRING)
     private CategoryEnum category;
 
+    /***
+     * 具体实例
+     */
     @Column(name = "category_id")
     private Integer categoryId;
 
+    /***
+     * 文件位置
+     */
     @Enumerated(EnumType.STRING)
     private CategoryStatus categoryStatus;
 
     /***
      * 跟进
      */
-    @Column(name = "follow_up",length = 1)
-    private Boolean followUp;
+    @Column(name = "follow",length = 1)
+    private Boolean follow;
 
     /***
      * 阅读状态
      */
     @Column(length = 1)
-    private Boolean unread;
+    private Boolean readed;
 
     /***
      * 参与者
      */
+    @Column(name = "user_id")
     private Integer userId;
 
     public CategoryEnum getCategory() {
@@ -65,20 +77,20 @@ public class Workspace extends DataEntity {
         this.categoryStatus = categoryStatus;
     }
 
-    public Boolean getFollowUp() {
-        return followUp;
+    public Boolean getFollow() {
+        return follow;
     }
 
-    public void setFollowUp(Boolean followUp) {
-        this.followUp = followUp;
+    public void setFollow(Boolean follow) {
+        this.follow = follow;
     }
 
-    public Boolean getUnread() {
-        return unread;
+    public Boolean getReaded() {
+        return readed;
     }
 
-    public void setUnread(Boolean unread) {
-        this.unread = unread;
+    public void setReaded(Boolean readed) {
+        this.readed = readed;
     }
 
     public Integer getUserId() {

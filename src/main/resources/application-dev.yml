@@ -10,6 +10,8 @@ configuration:
   cdn: http://cdn-oa.yodean.com
 
 spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
   servlet:
     multipart:
       max-file-size: 5MB

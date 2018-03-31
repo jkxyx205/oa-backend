@@ -9,7 +9,9 @@ public enum ResultEnum {
     SUCCESS(200, "成功"),
     SERVER_ERROR(500, "程序错误"),
     VALIDATE_ERROR(501, "验证错误"),
-    TOKEN_ERROR(502, "拦截token出错");
+    TOKEN_ERROR(502, "拦截token出错"),
+    EXISTS_ERROR(400, "纪录已经存在"),
+    NULL_ERROR(401, "不合法的参数ID");
 
     private Integer code;
 

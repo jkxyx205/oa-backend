@@ -62,7 +62,7 @@ public class MeetingService {
         meetingUserRepository.saveAll(meetingUserList);
 
         //
-        workspaceService.save(CategoryEnum.MEETING, meeting.getId(), userIds);
+        workspaceService.tipUsers(CategoryEnum.MEETING, meeting.getId(), userIds);
 
         return meeting;
     }

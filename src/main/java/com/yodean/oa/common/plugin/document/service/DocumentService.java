@@ -6,14 +6,20 @@ import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.dao.DocumentRepository;
 import com.yodean.oa.common.plugin.document.dto.ImageDocument;
 import com.yodean.oa.common.plugin.document.entity.Document;
+import org.apache.commons.lang3.Validate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Example;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by rick on 2018/3/22.
@@ -29,6 +35,9 @@ public class DocumentService {
 
     @Resource
     private ImageHandler imageHandler;
+
+    @Resource
+    private JdbcTemplate jdbcTemplate;
 
     @Transactional
     public Document upload(String folderPath, MultipartFile file, CategoryEnum categoryEnum, Integer Id) throws IOException {
@@ -105,5 +114,38 @@ public class DocumentService {
         save(document);
 
 //        documentRepository.deleteById(id);
+    }
+
+    /***
+     * 绑定附件到实例上
+     * @param docIds
+     * @param categoryId
+     */
+    public void update(Set<Integer> docIds, Integer categoryId) {
+        Validate.notNull(categoryId);
+        Validate.notNull(docIds);
+
+        if (docIds.size() == 0) {
+            return;
+        }
+
+        String sql = "UPDATE sys_document set category_id = ? WHERE id = ?";
+
+        List<Object[]> params = new ArrayList<>(docIds.size());
+        for (Integer docId : docIds) {
+            params.add(new Object[]{categoryId, docId});
+        }
+
+        jdbcTemplate.batchUpdate(sql, params);
+    }
+
+    public List<Document> findById(CategoryEnum category, Integer categoryId) {
+        Document document = new Document();
+        document.setCategoryEnum(category);
+        document.setCategoryId(categoryId);
+        document.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
+
+        Example example = Example.of(document);
+        return documentRepository.findAll(example);
     }
 }

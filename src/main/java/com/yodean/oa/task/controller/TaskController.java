@@ -1,8 +1,10 @@
 package com.yodean.oa.task.controller;
 
 import com.yodean.oa.common.dto.Result;
+import com.yodean.oa.common.enums.CategoryEnum;
 import com.yodean.oa.common.enums.ResultEnum;
 import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.sys.workspace.service.WorkspaceService;
 import com.yodean.oa.task.entity.Task;
 import com.yodean.oa.task.service.TaskService;
 import org.springframework.validation.BindingResult;
@@ -21,34 +23,49 @@ public class TaskController {
     @Resource
     private TaskService taskService;
 
+    @Resource
+    private WorkspaceService workspaceService;
+
 
     @PostMapping
-    public Result<Task> save(@Valid @RequestBody Task task, BindingResult result) {
+    public Result<Integer> save(@Valid @RequestBody Task task, BindingResult result) {
         if (result.hasErrors()) {
             return ResultUtil.error(ResultEnum.VALIDATE_ERROR, result.getAllErrors());
         }
 
-        taskService.save(task);
-        //TODO
+        return ResultUtil.success(taskService.save(task));
+    }
 
-        return ResultUtil.success(task);
+    @PutMapping("/{id}")
+    public Result<Integer> update(@RequestBody Task task, @PathVariable Integer id) {
+        taskService.update(task, id);
+        return ResultUtil.success();
     }
 
     @GetMapping("/{id}")
     public Result<Task> findById(@PathVariable Integer id) {
-        Task task = taskService.findById(id, false);
+        Task task = taskService.findById(id);
         return ResultUtil.success(task);
     }
 
-    @PostMapping("/{id}/trash")
-    public Result<String> trash(@PathVariable Integer id) {
-        taskService.trash(id);
+    /***
+     * 添加参与者
+     * @return
+     */
+    @PostMapping("{id}/user/{userId}/add")
+    public Result addUser(@PathVariable Integer id, @PathVariable Integer userId) {
+        workspaceService.tipUsers(CategoryEnum.TASK, id, userId);
         return ResultUtil.success();
     }
 
-    @PostMapping("/{id}/inbox")
-    public Result<String> move2Inbox(@PathVariable Integer id) {
-        taskService.move2Inbox(id);
+    /***
+     * 移除参与者
+     * @return
+     */
+    @PostMapping("{id}/user/{userId}/remove")
+    public Result removeUser(@PathVariable Integer id, @PathVariable Integer userId) {
+        workspaceService.remove(CategoryEnum.TASK, id, userId);
         return ResultUtil.success();
     }
+
 }

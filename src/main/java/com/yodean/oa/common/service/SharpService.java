@@ -1,8 +1,6 @@
 package com.yodean.oa.common.service;
 
-import com.yodean.oa.common.dto.PageModel;
 import com.yodean.oa.common.util.sql.SqlFormatter;
-import com.yodean.oa.sys.user.entity.User;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
@@ -37,6 +35,12 @@ public class SharpService {
                 Object[] args);
     }
 
+
+//    public interface JdbcTemplateCallback {
+//        void query(JdbcTemplate jdbcTemplate, String sql,
+//                Object[] args);
+//    }
+
     public  List<Map> query(String sql, Map<String, Object> params) {
         return query(sql, params, Map.class);
     }
@@ -67,7 +71,30 @@ public class SharpService {
 
         formatSql = formatSql.replaceAll(SqlFormatter.PARAM_REGEX,"?"); //mysql
         return jdbcTemplateCallback.query(jdbcTemplate, formatSql, args);
+    }
 
+    /**
+     * 两列
+     * 第一列做key
+     * 第二列做Value
+     * @param sql
+     * @param params
+     * @return
+     */
+    public <K,V> Map<K,V> query(String sql, Map<String, Object> params, final Map<K,V> m) {
+        query(sql, params, new JdbcTemplateCallback<List<Void>>() {
+            @Override
+            public List<Void> query(JdbcTemplate jdbcTemplate, String sql, Object[] args) {
+
+                jdbcTemplate.query(sql, args, rs -> {
+                    m.put((K)rs.getObject(1), (V) rs.getObject(2));
+                });
+
+                return null;
+            }
+        });
+
+        return m;
     }
 
 

@@ -1,6 +1,8 @@
 package com.yodean.oa.common.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yodean.oa.sys.util.UserUtils;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -12,34 +14,41 @@ import java.util.Date;
  * Created by rick on 2018/3/15.
  */
 @MappedSuperclass
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DataEntity implements Serializable {
-    public static Character DEL_FLAG_NORMAL = '1';
+    public static String DEL_FLAG_NORMAL = "1";
 
-    public static Character DEL_FLAG_REMOVE = '0';
+    public static String DEL_FLAG_REMOVE = "0";
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private Integer id;
 
+    @JsonIgnore
     @Column(name = "create_by", updatable = false)
     private String createBy;
 
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonIgnore
+//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "create_date", nullable = false, updatable = false)
     private Date createDate;
 
+    @JsonIgnore
     @Column(name = "update_by", nullable = false)
     private String updateBy;
 
-    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonIgnore
+//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name="update_date", nullable = false)
     private Date updateDate;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String remarks;
 
+    @JsonIgnore
     @Column(name="del_flag", length = 1, nullable = false)
-    private Character delFlag;
+    private String delFlag;
 
     public Integer getId() {
         return id;
@@ -89,11 +98,11 @@ public class DataEntity implements Serializable {
         this.remarks = remarks;
     }
 
-    public Character getDelFlag() {
+    public String getDelFlag() {
         return delFlag;
     }
 
-    public void setDelFlag(Character delFlag) {
+    public void setDelFlag(String delFlag) {
         this.delFlag = delFlag;
     }
 
@@ -101,14 +110,14 @@ public class DataEntity implements Serializable {
     @PreUpdate
     private void changeUpdateInfo() {
         Date now = new Date();
-        String curUser = "admin";
+
         if (this.getId() == null) {
-            this.setCreateBy(curUser);
+            this.setCreateBy(UserUtils.getUser().getId() + "");
             this.setCreateDate(now);
             this.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
         }
 
-        this.setUpdateBy(curUser);
+        this.setUpdateBy(UserUtils.getUser().getId() + "");
         this.setUpdateDate(now);
     }
 

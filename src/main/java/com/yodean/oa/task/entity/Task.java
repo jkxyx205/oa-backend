@@ -1,6 +1,7 @@
 package com.yodean.oa.task.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
+import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.user.entity.User;
 import com.yodean.oa.task.enums.Priority;
@@ -73,6 +74,12 @@ public class Task extends DataEntity {
 
     @Transient
     private List<Label> labels;
+
+    @Transient
+    private Set<Integer> docIds;
+
+    @Transient
+    private List<Document> documents;
 
     public String getTitle() {
         return title;
@@ -152,5 +159,21 @@ public class Task extends DataEntity {
 
     public void setLabels(List<Label> labels) {
         this.labels = labels;
+    }
+
+    public Set<Integer> getDocIds() {
+        return docIds;
+    }
+
+    public void setDocIds(Set<Integer> docIds) {
+        this.docIds = docIds;
+    }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
     }
 }

@@ -1,8 +1,8 @@
 package com.yodean.oa.note.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
+import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.label.entity.Label;
-import com.yodean.oa.sys.user.entity.User;
 import com.yodean.oa.task.enums.Priority;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
@@ -11,6 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by rick on 2018/3/19.
@@ -61,8 +62,20 @@ public class Note extends DataEntity {
     @Column
     private Priority priority;
 
+    /***
+     * 标签
+     */
     @Transient
     private List<Label> labels;
+
+    /***
+     * 附件
+     */
+    @Transient
+    private List<Document> documents;
+
+    @Transient
+    private Set<Integer> docIds;
 
     public String getTitle() {
         return title;
@@ -126,5 +139,21 @@ public class Note extends DataEntity {
 
     public void setLabels(List<Label> labels) {
         this.labels = labels;
+    }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
+    }
+
+    public Set<Integer> getDocIds() {
+        return docIds;
+    }
+
+    public void setDocIds(Set<Integer> docIds) {
+        this.docIds = docIds;
     }
 }

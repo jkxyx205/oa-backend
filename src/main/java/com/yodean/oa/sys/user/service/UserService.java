@@ -3,7 +3,8 @@ package com.yodean.oa.sys.user.service;
 import com.yodean.oa.common.enums.ResultEnum;
 import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.service.BaseService;
-import com.yodean.oa.sys.user.dao.UserMapper;
+import com.yodean.oa.sys.org.entity.Organization;
+import com.yodean.oa.sys.org.service.OrganizationService;
 import com.yodean.oa.sys.user.dao.UserRepository;
 import com.yodean.oa.sys.user.entity.User;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -11,8 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by rick on 2018/3/15.
@@ -23,7 +23,7 @@ public class UserService {
     private UserRepository userRepository;
 
     @Resource
-    private UserMapper userMapper;
+    private OrganizationService organizationService;
 
     @Resource
     private BaseService baseService;
@@ -31,88 +31,57 @@ public class UserService {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
+
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
     public User findById(Integer id) {
-        //getOne findOne findByID??
-        //TODO
         Optional<User> optional =userRepository.findById(id);
 
         if(!optional.isPresent()) {
             throw new OAException(ResultEnum.NOT_FOUND_ERROR);
         }
 
+        User user =  optional.get();
+        //获取组织代码
+        String sql = "select org_id from sys_user_org where user_id = :userId";
+        Map<String, Object> params = new HashMap<>(1);
+        params.put("userId", id);
 
-
-        return optional.get();
+        List<Integer> list = baseService.query(sql, params, Integer.class);
+        user.setOrgIds(new HashSet<>(list));
+        return user;
     }
 
-    public User save(User user) {
-        return userRepository.save(user);
-    }
 
-    public void deleteById(Integer id) {
-        userRepository.deleteById(id);
-    }
-
-    public User update(User user) {
-        return userRepository.save(user);
-    }
-
-    public User findByChineseName(String name) {
-        return userRepository.findByChineseName(name);
-    }
-
-    //test transaction
     @Transactional
-    public void insertTwo() {
-        User user1 = new User();
-        user1.setChineseName("张三");
-        save(user1);
-        int a = 2 / 0;
+    public Integer save(User user) {
+        User persist = user;
 
-        updateStatus();
+        Set<Organization> organizations = new HashSet<>(user.getOrgIds().size());
+        user.getOrgIds().forEach(orgId -> {
+            Organization organization = organizationService.findById(orgId);
+            organizations.add(organization);
+        });
+        //添加组织
+        persist.setOrganizations(organizations);
 
-//        User user2 = new User();
-//        user2.setName("Japan");
-//        save(user2);
+        return userRepository.save(persist).getId();
     }
 
-    public void updateStatus() {
-        String sql = "update sys_user set name = ? where id = 1";
-        jdbcTemplate.update(sql, new Object[] {"lisi"});
+    @Transactional
+    public void delete(Integer id) {
+        userRepository.deleteLogical(id);
 
-
+        //取消该用户主管的所有组织
+        jdbcTemplate.update("update sys_org set manager_id = null WHERE manager_id = ?", id);
     }
 
-    public List<User> getAllUsers() {
-        return userMapper.getAllUsers();
+
+    public void update(User user, Integer id) {
+        user.setId(id);
+       userRepository.updateNonNull(user);
     }
-
-    public List<User> getAllUsers2() {
-
-        return userMapper.getAllUsers2();
-    }
-
-//    public List<User> getAllUsers3() {
-//        String sql = "select name from sys_user where id = :id";
-//        Map<String, Object> param = new HashMap<String, Object>(1);
-////        param.put("id", 1);
-//
-//
-//        Map<String, Object> formatMap = new HashMap<String, Object>();
-//        String formatSql = SqlFormatter.formatSql(sql, param, formatMap);
-//
-//        Object[] args = NamedParameterUtils.buildValueArray(formatSql,
-//                formatMap);
-//        formatSql = formatSql.replaceAll(SqlFormatter.PARAM_REGEX,"?"); //mysql
-//
-//
-//        List<User> userList = baseService.jdbcTemplate.query(formatSql, args, new BeanPropertyRowMapper<User>(User.class));
-//        return userList;
-//    }
-
 
 }

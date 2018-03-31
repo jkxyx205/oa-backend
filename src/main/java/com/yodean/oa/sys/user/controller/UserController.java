@@ -20,8 +20,14 @@ public class UserController {
 
 
     @PostMapping
-    public Result<User> save(@RequestBody  User user) {
+    public Result<Integer> save(@RequestBody User user) {
         return ResultUtil.success(userService.save(user));
+    }
+
+    @PutMapping("/{id}")
+    public Result update(@RequestBody User user, @PathVariable Integer id) {
+        userService.update(user, id);
+        return ResultUtil.success();
     }
 
     @GetMapping
@@ -35,40 +41,11 @@ public class UserController {
         User user = userService.findById(id);
         return user;
     }
-/*
-    @GetMapping("/name/{name}")
-    public User getUserById(@PathVariable String name) {
-        return userService.findByChineseName(name);
+
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable Integer id) {
+        userService.delete(id);
+        return ResultUtil.success();
     }
-
-
-    @GetMapping("/list")
-    public List<User> listUsers() {
-        return userService.findAll();
-    }
-
-    @PostMapping("/save")
-    public Result saveUser(@Valid User user, BindingResult bindingResult) {
-        Result result;
-        if (bindingResult.hasErrors()) {
-            result = ResultUtil.error(0, bindingResult.getFieldError().getDefaultMessage());
-        } else {
-            result = ResultUtil.success(userService.save(user));
-        }
-
-        return result;
-
-    }
-
-    @PutMapping("/update")
-    public void  updateUser(User user) {
-        userService.save(user);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable Integer id) {
-        userService.deleteById(id);
-    }*/
-
 
 }

@@ -82,6 +82,15 @@ public class Meeting extends DataEntity {
     @Transient
     private List<User> ccUsers;
 
+    private Integer[] test;
+
+    public Integer[] getTest() {
+        return test;
+    }
+
+    public void setTest(Integer[] test) {
+        this.test = test;
+    }
 
     public String getTitle() {
         return title;

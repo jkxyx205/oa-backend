@@ -7,7 +7,7 @@ public enum CategoryStatus {
     INBOX("待办"),
     ARCHIVE("归档"),
     TRASH("回收站"),
-    DELETE("彻底删除");
+    CLEAN("回收站删除");
     private String description;
 
     private CategoryStatus(String description) {

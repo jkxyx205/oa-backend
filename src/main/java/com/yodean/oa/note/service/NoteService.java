@@ -2,6 +2,7 @@ package com.yodean.oa.note.service;
 
 import com.yodean.oa.common.enums.CategoryEnum;
 import com.yodean.oa.common.exception.OANoSuchElementException;
+import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.note.dao.NoteRepository;
 import com.yodean.oa.note.entity.Note;
 import com.yodean.oa.sys.label.entity.Label;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,20 +30,37 @@ public class NoteService {
     private WorkspaceService workspaceService;
 
     @Resource
+    private DocumentService documentService;
+
+    @Resource
     private LabelService labelService;
 
     @Transactional
-    public Note save(Note note) {
+    public Integer save(Note note) {
         List<Label> labels = note.getLabels();
 
-        note = noteRepository.save(note);
+        noteRepository.save(note);
 
         labelService.save(CategoryEnum.NOTE, note.getId(), labels);
 
-        workspaceService.save(CategoryEnum.TASK, note.getId(), UserUtils.getUser().getId());
+        documentService.update(note.getDocIds(), note.getId());
 
-        note.setLabels(labels);
-        return note;
+        workspaceService.tipUsers(CategoryEnum.NOTE, note.getId(), UserUtils.getUser().getId());
+
+        return note.getId();
+    }
+
+    @Transactional
+    public void update(Note note, Integer id) throws InvocationTargetException, IllegalAccessException {
+        note.setId(id);
+        noteRepository.updateNonNull(note);
+
+        //便签更新的时候，不需要移动到inbox。因为是属于自己的
+        //workspaceService.save(CategoryEnum.NOTE, note.getId(), UserUtils.getUser().getId());
+    }
+
+    public void delete(Integer ...id) {
+        noteRepository.deleteLogical(id);
     }
 
     public Note findById(Integer id) {
@@ -49,6 +68,8 @@ public class NoteService {
         if (optional.isPresent()) {
             Note note = optional.get();
             note.setLabels(labelService.findLabels(CategoryEnum.NOTE, id));
+            note.setDocuments(documentService.findById(CategoryEnum.NOTE, id));
+
             return note;
         }
 

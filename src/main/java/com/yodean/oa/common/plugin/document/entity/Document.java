@@ -25,7 +25,7 @@ public class Document extends DataEntity {
 
     private String ext;
 
-    private long size;
+    private Long size;
 
     @Column(name = "content_type")
     private String contentType;
@@ -72,11 +72,11 @@ public class Document extends DataEntity {
         this.ext = ext;
     }
 
-    public long getSize() {
+    public Long getSize() {
         return size;
     }
 
-    public void setSize(long size) {
+    public void setSize(Long size) {
         this.size = size;
     }
 

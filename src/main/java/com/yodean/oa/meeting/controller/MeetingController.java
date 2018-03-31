@@ -7,6 +7,7 @@ import com.yodean.oa.meeting.service.MeetingService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Set;
 
 /**
  * Created by rick on 3/27/18.
@@ -19,8 +20,10 @@ public class MeetingController {
     private MeetingService meetingService;
 
     @PostMapping
-    public Result<Meeting> save(@RequestBody Meeting meeting) {
-        return ResultUtil.success(meetingService.save(meeting));
+    public Result<Meeting> save(@RequestHeader Integer test2, @RequestParam Integer[] test1) {
+//        return ResultUtil.success(meetingService.save(meeting));
+
+        return ResultUtil.success();
     }
 
     @GetMapping("/{id}")

@@ -3,6 +3,7 @@ package com.yodean.oa.task.service;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.CategoryEnum;
 import com.yodean.oa.common.exception.OANoSuchElementException;
+import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.label.service.LabelService;
 import com.yodean.oa.sys.util.UserUtils;
@@ -30,6 +31,9 @@ public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     @Resource
+    private DocumentService documentService;
+
+    @Resource
     private TaskRepository taskRepository;
 
     @Resource
@@ -39,65 +43,42 @@ public class TaskService {
     private WorkspaceService workspaceService;
 
     @Transactional
-    public Task save(Task task) {
-
-        task.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
-
-        Task persit = taskRepository.save(task);
-        task.setId(persit.getId());
-
-        workspaceService.save(CategoryEnum.TASK, task.getId(), task.getUserIds());
+    public Integer save(Task task) {
+        taskRepository.save(task);
 
         //add Label
         labelService.save(CategoryEnum.TASK, task.getId(), task.getLabels());
 
+        workspaceService.tipUsers(CategoryEnum.TASK, task.getId(), task.getUserIds());
+
         logger.info("saved task【{}】,detail is {}",task.getTitle(), task);
-        return task;
+        return task.getId();
     }
 
 
-    /***
-     * load all
-     * @param id
-     * @return
-     */
+
     public Task findById(Integer id) {
-       return findById(id, false);
-    }
-
-    public Task findById(Integer id, boolean lazy) {
         Optional<Task> optional = taskRepository.findById(id);
 
         if (optional.isPresent()) {
             Task task = optional.get();
-            if (!lazy) {
-                task.setUsers(workspaceService.findUsers(CategoryEnum.TASK, id));
-                task.setLabels(labelService.findLabels(CategoryEnum.TASK, id));
-            }
+            task.setUsers(workspaceService.findUsers(CategoryEnum.TASK, id));
+            task.setLabels(labelService.findLabels(CategoryEnum.TASK, id));
+            task.setDocuments(documentService.findById(CategoryEnum.TASK, id));
             return task;
         }
 
         throw new OANoSuchElementException();
     }
 
-
-    /***
-     * 本地删除任务
-     * @param taskId
-     */
-    public void trash(Integer taskId) {
-        workspaceService.move(CategoryEnum.TASK, taskId, CategoryStatus.TRASH);
+    @Transactional
+    public void update(Task task, Integer id) {
+        task.setId(id);
+        taskRepository.updateNonNull(task);
+        workspaceService.tipAll(CategoryEnum.TASK, task.getId());
     }
 
-    public void move2Inbox(Integer taskId) {
-        workspaceService.move(CategoryEnum.TASK, taskId, CategoryStatus.INBOX);
-    }
-
-    public void archive(Integer taskId) {
-        workspaceService.move(CategoryEnum.TASK, taskId, CategoryStatus.ARCHIVE);
-    }
-
-    public void delete(Integer taskId) {
-        workspaceService.move(CategoryEnum.TASK, taskId, CategoryStatus.DELETE);
+    public void delete(Integer id) {
+        taskRepository.deleteLogical(id);
     }
 }

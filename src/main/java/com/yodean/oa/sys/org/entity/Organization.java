@@ -1,14 +1,12 @@
 package com.yodean.oa.sys.org.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.sys.user.entity.User;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
@@ -16,22 +14,24 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "sys_org")
+@DynamicUpdate
 public class Organization extends DataEntity {
 
-    @Column(nullable = false)
-    @NotNull(message = "parentId不能为空")
     private Integer parentId;
 
     @Column(nullable = false, length = 32)
     @NotBlank
     private String name;
 
-    @Column(length = 32)
-    private String manager;
+    @Column(name = "manager_id")
+    private Integer managerId;
 
     @ManyToMany(mappedBy = "organizations")
     @JsonIgnore
     private Set<User> users;
+
+    @Transient
+    private User manager;
 
     public Integer getParentId() {
         return parentId;
@@ -49,13 +49,6 @@ public class Organization extends DataEntity {
         this.name = name;
     }
 
-    public String getManager() {
-        return manager;
-    }
-
-    public void setManager(String manager) {
-        this.manager = manager;
-    }
 
     public Set<User> getUsers() {
         return users;
@@ -63,5 +56,22 @@ public class Organization extends DataEntity {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    public Integer getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(Integer managerId) {
+        this.managerId = managerId;
+    }
+
+    public User getManager() {
+
+        return manager;
+    }
+
+    public void setManager(User manager) {
+        this.manager = manager;
     }
 }
