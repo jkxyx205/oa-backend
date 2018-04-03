@@ -1,7 +1,6 @@
 package com.yodean.oa.task.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 
@@ -14,7 +13,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "sys_task_discussion")
-@JsonIgnoreProperties("id")
 public class Discussion extends DataEntity {
 
     private String content;

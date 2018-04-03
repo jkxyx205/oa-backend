@@ -41,7 +41,7 @@ public class Document extends DataEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
-    private Category categoryEnum;
+    private Category category;
 
     @Column(name = "category_id")
     private Integer categoryId;
@@ -103,12 +103,12 @@ public class Document extends DataEntity {
         this.fileType = fileType;
     }
 
-    public Category getCategoryEnum() {
-        return categoryEnum;
+    public Category getCategory() {
+        return category;
     }
 
-    public void setCategoryEnum(Category categoryEnum) {
-        this.categoryEnum = categoryEnum;
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public Integer getCategoryId() {

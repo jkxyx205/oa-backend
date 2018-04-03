@@ -1,15 +1,17 @@
 package com.yodean.oa.task.service;
 
+import com.yodean.oa.sys.enums.Priority;
 import com.yodean.oa.sys.user.entity.User;
 import com.yodean.oa.task.entity.Task;
-import com.yodean.oa.sys.enums.Priority;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by rick on 2018/3/19.

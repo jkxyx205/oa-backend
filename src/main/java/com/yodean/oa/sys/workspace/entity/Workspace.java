@@ -3,6 +3,7 @@ package com.yodean.oa.sys.workspace.entity;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.sys.workspace.enums.CategoryStatus;
+import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -15,7 +16,12 @@ import javax.persistence.*;
         uniqueConstraints = {@UniqueConstraint(columnNames={"category", "category_id", "user_id", "del_flag"})})
 
 @DynamicUpdate
+@DynamicInsert
 public class Workspace extends DataEntity {
+
+    public enum UserType {
+        MUST,OPTIONAL
+    }
 
     /***
      * 类型
@@ -30,7 +36,7 @@ public class Workspace extends DataEntity {
     private Integer categoryId;
 
     /***
-     * 文件位置
+     * 状态
      */
     @Enumerated(EnumType.STRING)
     private CategoryStatus categoryStatus;
@@ -52,6 +58,13 @@ public class Workspace extends DataEntity {
      */
     @Column(name = "user_id")
     private Integer userId;
+
+    /***
+     * 参与者类型
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_type")
+    private UserType userType;
 
     public Category getCategory() {
         return category;
@@ -99,5 +112,13 @@ public class Workspace extends DataEntity {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
     }
 }

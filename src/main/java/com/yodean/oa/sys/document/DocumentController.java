@@ -67,4 +67,13 @@ public class DocumentController {
     public void download(@PathVariable Integer id, HttpServletResponse response, HttpServletRequest request) throws IOException {
         documentService.download(response, request, id);
     }
+
+    /***
+     * 删除附件
+     */
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable Integer id) {
+        documentService.delete(id);
+        return ResultUtil.success();
+    }
 }

@@ -48,13 +48,13 @@ public class DocumentService {
     private JdbcTemplate jdbcTemplate;
 
     @Transactional
-    public Document upload(String folderPath, MultipartFile file, Category categoryEnum, Integer Id) throws IOException {
+    public Document upload(String folderPath, MultipartFile file, Category category, Integer Id) throws IOException {
         //上传到服务器
         Document document = documentHandler.store(folderPath, file);
-        document.setCategoryEnum(categoryEnum);
+        document.setCategory(category);
         document.setCategoryId(Id);
-        document = save(document);
-        return document;
+
+        return save(document);
     }
 
     /***
@@ -116,12 +116,8 @@ public class DocumentService {
      * 逻辑删除
      * @param id
      */
-    public void deleteById(Integer id) {
-        Document document = findById(id);
-        document.setDelFlag(DataEntity.DEL_FLAG_REMOVE);
-        save(document);
-
-//        documentRepository.deleteById(id);
+    public void delete(Integer id) {
+        documentRepository.deleteLogical(id);
     }
 
     /***
@@ -149,7 +145,7 @@ public class DocumentService {
 
     public List<Document> findById(Category category, Integer categoryId) {
         Document document = new Document();
-        document.setCategoryEnum(category);
+        document.setCategory(category);
         document.setCategoryId(categoryId);
         document.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
 

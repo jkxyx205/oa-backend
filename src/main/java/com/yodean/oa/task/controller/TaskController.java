@@ -1,7 +1,6 @@
 package com.yodean.oa.task.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.enums.ResultType;
 import com.yodean.oa.common.util.ResultUtil;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
@@ -53,7 +52,7 @@ public class TaskController {
      * 添加参与者
      * @return
      */
-    @PostMapping("{id}/user/{userId}/add")
+    @PostMapping("{id}/users/{userId}")
     public Result addUser(@PathVariable Integer id, @PathVariable Integer userId) {
         taskService.addUser(id, userId);
         return ResultUtil.success();
@@ -63,7 +62,7 @@ public class TaskController {
      * 移除参与者
      * @return
      */
-    @PostMapping("{id}/user/{userId}/remove")
+    @DeleteMapping("{id}/users/{userId}")
     public Result removeUser(@PathVariable Integer id, @PathVariable Integer userId) {
         taskService.removeUser(id, userId);
         return ResultUtil.success();

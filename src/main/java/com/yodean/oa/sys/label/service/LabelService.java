@@ -1,10 +1,10 @@
 package com.yodean.oa.sys.label.service;
 
+import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.sys.label.dao.LabelRepository;
 import com.yodean.oa.sys.label.entity.Label;
 import org.springframework.data.domain.Example;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,33 +19,38 @@ public class LabelService {
     @Resource
     private LabelRepository labelRepository;
 
-    @Resource
-    private JdbcTemplate jdbcTemplate;
-
     public void save(Category category, Integer categoryId, List<Label> labels) {
-        delete(category, categoryId);
         labels.forEach(label -> {
-            label.setCategory(category);
-            label.setCategoryId(categoryId);
+            labelSetter(label, category, categoryId);
         });
 
         labelRepository.saveAll(labels);
     }
 
+    public Integer save(Category category, Integer categoryId, Label label) {
+        labelRepository.save(labelSetter(label, category, categoryId));
 
-    public int delete(Category category, Integer categoryId) {
-        String sql = "DELETE FROM sys_label WHERE category = ? and category_id = ?";
-        return jdbcTemplate.update(sql, category.name(), categoryId);
+        return label.getId();
+    }
+
+    public void delete(Integer id) {
+        labelRepository.deleteLogical(id);
     }
 
     public List<Label> findLabels(Category category, Integer categoryId) {
-        Label label = new Label();
-        label.setCategory(category);
-        label.setCategoryId(categoryId);
+        Label label = labelSetter(new Label(), category, categoryId);
+
+        label.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
 
         Example<Label> example = Example.of(label);
 
         return labelRepository.findAll(example);
+    }
+
+    private Label labelSetter(Label label, Category category, Integer categoryId) {
+        label.setCategory(category);
+        label.setCategoryId(categoryId);
+        return label;
     }
 
 

@@ -1,6 +1,5 @@
 package com.yodean.oa.sys.org.controller;
 
-import com.sun.deploy.net.HttpResponse;
 import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.plugin.ztree.dto.TreeNode;
 import com.yodean.oa.common.plugin.ztree.service.ZtreeService;
@@ -10,9 +9,6 @@ import com.yodean.oa.sys.org.service.OrganizationService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 

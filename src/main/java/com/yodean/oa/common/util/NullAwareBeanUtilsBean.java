@@ -3,9 +3,11 @@ package com.yodean.oa.common.util;
 /**
  * Created by rick on 3/29/18.
  */
-import java.lang.reflect.InvocationTargetException;
+
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ContextClassLoaderLocal;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class NullAwareBeanUtilsBean extends BeanUtilsBean {
 

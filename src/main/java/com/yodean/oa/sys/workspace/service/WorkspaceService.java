@@ -3,9 +3,9 @@ package com.yodean.oa.sys.workspace.service;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.service.BaseService;
-import com.yodean.oa.sys.user.entity.User;
 import com.yodean.oa.sys.util.UserUtils;
 import com.yodean.oa.sys.workspace.dao.WorkspaceRepository;
+import com.yodean.oa.sys.workspace.dto.Participant;
 import com.yodean.oa.sys.workspace.entity.Workspace;
 import com.yodean.oa.sys.workspace.enums.CategoryStatus;
 import org.apache.commons.collections.CollectionUtils;
@@ -36,20 +36,21 @@ public class WorkspaceService {
      * 【插入】参与者
      * @param category
      * @param categoryId
-     * @param userIds 需要到inbox的用户ids
+     * @param userMap 需要到inbox的用户ids
      */
+
     @Transactional
-    public void tipUsers(Category category, Integer categoryId, Set<Integer> userIds) {
-//        所有已经参加的人员
+    public void tipUsers(Category category, Integer categoryId, Map<Integer, Workspace.UserType> userMap) {
+//      所有已经参加的人员
         Map<String, Object> params = new HashMap<>(2);
         params.put("category", category.name());
         params.put("categoryId", categoryId);
         Map<Integer, Integer>  wkMap = baseService.query("select user_id, id as userId from sys_workspace sp where category = :category and category_id = :categoryId and del_flag = '1'",
                 params, new HashMap<Integer, Integer>());
 
-        List<Workspace> workspaceList = new ArrayList<>(userIds.size());
+        List<Workspace> workspaceList = new ArrayList<>(userMap.size());
 
-        userIds.forEach(userId -> {
+        userMap.keySet().forEach(userId -> {
             Workspace workspace;
 
             if (wkMap.keySet().contains(userId)) { //存在
@@ -62,6 +63,7 @@ public class WorkspaceService {
                 workspace.setReaded(false);
                 workspace.setUserId(userId);
             }
+            workspace.setUserType(userMap.get(userId));
             workspace.setCategoryStatus(CategoryStatus.INBOX);
 
             workspaceList.add(workspace);
@@ -71,14 +73,15 @@ public class WorkspaceService {
     }
 
 
-
-
-
     @Transactional
     public void tipUsers(Category category, Integer categoryId, Integer ...userIds) {
-        tipUsers(category, categoryId, new HashSet<>(Arrays.asList(userIds)));
-    }
+        Map<Integer, Workspace.UserType> userMap = new HashMap<>(userIds.length);
+        for (Integer userId: userIds) {
+            userMap.put(userId,null);
+        }
 
+        tipUsers(category, categoryId, userMap);
+    }
 
     /***
      * 移除参与者
@@ -148,22 +151,19 @@ public class WorkspaceService {
 
 
     /***
-     * 查找所有相关者
+     * 查找参与者
      * @param category
      * @param categoryId
      * @return
      */
-    public List<User> findUsers(Category category, Integer categoryId) {
-        String sql = "select id, chinese_name chineseName from sys_user su\n" +
-                "where exists(\n" +
-                "select 1 from sys_workspace sp where  sp.category = :category and sp.category_id = :categoryId and \n" +
-                "su.id = sp.user_id and sp.del_flag = '1'\n" +
-                ")";
+    public List<Participant> findUsers(Category category, Integer categoryId) {
+        String sql = "select w.category_status categoryStatus, w.follow, w.readed, w.user_type userType, u.id userId, u.chinese_name chineseName from sys_workspace w left join sys_user u on w.user_id = u.id\n" +
+                "where category = :category and category_id = :categoryId and w.del_flag = '1'";
         Map<String, Object> params = new HashMap<>(2);
         params.put("category", category.name());
         params.put("categoryId",categoryId);
 
-       return baseService.query(sql, params, User.class);
+       return baseService.query(sql, params, Participant.class);
     }
 
     /***

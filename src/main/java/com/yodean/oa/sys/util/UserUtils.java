@@ -2,8 +2,6 @@ package com.yodean.oa.sys.util;
 
 import com.yodean.oa.sys.user.entity.User;
 
-import java.util.Date;
-
 /**
  * Created by rick on 3/27/18.
  */

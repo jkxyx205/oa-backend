@@ -4,7 +4,10 @@ import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.sys.label.enums.ColorEnum;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 /**
  * Created by rick on 2018/3/20.

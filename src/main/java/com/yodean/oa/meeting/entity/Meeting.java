@@ -1,9 +1,11 @@
 package com.yodean.oa.meeting.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.sys.label.entity.Label;
-import com.yodean.oa.sys.user.entity.User;
+import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.enums.Priority;
+import com.yodean.oa.sys.label.entity.Label;
+import com.yodean.oa.sys.workspace.dto.Participant;
+import com.yodean.oa.sys.workspace.entity.Workspace;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
 
@@ -11,6 +13,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by rick on 2018/3/19.
@@ -18,6 +22,15 @@ import java.util.List;
 @Entity(name = "t_meeting")
 @DynamicUpdate
 public class Meeting extends DataEntity {
+
+    public enum MeetingType {
+        MEETING, SCHEDULE;
+    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "meeting_type", nullable = false)
+    private MeetingType meetingType;
+
     /***
      * 会议标题
      */
@@ -29,6 +42,16 @@ public class Meeting extends DataEntity {
     @NotBlank(message = "会议正文不能为空")
     @Column(columnDefinition = "text", nullable = false)
     private String content;
+
+    /***
+     * 会议地址
+     */
+    private String address;
+
+    /***
+     * 可见度
+     */
+    private Boolean privacy;
 
     /***
      * 会议开始时间
@@ -61,36 +84,29 @@ public class Meeting extends DataEntity {
     @Column
     private Priority priority;
 
+    /***
+     * 标签
+     */
     @Transient
     private List<Label> labels;
 
+
+    @Transient
+    private Set<Integer> docIds;
     /***
-     * 必须参加
+     * 附件
      */
     @Transient
-    private List<Integer> toUserIds;
+    private List<Document> documents;
+
+    @Transient
+    private Map<Integer, Workspace.UserType> userMap;
 
     /***
-     * 可选
+     * 参与人员
      */
     @Transient
-    private List<Integer> ccUserIds;
-
-    @Transient
-    private List<User> toUsers;
-
-    @Transient
-    private List<User> ccUsers;
-
-    private Integer[] test;
-
-    public Integer[] getTest() {
-        return test;
-    }
-
-    public void setTest(Integer[] test) {
-        this.test = test;
-    }
+    private List<Participant> users;
 
     public String getTitle() {
         return title;
@@ -156,35 +172,59 @@ public class Meeting extends DataEntity {
         this.labels = labels;
     }
 
-    public List<Integer> getToUserIds() {
-        return toUserIds;
+    public MeetingType getMeetingType() {
+        return meetingType;
     }
 
-    public void setToUserIds(List<Integer> toUserIds) {
-        this.toUserIds = toUserIds;
+    public void setMeetingType(MeetingType meetingType) {
+        this.meetingType = meetingType;
     }
 
-    public List<Integer> getCcUserIds() {
-        return ccUserIds;
+    public String getAddress() {
+        return address;
     }
 
-    public void setCcUserIds(List<Integer> ccUserIds) {
-        this.ccUserIds = ccUserIds;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public List<User> getToUsers() {
-        return toUsers;
+    public Boolean getPrivacy() {
+        return privacy;
     }
 
-    public void setToUsers(List<User> toUsers) {
-        this.toUsers = toUsers;
+    public void setPrivacy(Boolean privacy) {
+        this.privacy = privacy;
     }
 
-    public List<User> getCcUsers() {
-        return ccUsers;
+    public Set<Integer> getDocIds() {
+        return docIds;
     }
 
-    public void setCcUsers(List<User> ccUsers) {
-        this.ccUsers = ccUsers;
+    public void setDocIds(Set<Integer> docIds) {
+        this.docIds = docIds;
+    }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
+    }
+
+    public Map<Integer, Workspace.UserType> getUserMap() {
+        return userMap;
+    }
+
+    public void setUserMap(Map<Integer, Workspace.UserType> userMap) {
+        this.userMap = userMap;
+    }
+
+    public List<Participant> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<Participant> users) {
+        this.users = users;
     }
 }

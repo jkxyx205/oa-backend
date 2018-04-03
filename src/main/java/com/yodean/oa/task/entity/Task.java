@@ -4,7 +4,7 @@ import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.enums.Priority;
 import com.yodean.oa.sys.label.entity.Label;
-import com.yodean.oa.sys.user.entity.User;
+import com.yodean.oa.sys.workspace.dto.Participant;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
@@ -81,10 +81,10 @@ public class Task extends DataEntity {
      * 参与人
      */
     @Transient
-    private Set<Integer> userIds;
+    private Integer[] userIds;
 
     @Transient
-    private List<User> users;
+    private List<Participant> users;
 
     @Transient
     private List<Label> labels;
@@ -151,19 +151,19 @@ public class Task extends DataEntity {
         this.content = content;
     }
 
-    public Set<Integer> getUserIds() {
+    public Integer[] getUserIds() {
         return userIds;
     }
 
-    public void setUserIds(Set<Integer> userIds) {
+    public void setUserIds(Integer[] userIds) {
         this.userIds = userIds;
     }
 
-    public List<User> getUsers() {
+    public List<Participant> getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(List<Participant> users) {
         this.users = users;
     }
 
