@@ -1,10 +1,8 @@
 package com.yodean.oa.sys.label.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.CategoryEnum;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.sys.label.enums.ColorEnum;
-import com.yodean.oa.task.entity.Task;
-import org.hibernate.annotations.Filter;
 
 import javax.persistence.*;
 
@@ -30,7 +28,7 @@ public class Label extends DataEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CategoryEnum category;
+    private Category category;
 
     @Column(name = "category_id", nullable = false)
     private Integer categoryId;
@@ -54,11 +52,11 @@ public class Label extends DataEntity {
         this.title = title;
     }
 
-    public CategoryEnum getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(CategoryEnum category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 

@@ -1,6 +1,6 @@
 package com.yodean.oa.meeting.service;
 
-import com.yodean.oa.common.enums.CategoryEnum;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.service.BaseService;
 import com.yodean.oa.meeting.dao.MeetingRepository;
@@ -62,7 +62,7 @@ public class MeetingService {
         meetingUserRepository.saveAll(meetingUserList);
 
         //
-        workspaceService.tipUsers(CategoryEnum.MEETING, meeting.getId(), userIds);
+        workspaceService.tipUsers(Category.MEETING, meeting.getId(), userIds);
 
         return meeting;
     }

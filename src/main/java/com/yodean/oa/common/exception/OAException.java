@@ -1,6 +1,6 @@
 package com.yodean.oa.common.exception;
 
-import com.yodean.oa.common.enums.ResultEnum;
+import com.yodean.oa.common.enums.ResultType;
 
 /**
  * Created by rick on 2018/3/15.
@@ -10,7 +10,7 @@ public class OAException extends RuntimeException {
 
     private String msg;
 
-    public OAException(ResultEnum resultEnum) {
+    public OAException(ResultType resultEnum) {
         super(resultEnum.getMessage());
         this.code = resultEnum.getCode();
         this.msg = resultEnum.getMessage();

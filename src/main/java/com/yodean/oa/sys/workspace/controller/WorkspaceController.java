@@ -1,7 +1,7 @@
 package com.yodean.oa.sys.workspace.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.enums.CategoryEnum;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.util.ResultUtil;
 import com.yodean.oa.sys.workspace.enums.CategoryStatus;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
@@ -27,7 +27,7 @@ public class WorkspaceController {
      * @return
      */
     @PostMapping("/{category}/{id}/trash")
-    public Result trash(@PathVariable CategoryEnum category, @PathVariable Integer id) {
+    public Result trash(@PathVariable Category category, @PathVariable Integer id) {
         workspaceService.move(category, id, CategoryStatus.TRASH);
         return ResultUtil.success();
     }
@@ -37,7 +37,7 @@ public class WorkspaceController {
      * @return
      */
     @PostMapping("{category}/{id}/inbox")
-    public Result inbox(@PathVariable CategoryEnum category, @PathVariable Integer id) {
+    public Result inbox(@PathVariable Category category, @PathVariable Integer id) {
         workspaceService.move(category, id, CategoryStatus.INBOX);
         return ResultUtil.success();
     }
@@ -48,7 +48,7 @@ public class WorkspaceController {
      * @return
      */
     @PostMapping("{category}/{id}/archive")
-    public Result archive(@PathVariable CategoryEnum category, @PathVariable Integer id) {
+    public Result archive(@PathVariable Category category, @PathVariable Integer id) {
         workspaceService.move(category, id, CategoryStatus.ARCHIVE);
         return ResultUtil.success();
     }
@@ -59,7 +59,7 @@ public class WorkspaceController {
      * @return
      */
     @PostMapping("{category}/{id}/clean")
-    public Result clean(@PathVariable CategoryEnum category, @PathVariable Integer id) {
+    public Result clean(@PathVariable Category category, @PathVariable Integer id) {
         workspaceService.move(category, id, CategoryStatus.CLEAN);
         return ResultUtil.success();
     }
@@ -69,7 +69,7 @@ public class WorkspaceController {
      * @return
      */
     @PostMapping("/{category}/{id}/follow")
-    public Result follow(@PathVariable CategoryEnum category, @PathVariable Integer id) {
+    public Result follow(@PathVariable Category category, @PathVariable Integer id) {
         workspaceService.markFollow(category, id, true);
         return ResultUtil.success();
     }
@@ -79,7 +79,7 @@ public class WorkspaceController {
      * @return
      */
     @PostMapping("/{category}/{id}/unfollow")
-    public Result unfollow(@PathVariable CategoryEnum category, @PathVariable Integer id) {
+    public Result unfollow(@PathVariable Category category, @PathVariable Integer id) {
         workspaceService.markFollow(category, id, false);
         return ResultUtil.success();
     }
@@ -89,7 +89,7 @@ public class WorkspaceController {
      * @return
      */
     @PostMapping("/{category}/{id}/unread")
-    public Result unread(@PathVariable CategoryEnum category, @PathVariable Integer id) {
+    public Result unread(@PathVariable Category category, @PathVariable Integer id) {
         workspaceService.markRead(category, id, false);
         return ResultUtil.success();
     }

@@ -1,7 +1,7 @@
 package com.yodean.oa.common.dao;
 
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.ResultEnum;
+import com.yodean.oa.common.enums.ResultType;
 import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.util.NullAwareBeanUtilsBean;
@@ -43,13 +43,13 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
             NullAwareBeanUtilsBean.getInstance().copyProperties(persist, t);
             save(persist);
         } catch (Exception e) {
-            throw new OAException(ResultEnum.UNKNOW_ERROR);
+            throw new OAException(ResultType.UNKNOW_ERROR);
         }
     }
 
     @Transactional
     public void deleteLogical(ID ...ids) {
-        if (Objects.isNull(ids)) throw new OAException(ResultEnum.NULL_ERROR);
+        if (Objects.isNull(ids)) throw new OAException(ResultType.NULL_ERROR);
 
         List<T> list = findAllById(Arrays.asList(ids));
         for(T t : list) {

@@ -3,7 +3,7 @@ package com.yodean.oa.meeting.entity;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.user.entity.User;
-import com.yodean.oa.task.enums.Priority;
+import com.yodean.oa.sys.enums.Priority;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
 

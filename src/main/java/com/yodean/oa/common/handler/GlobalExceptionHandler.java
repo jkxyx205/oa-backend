@@ -1,7 +1,7 @@
 package com.yodean.oa.common.handler;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.enums.ResultEnum;
+import com.yodean.oa.common.enums.ResultType;
 import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.util.ResultUtil;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
             OAException ex = (OAException)e;
             result = ResultUtil.error(ex.getCode(), ex.getMessage());
          } else if (e instanceof MaxUploadSizeExceededException) {
-            result = ResultUtil.error(ResultEnum.VALIDATE_ERROR, "文件不能超过5M");
+            result = ResultUtil.error(ResultType.VALIDATE_ERROR, "文件不能超过5M");
         }else {
             result = ResultUtil.error(e.getMessage());
         }

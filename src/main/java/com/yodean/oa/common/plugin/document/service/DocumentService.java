@@ -1,7 +1,7 @@
 package com.yodean.oa.common.plugin.document.service;
 
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.CategoryEnum;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.dao.DocumentRepository;
 import com.yodean.oa.common.plugin.document.dto.ImageDocument;
@@ -48,7 +48,7 @@ public class DocumentService {
     private JdbcTemplate jdbcTemplate;
 
     @Transactional
-    public Document upload(String folderPath, MultipartFile file, CategoryEnum categoryEnum, Integer Id) throws IOException {
+    public Document upload(String folderPath, MultipartFile file, Category categoryEnum, Integer Id) throws IOException {
         //上传到服务器
         Document document = documentHandler.store(folderPath, file);
         document.setCategoryEnum(categoryEnum);
@@ -129,7 +129,7 @@ public class DocumentService {
      * @param docIds
      * @param categoryId
      */
-    public void update(Set<Integer> docIds, Integer categoryId) {
+    public void update(Set<Integer> docIds, Category category, Integer categoryId) {
         Validate.notNull(categoryId);
         Validate.notNull(docIds);
 
@@ -137,17 +137,17 @@ public class DocumentService {
             return;
         }
 
-        String sql = "UPDATE sys_document set category_id = ? WHERE id = ?";
+        String sql = "UPDATE sys_document set category = ?, category_id = ? WHERE id = ?";
 
         List<Object[]> params = new ArrayList<>(docIds.size());
         for (Integer docId : docIds) {
-            params.add(new Object[]{categoryId, docId});
+            params.add(new Object[]{category.name(), categoryId, docId});
         }
 
         jdbcTemplate.batchUpdate(sql, params);
     }
 
-    public List<Document> findById(CategoryEnum category, Integer categoryId) {
+    public List<Document> findById(Category category, Integer categoryId) {
         Document document = new Document();
         document.setCategoryEnum(category);
         document.setCategoryId(categoryId);

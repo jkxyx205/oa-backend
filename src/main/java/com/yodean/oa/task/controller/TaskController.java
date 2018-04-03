@@ -1,10 +1,11 @@
 package com.yodean.oa.task.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.enums.CategoryEnum;
-import com.yodean.oa.common.enums.ResultEnum;
+import com.yodean.oa.common.enums.Category;
+import com.yodean.oa.common.enums.ResultType;
 import com.yodean.oa.common.util.ResultUtil;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
+import com.yodean.oa.task.entity.Discussion;
 import com.yodean.oa.task.entity.Task;
 import com.yodean.oa.task.service.TaskService;
 import org.springframework.validation.BindingResult;
@@ -30,7 +31,7 @@ public class TaskController {
     @PostMapping
     public Result<Integer> save(@Valid @RequestBody Task task, BindingResult result) {
         if (result.hasErrors()) {
-            return ResultUtil.error(ResultEnum.VALIDATE_ERROR, result.getAllErrors());
+            return ResultUtil.error(ResultType.VALIDATE_ERROR, result.getAllErrors());
         }
 
         return ResultUtil.success(taskService.save(task));
@@ -54,7 +55,7 @@ public class TaskController {
      */
     @PostMapping("{id}/user/{userId}/add")
     public Result addUser(@PathVariable Integer id, @PathVariable Integer userId) {
-        workspaceService.tipUsers(CategoryEnum.TASK, id, userId);
+        taskService.addUser(id, userId);
         return ResultUtil.success();
     }
 
@@ -64,7 +65,17 @@ public class TaskController {
      */
     @PostMapping("{id}/user/{userId}/remove")
     public Result removeUser(@PathVariable Integer id, @PathVariable Integer userId) {
-        workspaceService.remove(CategoryEnum.TASK, id, userId);
+        taskService.removeUser(id, userId);
+        return ResultUtil.success();
+    }
+
+    /***
+     * 添加讨论
+     * @return
+     */
+    @PostMapping("{id}/discussions")
+    public Result addDiscussion(@PathVariable Integer id, @RequestBody Discussion discussion) {
+        taskService.addDiscussion(id, discussion);
         return ResultUtil.success();
     }
 

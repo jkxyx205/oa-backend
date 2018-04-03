@@ -1,6 +1,6 @@
 package com.yodean.oa.note.service;
 
-import com.yodean.oa.common.enums.CategoryEnum;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.note.dao.NoteRepository;
@@ -41,11 +41,11 @@ public class NoteService {
 
         noteRepository.save(note);
 
-        labelService.save(CategoryEnum.NOTE, note.getId(), labels);
+        labelService.save(Category.NOTE, note.getId(), labels);
 
-        documentService.update(note.getDocIds(), note.getId());
+        documentService.update(note.getDocIds(), Category.NOTE, note.getId());
 
-        workspaceService.tipUsers(CategoryEnum.NOTE, note.getId(), UserUtils.getUser().getId());
+        workspaceService.tipUsers(Category.NOTE, note.getId(), UserUtils.getUser().getId());
 
         return note.getId();
     }
@@ -67,8 +67,8 @@ public class NoteService {
         Optional<Note> optional = noteRepository.findById(id);
         if (optional.isPresent()) {
             Note note = optional.get();
-            note.setLabels(labelService.findLabels(CategoryEnum.NOTE, id));
-            note.setDocuments(documentService.findById(CategoryEnum.NOTE, id));
+            note.setLabels(labelService.findLabels(Category.NOTE, id));
+            note.setDocuments(documentService.findById(Category.NOTE, id));
 
             return note;
         }

@@ -1,12 +1,11 @@
 package com.yodean.oa.common.job.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.enums.CategoryEnum;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.job.SampleJob;
 import com.yodean.oa.common.job.dto.ScheduleDetail;
 import com.yodean.oa.common.job.service.ScheduleService;
 import com.yodean.oa.common.util.ResultUtil;
-import com.yodean.oa.sys.user.service.UserService;
 import org.quartz.SchedulerException;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +44,7 @@ public class ScheduleController {
 
     @DeleteMapping("/{name}")
     public Result delete(@PathVariable String name) throws SchedulerException {
-        scheduleService.deleteJob(name, CategoryEnum.TASK.name());
+        scheduleService.deleteJob(name, Category.TASK.name());
         return ResultUtil.success();
     }
 }

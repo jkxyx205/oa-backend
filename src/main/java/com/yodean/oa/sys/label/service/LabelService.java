@@ -1,6 +1,6 @@
 package com.yodean.oa.sys.label.service;
 
-import com.yodean.oa.common.enums.CategoryEnum;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.sys.label.dao.LabelRepository;
 import com.yodean.oa.sys.label.entity.Label;
 import org.springframework.data.domain.Example;
@@ -22,7 +22,7 @@ public class LabelService {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
-    public void save(CategoryEnum category, Integer categoryId, List<Label> labels) {
+    public void save(Category category, Integer categoryId, List<Label> labels) {
         delete(category, categoryId);
         labels.forEach(label -> {
             label.setCategory(category);
@@ -33,12 +33,12 @@ public class LabelService {
     }
 
 
-    public int delete(CategoryEnum category, Integer categoryId) {
+    public int delete(Category category, Integer categoryId) {
         String sql = "DELETE FROM sys_label WHERE category = ? and category_id = ?";
         return jdbcTemplate.update(sql, category.name(), categoryId);
     }
 
-    public List<Label> findLabels(CategoryEnum category, Integer categoryId) {
+    public List<Label> findLabels(Category category, Integer categoryId) {
         Label label = new Label();
         label.setCategory(category);
         label.setCategoryId(categoryId);

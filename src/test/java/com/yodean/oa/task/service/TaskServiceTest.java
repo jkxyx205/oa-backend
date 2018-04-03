@@ -2,8 +2,7 @@ package com.yodean.oa.task.service;
 
 import com.yodean.oa.sys.user.entity.User;
 import com.yodean.oa.task.entity.Task;
-import com.yodean.oa.task.enums.Priority;
-import org.junit.Assert;
+import com.yodean.oa.sys.enums.Priority;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

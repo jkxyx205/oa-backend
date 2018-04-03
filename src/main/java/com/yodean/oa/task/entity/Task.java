@@ -4,7 +4,7 @@ import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.user.entity.User;
-import com.yodean.oa.task.enums.Priority;
+import com.yodean.oa.sys.enums.Priority;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
 
@@ -62,6 +62,12 @@ public class Task extends DataEntity {
     @Enumerated(EnumType.STRING)
     @Column
     private Priority priority;
+
+    @OneToMany(mappedBy = "task")
+    private List<TaskLog> taskLogs;
+
+    @OneToMany(mappedBy = "task")
+    private Set<Discussion> discussions;
 
     /***
      * 参与人
@@ -175,5 +181,21 @@ public class Task extends DataEntity {
 
     public void setDocuments(List<Document> documents) {
         this.documents = documents;
+    }
+
+    public List<TaskLog> getTaskLogs() {
+        return taskLogs;
+    }
+
+    public void setTaskLogs(List<TaskLog> taskLogs) {
+        this.taskLogs = taskLogs;
+    }
+
+    public Set<Discussion> getDiscussions() {
+        return discussions;
+    }
+
+    public void setDiscussions(Set<Discussion> discussions) {
+        this.discussions = discussions;
     }
 }

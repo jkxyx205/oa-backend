@@ -1,7 +1,7 @@
 package com.yodean.oa.sys.workspace.service;
 
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.CategoryEnum;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.service.BaseService;
 import com.yodean.oa.sys.user.entity.User;
 import com.yodean.oa.sys.util.UserUtils;
@@ -39,7 +39,7 @@ public class WorkspaceService {
      * @param userIds 需要到inbox的用户ids
      */
     @Transactional
-    public void tipUsers(CategoryEnum category, Integer categoryId, Set<Integer> userIds) {
+    public void tipUsers(Category category, Integer categoryId, Set<Integer> userIds) {
 //        所有已经参加的人员
         Map<String, Object> params = new HashMap<>(2);
         params.put("category", category.name());
@@ -75,7 +75,7 @@ public class WorkspaceService {
 
 
     @Transactional
-    public void tipUsers(CategoryEnum category, Integer categoryId, Integer ...userIds) {
+    public void tipUsers(Category category, Integer categoryId, Integer ...userIds) {
         tipUsers(category, categoryId, new HashSet<>(Arrays.asList(userIds)));
     }
 
@@ -86,7 +86,7 @@ public class WorkspaceService {
      * @param categoryId
      * @param userId
      */
-    public void remove(CategoryEnum category, Integer categoryId, Integer userId) {
+    public void remove(Category category, Integer categoryId, Integer userId) {
         jdbcTemplate.update("UPDATE sys_workspace set del_flag = '0', update_date = ? WHERE category = ? AND category_id = ? AND user_id = ? AND del_flag = '1'",
                new Date(), category.name(), categoryId, userId);
     }
@@ -96,7 +96,7 @@ public class WorkspaceService {
      * @param category
      * @param id
      */
-    public void tipAll(CategoryEnum category, Integer id) {
+    public void tipAll(Category category, Integer id) {
         jdbcTemplate.update("UPDATE sys_workspace set category_status = ? WHERE category = ? AND category_id = ? AND del_flag = '1'",
                 CategoryStatus.INBOX.name(), category.name(), id);
     }
@@ -105,7 +105,7 @@ public class WorkspaceService {
      * 跟进
      * @param isFollow
      */
-    public void markFollow(CategoryEnum category, Integer categoryId, boolean isFollow) {
+    public void markFollow(Category category, Integer categoryId, boolean isFollow) {
         Workspace workspace = findCurrentWorkspace(category, categoryId);
         workspace.setFollow(isFollow);
         workspaceRepository.save(workspace);
@@ -117,7 +117,7 @@ public class WorkspaceService {
      * @param categoryId
      * @return
      */
-    private Workspace findCurrentWorkspace(CategoryEnum category, Integer categoryId) {
+    private Workspace findCurrentWorkspace(Category category, Integer categoryId) {
         Workspace workspace = new Workspace();
         workspace.setCategory(category);
         workspace.setCategoryId(categoryId);
@@ -139,7 +139,7 @@ public class WorkspaceService {
      * @param category
      * @param categoryId
      */
-    public void move(CategoryEnum category, Integer categoryId, CategoryStatus categoryStatus) {
+    public void move(Category category, Integer categoryId, CategoryStatus categoryStatus) {
         Workspace workspace = findCurrentWorkspace(category, categoryId);
         workspace.setCategoryStatus(categoryStatus);
         workspaceRepository.save(workspace);
@@ -153,7 +153,7 @@ public class WorkspaceService {
      * @param categoryId
      * @return
      */
-    public List<User> findUsers(CategoryEnum category, Integer categoryId) {
+    public List<User> findUsers(Category category, Integer categoryId) {
         String sql = "select id, chinese_name chineseName from sys_user su\n" +
                 "where exists(\n" +
                 "select 1 from sys_workspace sp where  sp.category = :category and sp.category_id = :categoryId and \n" +
@@ -172,7 +172,7 @@ public class WorkspaceService {
      * @param categoryId
      * @param isRead
      */
-    public void markRead(CategoryEnum category, Integer categoryId, boolean isRead) {
+    public void markRead(Category category, Integer categoryId, boolean isRead) {
         Workspace workspace = findCurrentWorkspace(category, categoryId);
         workspace.setReaded(isRead);
         workspaceRepository.save(workspace);

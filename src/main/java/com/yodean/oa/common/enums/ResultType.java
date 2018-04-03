@@ -3,7 +3,7 @@ package com.yodean.oa.common.enums;
 /**
  * Created by rick on 2018/3/15.
  */
-public enum ResultEnum {
+public enum ResultType {
     UNKNOW_ERROR(-1, "未知错误"),
     NOT_FOUND_ERROR(404, "未找到相关纪录"),
     SUCCESS(200, "成功"),
@@ -17,7 +17,7 @@ public enum ResultEnum {
 
     private String message;
 
-    ResultEnum(Integer code, String message) {
+    ResultType(Integer code, String message) {
         this.code = code;
         this.message = message;
     }

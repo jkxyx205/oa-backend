@@ -1,7 +1,7 @@
 package com.yodean.oa.sys.workspace.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.CategoryEnum;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.sys.workspace.enums.CategoryStatus;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -21,7 +21,7 @@ public class Workspace extends DataEntity {
      * 类型
      */
     @Enumerated(EnumType.STRING)
-    private CategoryEnum category;
+    private Category category;
 
     /***
      * 具体实例
@@ -53,11 +53,11 @@ public class Workspace extends DataEntity {
     @Column(name = "user_id")
     private Integer userId;
 
-    public CategoryEnum getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(CategoryEnum category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
