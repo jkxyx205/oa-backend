@@ -120,6 +120,8 @@ public class TaskService {
         } else if (null != task.getContent()){
             taskLog.setTaskLogType(TaskLogType.CONTENT)
                     .setDetail(task.getContent());
+        } else if (null != task.getProgress()){
+            taskLog.setTaskLogType(TaskLogType.PROGRESS, task.getProgress() + "");
         }
 
         //TODO add User or remove member, use specific api

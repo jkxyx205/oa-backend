@@ -2,11 +2,12 @@ package com.yodean.oa.task.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
+import com.yodean.oa.sys.enums.Priority;
 import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.user.entity.User;
-import com.yodean.oa.sys.enums.Priority;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -62,6 +63,13 @@ public class Task extends DataEntity {
     @Enumerated(EnumType.STRING)
     @Column
     private Priority priority;
+
+    /***
+     * 进度
+     */
+    @Range(min = 0, max = 100)
+    @Column
+    private Integer progress;
 
     @OneToMany(mappedBy = "task")
     private List<TaskLog> taskLogs;
@@ -197,5 +205,13 @@ public class Task extends DataEntity {
 
     public void setDiscussions(Set<Discussion> discussions) {
         this.discussions = discussions;
+    }
+
+    public Integer getProgress() {
+        return progress;
+    }
+
+    public void setProgress(Integer progress) {
+        this.progress = progress;
     }
 }

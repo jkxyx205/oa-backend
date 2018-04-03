@@ -23,7 +23,7 @@ public class Discussion extends DataEntity {
     private List<Document> documents;
 
     @ManyToOne
-    @JoinColumn(name = "task_id")
+    @JoinColumn(name = "task_id", nullable = false)
     @JsonIgnore
     private Task task;
 

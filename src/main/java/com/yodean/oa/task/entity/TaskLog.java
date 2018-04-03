@@ -24,7 +24,7 @@ public class TaskLog extends DataEntity {
     private String detail;
 
     @ManyToOne
-    @JoinColumn(name = "task_id", referencedColumnName = "id")
+    @JoinColumn(name = "task_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private Task task;
 

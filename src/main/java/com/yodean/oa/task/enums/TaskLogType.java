@@ -12,6 +12,7 @@ public enum TaskLogType {
     TITLE(UserUtils.getUser().getChineseName() + " 更新了标题"),
     CONTENT(UserUtils.getUser().getChineseName() + " 更新了正文"),
     PRIORITY(UserUtils.getUser().getChineseName() + " 更新任务优先级为 %s"),
+    PROGRESS(UserUtils.getUser().getChineseName() + " 更新任务进度为 %s%%"),
     REPEATE(UserUtils.getUser().getChineseName() + " 更新了提醒");
 
     private String logName;
