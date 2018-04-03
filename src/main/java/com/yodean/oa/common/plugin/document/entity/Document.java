@@ -120,6 +120,9 @@ public class Document extends DataEntity {
         this.categoryId = categoryId;
     }
 
+    public String getFullName() {
+        return this.name + "." + this.getExt();
+    }
 
     /***
      * 获取原文件绝对路径

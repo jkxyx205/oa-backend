@@ -1,4 +1,4 @@
-package com.yodean.oa.task.enums;
+package com.yodean.oa.sys.enums;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

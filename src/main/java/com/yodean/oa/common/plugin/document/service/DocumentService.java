@@ -6,7 +6,10 @@ import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.dao.DocumentRepository;
 import com.yodean.oa.common.plugin.document.dto.ImageDocument;
 import com.yodean.oa.common.plugin.document.entity.Document;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,8 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -147,5 +155,40 @@ public class DocumentService {
 
         Example example = Example.of(document);
         return documentRepository.findAll(example);
+    }
+
+    public void download(HttpServletResponse response, HttpServletRequest request, Integer id) throws IOException {
+        Document doc = findById(id);
+        OutputStream os = getResponseOutputStream(response, request, doc.getFullName());
+        File file = new File(doc.getFileAbsolutePath());
+        IOUtils.write(FileUtils.readFileToByteArray(file), os);
+        os.close();
+    }
+
+    private static OutputStream getResponseOutputStream(HttpServletResponse response, HttpServletRequest request, String fileName) throws IOException {
+        String _fileName = fileName.replaceAll("[\\/:*?\"<>[|]]", "");
+
+        String browserType = request.getHeader("User-Agent").toLowerCase();
+
+        if(browserType.indexOf("firefox") > -1) { //FF
+            _fileName = "=?"+ StandardCharsets.UTF_8+"?B?"+(new String(Base64.encodeBase64(_fileName.getBytes(StandardCharsets.UTF_8))))+"?=";
+        } else {
+            if(fileName.matches(".*[^\\x00-\\xff]+.*")) {
+                if(request.getHeader("User-Agent").toLowerCase().indexOf("msie") > -1) { //IE
+                    _fileName = java.net.URLEncoder.encode(_fileName,StandardCharsets.UTF_8.name());
+                } else  { //其他
+                    _fileName = new String(_fileName.getBytes(StandardCharsets.UTF_8), "ISO-8859-1");
+                }
+            }
+        }
+
+        response.reset();// 清空输出流
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+
+        response.setHeader("Content-disposition", "attachment; filename="+_fileName+"");// 设定输出文件头
+        response.setContentType("application/vnd.ms-excel;charset="+StandardCharsets.UTF_8+"");// 定义输出类型
+        OutputStream os = response.getOutputStream(); // 取得输出流
+        return os;
     }
 }
