@@ -46,7 +46,7 @@ public class OrganizationService {
     }
 
     public List<Organization> findAll() {
-        return organizationRepository.findAll();
+        return organizationRepository.findAllNormal();
     }
 
 

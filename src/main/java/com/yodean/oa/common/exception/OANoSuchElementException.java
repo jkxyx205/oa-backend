@@ -1,6 +1,6 @@
 package com.yodean.oa.common.exception;
 
-import com.yodean.oa.common.enums.ResultType;
+import com.yodean.oa.common.enums.ResultCode;
 
 /**
  * Created by rick on 2018/3/15.
@@ -8,6 +8,6 @@ import com.yodean.oa.common.enums.ResultType;
 public class OANoSuchElementException extends OAException {
 
     public OANoSuchElementException() {
-        super(ResultType.NOT_FOUND_ERROR);
+        super(ResultCode.NOT_FOUND_ERROR);
     }
 }

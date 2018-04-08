@@ -1,6 +1,6 @@
 package com.yodean.oa.sys.user.service;
 
-import com.yodean.oa.common.enums.ResultType;
+import com.yodean.oa.common.enums.ResultCode;
 import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.service.BaseService;
 import com.yodean.oa.sys.org.entity.Organization;
@@ -40,7 +40,7 @@ public class UserService {
         Optional<User> optional =userRepository.findById(id);
 
         if(!optional.isPresent()) {
-            throw new OAException(ResultType.NOT_FOUND_ERROR);
+            throw new OAException(ResultCode.NOT_FOUND_ERROR);
         }
 
         User user =  optional.get();

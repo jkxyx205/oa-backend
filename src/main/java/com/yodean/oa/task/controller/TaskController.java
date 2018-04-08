@@ -1,7 +1,7 @@
 package com.yodean.oa.task.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.enums.ResultType;
+import com.yodean.oa.common.enums.ResultCode;
 import com.yodean.oa.common.util.ResultUtil;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
 import com.yodean.oa.task.entity.Discussion;
@@ -30,7 +30,7 @@ public class TaskController {
     @PostMapping
     public Result<Integer> save(@Valid @RequestBody Task task, BindingResult result) {
         if (result.hasErrors()) {
-            return ResultUtil.error(ResultType.VALIDATE_ERROR, result.getAllErrors());
+            return ResultUtil.error(ResultCode.VALIDATE_ERROR, result.getAllErrors());
         }
 
         return ResultUtil.success(taskService.save(task));
