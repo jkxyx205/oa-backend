@@ -2,6 +2,7 @@ package com.yodean.oa.meeting.service;
 
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.Category;
+import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.common.service.BaseService;
@@ -46,7 +47,7 @@ public class MeetingService {
         labelService.save(Category.MEETING, meeting.getId(), meeting.getLabels());
 
         //add document
-        documentService.update(meeting.getDocIds(), Category.MEETING, meeting.getId());
+        documentService.update(meeting.getDocIds(), DocumentCategory.MEETING, meeting.getId());
 
         return meeting.getId();
     }
@@ -64,7 +65,7 @@ public class MeetingService {
             Meeting meeting = optional.get();
             meeting.setUsers(workspaceService.findUsers(Category.MEETING, id));
             meeting.setLabels(labelService.findLabels(Category.MEETING, id));
-            meeting.setDocuments(documentService.findById(Category.MEETING, id));
+            meeting.setDocuments(documentService.findById(DocumentCategory.MEETING, id));
             return meeting;
         }
 

@@ -3,7 +3,7 @@ package com.yodean.oa.common.plugin.document.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.config.Global;
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.Category;
+import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.plugin.document.enums.FileType;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -41,7 +41,7 @@ public class Document extends DataEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
-    private Category category;
+    private DocumentCategory category;
 
     @Column(name = "category_id")
     private Integer categoryId;
@@ -103,11 +103,11 @@ public class Document extends DataEntity {
         this.fileType = fileType;
     }
 
-    public Category getCategory() {
+    public DocumentCategory getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(DocumentCategory category) {
         this.category = category;
     }
 

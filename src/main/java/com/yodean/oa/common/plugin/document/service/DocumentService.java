@@ -2,6 +2,7 @@ package com.yodean.oa.common.plugin.document.service;
 
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.Category;
+import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.dao.DocumentRepository;
 import com.yodean.oa.common.plugin.document.dto.ImageDocument;
@@ -48,7 +49,7 @@ public class DocumentService {
     private JdbcTemplate jdbcTemplate;
 
     @Transactional
-    public Document upload(String folderPath, MultipartFile file, Category category, Integer Id) throws IOException {
+    public Document upload(String folderPath, MultipartFile file, DocumentCategory category, Integer Id) throws IOException {
         //上传到服务器
         Document document = documentHandler.store(folderPath, file);
         document.setCategory(category);
@@ -125,7 +126,7 @@ public class DocumentService {
      * @param docIds
      * @param categoryId
      */
-    public void update(Set<Integer> docIds, Category category, Integer categoryId) {
+    public void update(Set<Integer> docIds, DocumentCategory category, Integer categoryId) {
         Validate.notNull(categoryId);
         Validate.notNull(docIds);
 
@@ -143,7 +144,7 @@ public class DocumentService {
         jdbcTemplate.batchUpdate(sql, params);
     }
 
-    public List<Document> findById(Category category, Integer categoryId) {
+    public List<Document> findById(DocumentCategory category, Integer categoryId) {
         Document document = new Document();
         document.setCategory(category);
         document.setCategoryId(categoryId);

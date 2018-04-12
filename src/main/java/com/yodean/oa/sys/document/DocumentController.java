@@ -2,6 +2,7 @@ package com.yodean.oa.sys.document;
 
 import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.enums.Category;
+import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.common.util.ResultUtil;
@@ -38,7 +39,7 @@ public class DocumentController {
      * @throws IOException
      */
     @PostMapping("/{category}/{categoryId}/upload")
-    public Result<List<Document> > upload(MultipartHttpServletRequest multipartRequest, @PathVariable Category category, @PathVariable Integer categoryId) throws IOException {
+    public Result<List<Document> > upload(MultipartHttpServletRequest multipartRequest, @PathVariable DocumentCategory category, @PathVariable Integer categoryId) throws IOException {
         List<MultipartFile> files = multipartRequest.getFiles(UPLOAD_NAME);
 
         List<Document> documents = new ArrayList<>(files.size());
@@ -56,7 +57,7 @@ public class DocumentController {
      * @throws IOException
      */
     @PostMapping("/{category}/upload")
-    public Result<List<Document> > upload2(MultipartHttpServletRequest multipartRequest, @PathVariable Category category) throws IOException {
+    public Result<List<Document> > upload2(MultipartHttpServletRequest multipartRequest, @PathVariable DocumentCategory category) throws IOException {
         return upload(multipartRequest, category, null);
     }
 

@@ -1,6 +1,7 @@
 package com.yodean.oa.common.plugin.document.service;
 
 import com.yodean.oa.common.enums.Category;
+import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.enums.FileType;
 import org.junit.Assert;
@@ -28,7 +29,7 @@ public class DocumentServiceTest {
     public void save() throws Exception {
         Document doc = new Document();
         doc.setName("中国万岁");
-        doc.setCategory(Category.TASK);
+        doc.setCategory(DocumentCategory.TASK);
         doc.setCategoryId(100);
         doc.setRemarks("重要文件");
         doc.setContentType("image/jpeg");

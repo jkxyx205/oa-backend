@@ -1,7 +1,9 @@
 package com.yodean.oa.task.service;
 
 import com.yodean.oa.common.enums.Category;
+import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.exception.OANoSuchElementException;
+import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.sys.label.service.LabelService;
 import com.yodean.oa.sys.user.entity.User;
@@ -62,7 +64,7 @@ public class TaskService {
         workspaceService.tipUsers(Category.TASK, task.getId(), task.getUserIds());
 
         //add document
-        documentService.update(task.getDocIds(), Category.TASK, task.getId());
+        documentService.update(task.getDocIds(), DocumentCategory.TASK, task.getId());
 
         logger.info("saved task【{}】,detail is {}",task.getTitle(), task);
 
@@ -82,11 +84,11 @@ public class TaskService {
             Task task = optional.get();
             task.setUsers(workspaceService.findUsers(Category.TASK, id));
             task.setLabels(labelService.findLabels(Category.TASK, id));
-            task.setDocuments(documentService.findById(Category.TASK, id));
+            task.setDocuments(documentService.findById(DocumentCategory.TASK, id));
 
             //get Discussion document
             for (Discussion discussion : task.getDiscussions()) {
-                discussion.setDocuments(documentService.findById(Category.TASK_DISCUSSION, discussion.getId()));
+                discussion.setDocuments(documentService.findById(DocumentCategory.TASK_DISCUSSION, discussion.getId()));
             }
 
             return task;
@@ -166,6 +168,6 @@ public class TaskService {
 
         discussionRepository.save(discussion);
 
-        documentService.update(discussion.getDocIds(), Category.TASK_DISCUSSION, discussion.getId());
+        documentService.update(discussion.getDocIds(), DocumentCategory.TASK_DISCUSSION, discussion.getId());
     }
 }

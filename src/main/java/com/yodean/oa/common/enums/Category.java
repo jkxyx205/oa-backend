@@ -5,7 +5,6 @@ package com.yodean.oa.common.enums;
  */
 public enum Category {
     TASK("任务"),
-    TASK_DISCUSSION("任务讨论"),
     MEETING("会议"),
     NOTE("便签");
 
