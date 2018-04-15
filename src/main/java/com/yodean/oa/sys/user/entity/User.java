@@ -14,8 +14,12 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "sys_user")
-//@JsonIgnoreProperties(value = { "hibernateLazyInitializer", "handler"})
 public class User extends DataEntity {
+
+    @Length(max=20, message = "昵称不能超过20个字符串")
+    @NotNull(message = "昵称不能为空")
+    @Column(nullable = false, length = 20)
+    private String nickName;
 
     @Length(max=20, message = "中文姓名不能超过20个字符串")
     @NotNull(message = "中文姓名不能为空")

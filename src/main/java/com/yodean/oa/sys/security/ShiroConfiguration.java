@@ -35,17 +35,17 @@ public class ShiroConfiguration {
 
         // 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
         //身份验证时使用
-        shiroFilterFactoryBean.setLoginUrl("/login");
+//        shiroFilterFactoryBean.setLoginUrl("/login");
 
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
 
-        filterChainDefinitionMap.put("/**", "authc");
+//        filterChainDefinitionMap.put("/**", "authc");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
         // 登录成功后要跳转的链接
 //        shiroFilterFactoryBean.setSuccessUrl("/index");
         // 未授权界面;
-        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
+//        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
 
 
         return shiroFilterFactoryBean;
