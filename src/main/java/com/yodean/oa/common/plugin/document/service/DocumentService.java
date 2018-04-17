@@ -7,6 +7,7 @@ import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.dao.DocumentRepository;
 import com.yodean.oa.common.plugin.document.dto.ImageDocument;
 import com.yodean.oa.common.plugin.document.entity.Document;
+import com.yodean.oa.common.plugin.document.enums.FileType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.print.Doc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
@@ -144,10 +146,29 @@ public class DocumentService {
         jdbcTemplate.batchUpdate(sql, params);
     }
 
+    /**
+     * 查找实例的所有文件
+     * @param category
+     * @param categoryId
+     * @return
+     */
     public List<Document> findById(DocumentCategory category, Integer categoryId) {
         Document document = new Document();
         document.setCategory(category);
         document.setCategoryId(categoryId);
+        document.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
+
+        Example example = Example.of(document);
+        return documentRepository.findAll(example);
+    }
+
+    /**
+     * 查找所有子文件（夹）
+     * @return
+     */
+    public List<Document> findSubDocument(Integer parentId) {
+        Document document = new Document();
+        document.setParentId(parentId);
         document.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
 
         Example example = Example.of(document);
@@ -187,5 +208,22 @@ public class DocumentService {
         response.setContentType("application/vnd.ms-excel;charset="+StandardCharsets.UTF_8+"");// 定义输出类型
         OutputStream os = response.getOutputStream(); // 取得输出流
         return os;
+    }
+
+    /**
+     * 创建文件夹
+     * @param parentId
+     * @param folderName
+     * @param documentCategory
+     */
+    public Integer mkdir(Integer parentId, String folderName, DocumentCategory documentCategory) {
+        Document document = new Document();
+        document.setCategory(documentCategory);
+        document.setCategoryId(-1); // 团队id
+        document.setFileType(FileType.FOLDER);
+        document.setName(folderName);
+        document.setParentId(parentId);
+        save(document);
+        return document.getId();
     }
 }

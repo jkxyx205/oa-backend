@@ -1,4 +1,4 @@
-package com.yodean.oa.sys.document;
+package com.yodean.oa.sys.document.controller;
 
 import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.enums.Category;
