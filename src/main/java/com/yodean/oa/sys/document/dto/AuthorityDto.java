@@ -3,6 +3,7 @@ package com.yodean.oa.sys.document.dto;
 import com.yodean.oa.sys.document.entity.Authority;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by rick on 4/17/18.
@@ -24,7 +25,7 @@ public class AuthorityDto {
     /**
      * 权限体系
      */
-    private List<Authority> authorityList;
+    private Set<Authority> authorityList;
 
 
     public Integer getDocumentId() {
@@ -43,11 +44,11 @@ public class AuthorityDto {
         this.inherit = inherit;
     }
 
-    public List<Authority> getAuthorityList() {
+    public Set<Authority> getAuthorityList() {
         return authorityList;
     }
 
-    public void setAuthorityList(List<Authority> authorityList) {
+    public void setAuthorityList(Set<Authority> authorityList) {
         this.authorityList = authorityList;
     }
 }

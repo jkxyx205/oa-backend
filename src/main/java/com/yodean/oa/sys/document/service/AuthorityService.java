@@ -56,12 +56,13 @@ public class AuthorityService extends SharpService {
     @Transactional
     private void addAuthority(Integer docId) {
         //获取父权限
-        List<Authority> authorityList = getInherit(docId);
+//        List<Authority> authorityList = getInherit(docId);
 
         AuthorityDto authorityDto = new AuthorityDto();
         authorityDto.setInherit(true);
         authorityDto.setDocumentId(docId);
-        authorityDto.setAuthorityList(authorityList);
+        authorityDto.setAuthorityList(new HashSet<>());
+//        authorityDto.setAuthorityList(new HashSet<>(authorityList));
 
 
         addAuthority(authorityDto);
@@ -103,7 +104,7 @@ public class AuthorityService extends SharpService {
         authorityDto.setDocumentId(docId);
         authorityDto.setInherit(true);
 
-        authorityDto.setAuthorityList(authorityList);
+        authorityDto.setAuthorityList(new HashSet<>(authorityList));
         addAuthority(authorityDto);
     }
 
@@ -142,6 +143,13 @@ public class AuthorityService extends SharpService {
         List<Authority> addAuthority = new ArrayList<>(); //新增权限
         List<Authority> delAuthority = new ArrayList<>(); //删除权限
 
+        //添加父目录权限：如果前端提供了非继承权限，根据父目录权限计算当前的所有权限
+        authorityDto.getAuthorityList().addAll(getInherit(authorityDto.getDocumentId()));
+
+        authorityDto.getAuthorityList().forEach(authority -> {
+            authority.setInherit(null);
+        });
+
         addAuthority(authorityDto, true, addAuthority, delAuthority);
 
         authorityRepository.saveAll(addAuthority);
@@ -162,8 +170,8 @@ public class AuthorityService extends SharpService {
         if (!curFolder && !folder.getInherit()) //子目录取消继承，那么授权终止
             return;
 
-        List<Authority> newAuthorityList= authorityDto.getAuthorityList();   //新的所有权限
-        List<Authority> authorityList = findAuthorityByDocumentId(docId);//获取目录的权限
+        Set<Authority> newAuthorityList= authorityDto.getAuthorityList();   //新的所有权限
+        List<Authority> authorityList = findAuthorityByDocumentId(docId);   //获取目录的权限
 
 
         //新增的权限
