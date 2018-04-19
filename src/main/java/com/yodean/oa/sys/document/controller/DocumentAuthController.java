@@ -30,11 +30,39 @@ public class DocumentAuthController {
         return ResultUtil.success(docId);
     }
 
+    /***
+     * 修改权限
+     * @param authorityDto
+     * @param id
+     * @return
+     */
     @PostMapping("/{id}/auth")
     public Result auth(@RequestBody AuthorityDto authorityDto, @PathVariable Integer id) {
         authorityDto.setDocumentId(id);
         authorityService.addAuthority(authorityDto);
 
+        return ResultUtil.success();
+    }
+
+    /**
+     * 停止权限继承
+     * @param id
+     * @return
+     */
+    @PostMapping("/{id}/stopAuthInherit")
+    public Result authStopInherit(@PathVariable Integer id) {
+        authorityService.stopAuthInherit(id);
+        return ResultUtil.success();
+    }
+
+    /**
+     * 开启权限继承
+     * @param id
+     * @return
+     */
+    @PostMapping("/{id}/startAuthInherit")
+    public Result startStopInherit(@PathVariable Integer id) {
+        authorityService.startAuthInherit(id);
         return ResultUtil.success();
     }
 

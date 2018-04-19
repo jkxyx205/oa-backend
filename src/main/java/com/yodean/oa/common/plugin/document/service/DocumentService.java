@@ -223,6 +223,7 @@ public class DocumentService {
         document.setFileType(FileType.FOLDER);
         document.setName(folderName);
         document.setParentId(parentId);
+        document.setInherit(true);// 初始化启用继承
         save(document);
         return document.getId();
     }

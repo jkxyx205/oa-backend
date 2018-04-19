@@ -1,8 +1,10 @@
 package com.yodean.oa.sys.document.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Created by rick on 4/17/18.
@@ -59,7 +61,7 @@ public class Authority extends DataEntity {
         this.documentId = documentId;
     }
 
-    public Boolean isInherit() {
+    public Boolean getInherit() {
         return inherit;
     }
 
@@ -110,15 +112,16 @@ public class Authority extends DataEntity {
 
         Authority that = (Authority) obj;
 
-        if (/*this.documentId == that.documentId &&*/
-                this.authorityType == that.authorityType &&
-                this.authorityId.equals(that.authorityId) &&
-                this.authorityArea == that.authorityArea &&
-                        this.inherit == that.inherit) {
-            return true;
-        }
-
-        return false;
+        return new EqualsBuilder()
+                .append(this.authorityType , that.authorityType)
+                .append(this.authorityId , that.authorityId)
+                .append(this.authorityArea , that.authorityArea)
+                .append(this.inherit , that.inherit)
+                .isEquals();
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(authorityType, authorityId, authorityArea, inherit);
+    }
 }

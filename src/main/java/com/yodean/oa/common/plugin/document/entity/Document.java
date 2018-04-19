@@ -47,6 +47,12 @@ public class Document extends DataEntity {
     private Integer categoryId;
 
 
+    /**
+     * 是否启用权限继承
+     */
+    private Boolean inherit;
+
+
     public String getName() {
         return name;
     }
@@ -93,6 +99,14 @@ public class Document extends DataEntity {
 
     public void setParentId(Integer parentId) {
         this.parentId = parentId;
+    }
+
+    public Boolean getInherit() {
+        return inherit;
+    }
+
+    public void setInherit(Boolean inherit) {
+        this.inherit = inherit;
     }
 
     public FileType getFileType() {
