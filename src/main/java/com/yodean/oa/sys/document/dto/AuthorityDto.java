@@ -2,7 +2,6 @@ package com.yodean.oa.sys.document.dto;
 
 import com.yodean.oa.sys.document.entity.Authority;
 
-import java.util.List;
 import java.util.Set;
 
 /**

@@ -4,7 +4,10 @@ import com.yodean.oa.common.entity.DataEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Created by rick on 4/17/18.
@@ -12,7 +15,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "sys_document_auth",
-        uniqueConstraints = {@UniqueConstraint(columnNames={"authority_type", "authority_id", "document_id", "authority_area", "inherit", "document_id"})})
+        uniqueConstraints = {@UniqueConstraint(columnNames={"authority_type", "authority_id", "document_id", "authority_area", "inherit"})})
 public class Authority extends DataEntity {
     /**
      * 用户id 或者 组id
@@ -95,7 +98,7 @@ public class Authority extends DataEntity {
     }
 
     public static enum AuthorityArea {
-        READ("查看"), UPLOAD("上传"), DELETE("删除"), DOWNLOAD("下载"), EDIT("编辑");
+        READ("查看"), LIST("列表"), UPLOAD("上传"), DELETE("删除"), DOWNLOAD("下载"), EDIT("编辑");
         private String description;
 
         AuthorityArea(String description) {
@@ -108,15 +111,16 @@ public class Authority extends DataEntity {
     public boolean equals(Object obj) {
         if (this == obj) return true;
 
-        if (obj instanceof Authority == false) return false;
+
+        if (!(obj instanceof Authority) || obj == null ) return false;
 
         Authority that = (Authority) obj;
 
         return new EqualsBuilder()
-                .append(this.authorityType , that.authorityType)
-                .append(this.authorityId , that.authorityId)
-                .append(this.authorityArea , that.authorityArea)
-                .append(this.inherit , that.inherit)
+                .append(this.authorityType, that.authorityType)
+                .append(this.authorityId, that.authorityId)
+                .append(this.authorityArea, that.authorityArea)
+                .append(this.inherit, that.inherit)
                 .isEquals();
     }
 
@@ -124,4 +128,29 @@ public class Authority extends DataEntity {
     public int hashCode() {
         return Objects.hash(authorityType, authorityId, authorityArea, inherit);
     }
+
+    public static void main(String[] args) {
+        Set<Authority> set = new HashSet<>(2);
+        Authority a1 = new Authority();
+        a1.setAuthorityId(1);
+        a1.setDocumentId(2);
+        a1.setInherit(true);
+        a1.setAuthorityArea(AuthorityArea.UPLOAD);
+        a1.setAuthorityType(AuthorityType.USER);
+        a1.setId(2);
+
+
+        Authority a2 = new Authority();
+        a2.setAuthorityId(1);
+        a2.setDocumentId(1);
+        a2.setInherit(true);
+        a2.setAuthorityArea(AuthorityArea.UPLOAD);
+        a2.setAuthorityType(AuthorityType.USER);
+
+        set.add(a1);
+//        set.add(a2);
+        System.out.println(set.contains(a2));
+
+    }
+
 }

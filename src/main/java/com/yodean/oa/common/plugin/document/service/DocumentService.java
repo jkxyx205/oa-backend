@@ -50,13 +50,24 @@ public class DocumentService {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
+    /**
+     *
+     * @param file 文件
+     * @param folderPath 文件存储路径
+     * @param parentId 所属文件夹
+     * @param category 分类
+     * @param Id 分类id
+     * @return
+     * @throws IOException
+     */
     @Transactional
-    public Document upload(String folderPath, MultipartFile file, DocumentCategory category, Integer Id) throws IOException {
+    public Document upload(MultipartFile file, String folderPath, Integer parentId, DocumentCategory category, Integer Id) throws IOException {
         //上传到服务器
         Document document = documentHandler.store(folderPath, file);
         document.setCategory(category);
         document.setCategoryId(Id);
-
+        document.setParentId(parentId);
+        document.setInherit(true);
         return save(document);
     }
 
@@ -116,7 +127,7 @@ public class DocumentService {
     }
 
     /***
-     * 逻辑删除
+     * 逻辑删除文件
      * @param id
      */
     public void delete(Integer id) {
@@ -173,10 +184,14 @@ public class DocumentService {
 
         Example example = Example.of(document);
         return documentRepository.findAll(example);
+
     }
 
     public void download(HttpServletResponse response, HttpServletRequest request, Integer id) throws IOException {
         Document doc = findById(id);
+        if (doc.getFileType() == FileType.FOLDER)
+            throw new RuntimeException("文件夹不能下载！");
+
         OutputStream os = getResponseOutputStream(response, request, doc.getFullName());
         File file = new File(doc.getFileAbsolutePath());
         IOUtils.write(FileUtils.readFileToByteArray(file), os);
@@ -211,17 +226,18 @@ public class DocumentService {
     }
 
     /**
-     * 创建文件夹
+     * 新建文件夹
+     * @param name
      * @param parentId
-     * @param folderName
      * @param documentCategory
+     * @param id
      */
-    public Integer mkdir(Integer parentId, String folderName, DocumentCategory documentCategory) {
+    public Integer mkdir(String name, Integer parentId, DocumentCategory documentCategory, Integer id) {
         Document document = new Document();
         document.setCategory(documentCategory);
-        document.setCategoryId(-1); // 团队id
+        document.setCategoryId(id);
         document.setFileType(FileType.FOLDER);
-        document.setName(folderName);
+        document.setName(name);
         document.setParentId(parentId);
         document.setInherit(true);// 初始化启用继承
         save(document);

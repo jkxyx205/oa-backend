@@ -13,11 +13,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.*;
 
 /**
- * Created by rick on 4/17/18.
+ * Created by rick on 4/20/18.
  */
 @Service
 public class AuthorityService extends SharpService {
@@ -31,16 +34,14 @@ public class AuthorityService extends SharpService {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
-
-
     /**
      * 添加文件夹
-     * @param documentName 文件夹名称
+     * @param name 文件夹名称
      */
     @Transactional
-    public Integer addFolder(Integer parentId, String documentName) {
+    public Integer mkdir(Integer parentId, String name, DocumentCategory documentCategory) {
         //创建文件夹
-        Integer docId = documentService.mkdir(parentId, documentName, DocumentCategory.DISK_COMPANY);
+        Integer docId = documentService.mkdir(name, parentId, documentCategory, 0);
 
         //添加文件夹继承权限
         addAuthority(docId);
@@ -49,36 +50,150 @@ public class AuthorityService extends SharpService {
     }
 
     /**
-     *
-     * 设置文件夹继承权限
+     * 添加继承权限
      * @param docId
      */
-    @Transactional
     private void addAuthority(Integer docId) {
-        //获取父权限
-//        List<Authority> authorityList = getInherit(docId);
-
         AuthorityDto authorityDto = new AuthorityDto();
         authorityDto.setInherit(true);
         authorityDto.setDocumentId(docId);
-        authorityDto.setAuthorityList(new HashSet<>());
-//        authorityDto.setAuthorityList(new HashSet<>(authorityList));
-
+        authorityDto.setAuthorityList(Collections.emptySet());
 
         addAuthority(authorityDto);
+    }
 
-        //修改权限的继承属性
-        String sql = "UPDATE sys_document_auth SET inherit = 1 WHERE document_id = ?";
-        jdbcTemplate.update(sql, docId);
+    /**
+     * 添加权限
+     * @param authorityDto
+     */
+    @Transactional
+    public void addAuthority(AuthorityDto authorityDto) {
+        Set<Authority> allAddAuthority = new HashSet<>();
+        Set<Authority> allRemoveAuthority = new HashSet<>();
+        addAuthority(authorityDto, true, allAddAuthority, allRemoveAuthority);
+        authorityRepository.saveAll(allAddAuthority);  //添加权限
+        authorityRepository.deleteAll(allRemoveAuthority); //删除权限
 
     }
 
     /**
-     * 清空权限列表
+     *
+     * @param authorityDto
      */
-    private void cleanAuthority(Integer docId) {
-        String sql = "DELETE FROM sys_document_auth WHERE document_id = ?";
-        jdbcTemplate.update(sql, docId);
+    private void addAuthority(AuthorityDto authorityDto, Boolean isCurrent, Set<Authority> allAddAuthority,  Set<Authority> allRemoveAuthority ) {
+        Integer docId = authorityDto.getDocumentId();
+        Document curDocument = documentService.findById(docId);
+
+        if (!isCurrent && Boolean.FALSE == curDocument.getInherit()) //子目录取消继承，那么授权终止
+            return;
+
+
+        //1. 继承权限（继承）
+        List<Authority> parentAuthority;
+        if (isCurrent) {
+
+            //取消继承
+            if (curDocument.getInherit() == Boolean.FALSE) {
+                parentAuthority = new ArrayList<>();
+            } else { //使用继承
+                parentAuthority = getInherit(docId);
+                parentAuthority.forEach(authority -> {
+                    authority.setId(null);
+                    authority.setInherit(true);
+                });
+            }
+
+        } else {
+            parentAuthority = new ArrayList<>(authorityDto.getAuthorityList());
+        }
+
+        //2. 参数权限（继承 或 非继承）
+        Set<Authority>  paramsAuthority =authorityDto.getAuthorityList();
+
+        //3. DB权限 （继承 或 非继承）
+        List<Authority> currentAuthority = findAuthorityByDocumentId(docId);
+
+        //根据1和2获取非继承权限 TODO set contains在某些清空下居然有问题...改用list
+        List<Authority> unInheritAuthority = new ArrayList<>();
+
+
+        if (isCurrent) {
+            paramsAuthority.forEach(authority -> {
+                Boolean paramInherit = authority.getInherit();
+                authority.setInherit(true);
+                if (!parentAuthority.contains(authority)) { //不是继承:在继承之中没有找到
+
+                    if (paramInherit == Boolean.TRUE) { //可能是移动或复制带过来的继承权限，不能充当非继承权限
+                        allRemoveAuthority.add(authority);
+                    } else {
+                        authority.setInherit(false);
+                        unInheritAuthority.add(authority);
+                    }
+                }
+
+            });
+        }
+
+        //--
+        if (isCurrent) {
+            unInheritAuthority.forEach(authority -> {
+                if (!currentAuthority.contains(authority)) { //添加非继承权限
+                    authority.setDocumentId(docId);
+                    allAddAuthority.add(authority);
+                }
+            });
+        }
+
+        parentAuthority.forEach(authority -> {
+            if (!currentAuthority.contains(authority)) { //添加继承权限
+                authority.setDocumentId(docId);
+                allAddAuthority.add(authority);
+            }
+        });
+
+        //--
+        if (isCurrent) {
+            currentAuthority.forEach(authority -> {
+                if (!authority.getInherit() && !unInheritAuthority.contains(authority)) { //删除非继承权限
+                    allRemoveAuthority.add(authority);
+                }
+            });
+        }
+
+        currentAuthority.forEach(authority -> {
+            if (authority.getInherit() && !parentAuthority.contains(authority)) { //删除继承权限
+                allRemoveAuthority.add(authority);
+            }
+        });
+
+        //所有继承权限
+        if (isCurrent) {
+            parentAuthority.addAll(paramsAuthority);
+        } else {
+            parentAuthority.addAll(currentAuthority);
+        }
+
+        //设置子目录权限
+        List<Document> documentList = documentService.findSubDocument(docId);
+
+        documentList.forEach(document -> {
+
+            Set<Authority> inheritAuthorityList = new HashSet<>(parentAuthority.size());
+
+            AuthorityDto subAuthorityDto = new AuthorityDto();
+            subAuthorityDto.setDocumentId(document.getId());
+            subAuthorityDto.setInherit(document.getInherit());
+
+            parentAuthority.forEach(authority -> {
+                Authority _authority = SerializationUtils.clone(authority);
+                _authority.setId(null);
+                _authority.setInherit(true);
+                inheritAuthorityList.add(_authority);
+            });
+            subAuthorityDto.setAuthorityList(inheritAuthorityList);
+
+            addAuthority(subAuthorityDto, false,  allAddAuthority, allRemoveAuthority);
+        });
     }
 
     /**
@@ -94,20 +209,18 @@ public class AuthorityService extends SharpService {
         List<Authority> authorityList = findAuthorityByDocumentId(docId);
 
         //清空所有权限
-        cleanAuthority(docId);
+//        cleanAuthority(docId);
 
-        //继承权限
-        addAuthority(docId);
 
-        //加载非继承权限
         AuthorityDto authorityDto = new AuthorityDto();
         authorityDto.setDocumentId(docId);
         authorityDto.setInherit(true);
-
         authorityDto.setAuthorityList(new HashSet<>(authorityList));
-        addAuthority(authorityDto);
-    }
 
+        addAuthority(authorityDto);
+
+
+    }
 
     /**
      * 停止继承权限
@@ -131,118 +244,31 @@ public class AuthorityService extends SharpService {
             uniqueAuthorityList.add(_authority);
         });
 
-        //清空所有权限
+        //清空所有权限(剔除重复)
         cleanAuthority(docId);
 
         authorityRepository.saveAll(uniqueAuthorityList);
-    }
 
-
-    @Transactional
-    public void addAuthority(AuthorityDto authorityDto) {
-        List<Authority> addAuthority = new ArrayList<>(); //新增权限
-        List<Authority> delAuthority = new ArrayList<>(); //删除权限
-
-        //添加父目录权限：如果前端提供了非继承权限，根据父目录权限计算当前的所有权限
-        authorityDto.getAuthorityList().addAll(getInherit(authorityDto.getDocumentId()));
-
-        authorityDto.getAuthorityList().forEach(authority -> {
-            authority.setInherit(null);
-        });
-
-        addAuthority(authorityDto, true, addAuthority, delAuthority);
-
-        authorityRepository.saveAll(addAuthority);
-        authorityRepository.deleteAll(delAuthority);
     }
 
     /**
-     *
-     * 修改文件夹权限
-     * @param authorityDto 当前目录权限信息
-     * @param curFolder true 当前目录 false 子目录
+     * 清空权限列表
      */
-
-    private void addAuthority(AuthorityDto authorityDto, boolean curFolder, List<Authority> addAuthority , List<Authority> delAuthority ) {
-        Integer docId = authorityDto.getDocumentId();
-        Document folder = documentService.findById(docId);
-
-        if (!curFolder && !folder.getInherit()) //子目录取消继承，那么授权终止
-            return;
-
-        Set<Authority> newAuthorityList= authorityDto.getAuthorityList();   //新的所有权限
-        List<Authority> authorityList = findAuthorityByDocumentId(docId);   //获取目录的权限
-
-
-        //新增的权限
-        newAuthorityList.forEach(_authority -> {
-
-            Authority authority = SerializationUtils.clone(_authority);
-            authority.setId(null);
-            authority.setDocumentId(docId);
-
-            if (curFolder) { //当前目录
-                authority.setInherit(true);
-                if (!authorityList.contains(authority)) { //如果没有被继承
-                    authority.setInherit(false);
-                    if (!authorityList.contains(authority)) { //如果没有自定义，则纳入自定义权限
-                        addAuthority.add(authority);
-                    }
-                }
-            } else { //子目录继承关系
-                authority.setInherit(true);
-                if (!authorityList.contains(authority)) { //判断是否是新增的权限
-                    addAuthority.add(authority);
-                }
-            }
-
-        });
-
-        //移除的权限
-        authorityList.forEach(_authority -> { //判断是否是删除的权限"
-            Authority authority = SerializationUtils.clone(_authority);
-            authority.setDocumentId(docId);
-            boolean inherit = authority.getInherit();//是否继承
-            authority.setInherit(null); //忽略继承查询
-
-
-            if (curFolder) { //本目录
-                if (!newAuthorityList.contains(authority)) { //如果被删除了
-                    if (!inherit) //如果是自定义的权限
-                        delAuthority.add(authority);
-                }
-
-            } else { // 子目录
-                if (!newAuthorityList.contains(authority)) { //如果被删除了
-                    if (inherit) //如果是继承的
-                        delAuthority.add(authority);
-                }
-            }
-
-        });
-
-        //设置子目录的继承权限
-        List<Document> documentList = documentService.findSubDocument(docId);
-
-        documentList.forEach(document -> {
-            if (document.getFileType() == FileType.FOLDER) {
-                authorityDto.setDocumentId(document.getId());
-
-                addAuthority(authorityDto, false, addAuthority, delAuthority);
-            }
-        });
+    private void cleanAuthority(Integer docId) {
+        String sql = "DELETE FROM sys_document_auth WHERE document_id = ?";
+        jdbcTemplate.update(sql, docId);
     }
 
 
     /**
-     * 获取文件夹的继承权限（父文件夹权限）
+     * 获取文件夹继承权限（父文件权限）
      * @param docId
      */
     private List<Authority> getInherit(Integer docId) {
         Document document = documentService.findById(docId);
         Integer parentId = document.getParentId();
         if (Objects.isNull(parentId)) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
 
         List<Authority> authorityList = findAuthorityByDocumentId(parentId);
@@ -251,7 +277,7 @@ public class AuthorityService extends SharpService {
     }
 
     /***
-     * 获取文件夹的权限体系
+     * 获取文件的权限
      * @param docId
      * @return
      */
@@ -259,9 +285,88 @@ public class AuthorityService extends SharpService {
         Map<String, Object> params = new HashMap<>(1);
         params.put("id", docId);
 
-        return query("SELECT  id, authority_type authorityType, authority_id authorityId, document_id documentId, authority_area authorityArea, inherit FROM sys_document_auth WHERE document_id = :id",
+        return query("SELECT  id, authority_type authorityType, authority_id authorityId, document_id documentId, authority_area authorityArea, inherit, create_by createBy, update_by updateBy, create_date createDate, update_date updateDate,del_flag delFlag FROM sys_document_auth WHERE document_id = :id",
                 params, Authority.class);
 
+    }
+
+    /**
+     * 逻辑删除文件
+     * @param id
+     */
+    public void delete(Integer id) {
+        documentService.delete(id);
+    }
+
+    /**
+     * 重命名
+     * @param id
+     * @param name
+     */
+    public void rename(Integer id, String name) {
+        Document document = documentService.findById(id);
+        document.setName(name);
+        documentService.save(document);
+    }
+
+    /**
+     * 文件移动
+     * @param id
+     * @param parentId
+     */
+    public void move(Integer id, Integer parentId) {
+        Document document = documentService.findById(id);
+        document.setParentId(parentId);
+        documentService.save(document);
+
+        //权限重置
+        startAuthInherit(id); //重置继承权限
+        if (!document.getInherit()) {//停止继承
+            stopAuthInherit(id);
+        }
+    }
+
+    /**
+     * 文件拷贝
+     * @param id
+     * @param parentId
+     */
+    public void copy(Integer id, Integer parentId) {
+        Document document = documentService.findById(id);
+
+        Integer nid = recursionDoc(document, parentId);
+        //权限重置
+
+        startAuthInherit(nid); //重置继承权限
+        if (!document.getInherit()) {//停止继承
+            stopAuthInherit(id);
+        }
+    }
+
+    private int recursionDoc(Document document, Integer parentId) {
+        Document _document = SerializationUtils.clone(document);
+        _document.setId(null);
+        _document.setParentId(parentId);
+
+        documentService.save(_document);
+
+        if (document.getFileType() == FileType.FILE) return _document.getId();
+
+        documentService.findSubDocument(document.getId()).forEach(subDocument -> {
+            recursionDoc(subDocument, _document.getId());
+        });
+
+        return _document.getId();
+    }
+
+
+
+    /**
+     * 下载
+     * @param id
+     */
+    public void download(HttpServletRequest request, HttpServletResponse response, Integer id) throws IOException {
+        documentService.download(response, request, id);
     }
 
 

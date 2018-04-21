@@ -39,12 +39,12 @@ public class DocumentController {
      * @throws IOException
      */
     @PostMapping("/{category}/{categoryId}/upload")
-    public Result<List<Document> > upload(MultipartHttpServletRequest multipartRequest, @PathVariable DocumentCategory category, @PathVariable Integer categoryId) throws IOException {
+    public Result<List<Document> > upload(MultipartHttpServletRequest multipartRequest, @PathVariable DocumentCategory category, @PathVariable Integer categoryId, Integer parentId) throws IOException {
         List<MultipartFile> files = multipartRequest.getFiles(UPLOAD_NAME);
 
         List<Document> documents = new ArrayList<>(files.size());
         for (MultipartFile file : files) {
-            documents.add(documentService.upload(UPLOAD_PATH, file, category, categoryId));
+            documents.add(documentService.upload(file, UPLOAD_PATH, parentId, category, categoryId));
         }
 
         return ResultUtil.success(documents);
@@ -57,8 +57,8 @@ public class DocumentController {
      * @throws IOException
      */
     @PostMapping("/{category}/upload")
-    public Result<List<Document> > upload2(MultipartHttpServletRequest multipartRequest, @PathVariable DocumentCategory category) throws IOException {
-        return upload(multipartRequest, category, null);
+    public Result<List<Document> > upload2(MultipartHttpServletRequest multipartRequest, @PathVariable DocumentCategory category, Integer parentId) throws IOException {
+        return upload(multipartRequest, category, null, parentId);
     }
 
     /***
