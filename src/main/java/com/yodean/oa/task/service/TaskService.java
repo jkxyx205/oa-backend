@@ -3,7 +3,6 @@ package com.yodean.oa.task.service;
 import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.exception.OANoSuchElementException;
-import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.sys.label.service.LabelService;
 import com.yodean.oa.sys.user.entity.User;

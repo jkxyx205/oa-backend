@@ -1,9 +1,6 @@
 package com.yodean.oa.chat.handler;
 
-import com.alibaba.druid.support.json.JSONUtils;
-import com.yodean.oa.sys.user.entity.User;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -11,7 +8,9 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by rick on 4/12/18.
