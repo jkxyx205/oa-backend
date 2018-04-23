@@ -48,6 +48,17 @@ public class DocumentCompanyController {
         return ResultUtil.success();
     }
 
+    /**
+     * 还原
+     * @return
+     */
+    @PostMapping("/{id}/putBack")
+    public Result putBack(@PathVariable Integer id) {
+        authorityService.putBack(id);
+        return ResultUtil.success();
+    }
+
+
 
     /**
      * 重命名文件

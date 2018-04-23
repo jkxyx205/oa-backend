@@ -4,7 +4,6 @@ import com.yodean.oa.common.entity.DataEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -98,7 +97,7 @@ public class Authority extends DataEntity {
     }
 
     public static enum AuthorityArea {
-        READ("查看"), LIST("列表"), UPLOAD("上传"), DELETE("删除"), DOWNLOAD("下载"), EDIT("编辑");
+        READ("查看"), LIST("列表"), UPLOAD("上传"), DELETE("删除"), DOWNLOAD("下载"), EDIT("编辑"), PATH("路径");
         private String description;
 
         AuthorityArea(String description) {

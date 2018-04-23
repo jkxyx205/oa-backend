@@ -1,5 +1,6 @@
 package com.yodean.oa.sys.document.service;
 
+import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.enums.FileType;
@@ -8,6 +9,7 @@ import com.yodean.oa.common.service.SharpService;
 import com.yodean.oa.sys.document.dao.AuthorityRepository;
 import com.yodean.oa.sys.document.dto.AuthorityDto;
 import com.yodean.oa.sys.document.entity.Authority;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -74,6 +76,43 @@ public class AuthorityService extends SharpService {
         authorityRepository.saveAll(allAddAuthority);  //添加权限
         authorityRepository.deleteAll(allRemoveAuthority); //删除权限
 
+        //设置"路径"权限
+        addPathAuthority(authorityDto);
+    }
+
+    private void addPathAuthority(AuthorityDto authorityDto) {
+        List<Document> parents = documentService.findParentsDocument(authorityDto.getDocumentId());
+
+        if (CollectionUtils.isEmpty(parents)) return;
+
+        Set<Authority> authoritySet = authorityDto.getAuthorityList();
+
+        List<Authority> pathAuthoritySet = new ArrayList<>(parents.size() * authoritySet.size());
+
+        //删除PATH权限
+        String sql = "DELETE FROM sys_document_auth WHERE document_id = ? AND authority_area = 'PATH'";
+        List<Object[]> paramsList = new ArrayList<>(parents.size());
+        parents.forEach(document -> {
+            Object[] params = new Object[] {document.getId()};
+            paramsList.add(params);
+        });
+        jdbcTemplate.batchUpdate(sql, paramsList);
+
+
+        //添加PATH权限
+        if (CollectionUtils.isEmpty(authoritySet)) return;
+
+        authoritySet.forEach(authority -> {
+            parents.forEach(document -> {
+                Authority _authority = SerializationUtils.clone(authority);
+                _authority.setAuthorityArea(Authority.AuthorityArea.PATH);
+                _authority.setDocumentId(document.getId());
+                pathAuthoritySet.add(_authority);
+            });
+
+        });
+
+        authorityRepository.saveAll(pathAuthoritySet);
     }
 
     /**
@@ -218,8 +257,6 @@ public class AuthorityService extends SharpService {
         authorityDto.setAuthorityList(new HashSet<>(authorityList));
 
         addAuthority(authorityDto);
-
-
     }
 
     /**
@@ -304,9 +341,7 @@ public class AuthorityService extends SharpService {
      * @param name
      */
     public void rename(Integer id, String name) {
-        Document document = documentService.findById(id);
-        document.setName(name);
-        documentService.save(document);
+        documentService.rename(id, name);
     }
 
     /**
@@ -359,7 +394,60 @@ public class AuthorityService extends SharpService {
         return _document.getId();
     }
 
+    /**
+     * 还原文件
+     * @param id
+     */
+    public void putBack(Integer id) {
+        //目录路径
+        List<Document> path = documentService.findDocumentPath(id);
 
+        Integer parentFlag = path.get(0).getParentId(); //当前目录的父目录ID
+
+        for (Document curDoc : path) {
+
+            curDoc.setParentId(parentFlag);
+
+            if (DataEntity.DEL_FLAG_REMOVE.equals(curDoc.getDelFlag())) {//文件已经删除
+                if (documentService.isUniqueFileNameWithNew(parentFlag, curDoc.getFileType(), curDoc.getFullName())) { //没有同名文件
+                    if(id == curDoc.getId()) {//要恢复的目录
+                        curDoc.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
+                        parentFlag = curDoc.getId();
+                    } else {// 上层目录
+                        parentFlag = documentService.mkdir(curDoc.getFullName(), parentFlag, curDoc.getCategory(), 0);
+                    }
+
+                } else { //有同名文件:获取同名的文件
+                    parentFlag = documentService.findByNameFromParent(parentFlag, curDoc.getFileType(), curDoc.getFullName()).getId();
+
+                    if(id == curDoc.getId()) {//要恢复的文件
+
+                        if (curDoc.getFileType() == FileType.FOLDER) { //恢复文件夹
+
+                            curDoc.setDelFlag(DataEntity.DEL_FLAG_CLEAN); //永久删除
+                            List<Document> subList = documentService.findSubDocument(id);
+
+                            for (Document document : subList) {
+                                document.setParentId(parentFlag);
+                            }
+
+                            path.addAll(subList); //合并所有修改
+                            break;
+                        } else { //恢复文件
+                            curDoc.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
+                            curDoc.setFullName(documentService.getUniqueName(curDoc.getParentId(), FileType.FILE, curDoc.getFullName()));
+                        }
+                    }
+
+                }
+
+            } else {
+                parentFlag = curDoc.getId();
+            }
+        }
+
+        documentService.save(path);
+    }
 
     /**
      * 下载

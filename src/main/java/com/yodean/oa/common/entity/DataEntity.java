@@ -20,6 +20,8 @@ public class DataEntity implements Serializable {
 
     public static String DEL_FLAG_REMOVE = "0";
 
+    public static String DEL_FLAG_CLEAN = "2"; //彻底删除
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)

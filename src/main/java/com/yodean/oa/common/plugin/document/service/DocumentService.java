@@ -1,8 +1,9 @@
 package com.yodean.oa.common.plugin.document.service;
 
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.enums.DocumentCategory;
+import com.yodean.oa.common.enums.ResultCode;
+import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.dao.DocumentRepository;
 import com.yodean.oa.common.plugin.document.dto.ImageDocument;
@@ -16,10 +17,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.print.Doc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
@@ -27,10 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by rick on 2018/3/22.
@@ -68,6 +66,7 @@ public class DocumentService {
         document.setCategoryId(Id);
         document.setParentId(parentId);
         document.setInherit(true);
+        document.setFullName(getUniqueName(parentId, FileType.FILE, document.getFullName())); //如果重名自动编号
         return save(document);
     }
 
@@ -115,6 +114,10 @@ public class DocumentService {
 
     public Document save(Document document) {
         return documentRepository.save(document);
+    }
+
+    public List<Document> save(Iterable<Document> iterator) {
+        return documentRepository.saveAll(iterator);
     }
 
     public Document findById(Integer id) {
@@ -174,6 +177,136 @@ public class DocumentService {
     }
 
     /**
+     * 查看所有父目录
+     * @param id
+     * @return
+     */
+    public List<Document> findParentsDocument(Integer id) {
+        return findDocumentPath(id, false);
+    }
+
+    /**
+     * 查看文件路径
+     * @param id
+     * @return
+     */
+    public List<Document> findDocumentPath(Integer id) {
+        return findDocumentPath(id, true);
+    }
+
+    /**
+     * 查看文件路径
+     * @param id
+     * @return
+     */
+    private List<Document> findDocumentPath(Integer id, boolean includeSelf) {
+        Document document =  findById(id);
+
+        List<Document> parentsDocument = new ArrayList<>();
+
+        Document curDocument = document;
+
+        while (curDocument.getParentId() != null) {
+            Document parent = findById(curDocument.getParentId());
+            parentsDocument.add(parent);
+            curDocument = parent;
+        }
+
+        Collections.reverse(parentsDocument);
+
+        if (includeSelf)
+            parentsDocument.add(document);
+
+        return parentsDocument;
+
+    }
+
+    /**
+     * 新增加文件，检查文件是否重复
+     * @param parentId 父目录
+     * @param fileFullName 新的名称
+     * @return
+     */
+    public boolean isUniqueFileNameWithNew(Integer parentId, FileType fileType, String fileFullName) {
+        List<Document> siblingsList = findSubDocument(parentId);
+
+        for(Document document : siblingsList) {
+            if(document.getFileType() == fileType && document.getFullName().equals(fileFullName)) {
+                 return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 已存在文件，检查文件是否重复
+     * @param docId
+     * @param fileFullName
+     * @return
+     */
+    public boolean isUniqueFileNameWithExists(Integer docId, FileType fileType, String fileFullName) {
+        Integer parentId = findById(docId).getParentId();
+
+        List<Document> siblingsList = findSubDocument(parentId);
+
+        for(Document document : siblingsList) {
+            if(document.getFileType() == fileType && docId != document.getId() && document.getFullName().equals(fileFullName)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 根据文件名查找目录下的文件
+     * @param parentId
+     * @param fileType
+     * @param fileFullName
+     * @return
+     */
+    public Document findByNameFromParent(Integer parentId, FileType fileType, String fileFullName) {
+        Document document = new Document();
+        document.setFullName(fileFullName);
+        document.setParentId(parentId);
+        document.setFileType(fileType);
+        document.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
+
+        Example<Document> example = Example.of(document);
+        return documentRepository.findOne(example).get();
+    }
+
+
+    /**
+     * 获取目录下的唯一名称
+     * @return
+     */
+    public String getUniqueName(Integer parentId, FileType fileType, String fileFullName) {
+        List<Document> siblingsList = findSubDocument(parentId);
+
+        List<String> names = new ArrayList<>(siblingsList.size());
+
+        for(Document document : siblingsList) {
+            if (fileType == document.getFileType())
+                names.add(document.getFullName());
+        }
+
+        String name = StringUtils.stripFilenameExtension(fileFullName);
+        String ext = StringUtils.getFilenameExtension(fileFullName);
+
+        int sno = 1;
+        while(names.contains(fileFullName)) {
+            fileFullName = name + "("+sno+")";
+            if (!StringUtils.isEmpty(ext)) {
+                fileFullName =  fileFullName + "." + ext;
+            }
+            sno++;
+        }
+
+        return fileFullName;
+    }
+
+    /**
      * 查找所有子文件（夹）
      * @return
      */
@@ -184,7 +317,6 @@ public class DocumentService {
 
         Example example = Example.of(document);
         return documentRepository.findAll(example);
-
     }
 
     public void download(HttpServletResponse response, HttpServletRequest request, Integer id) throws IOException {
@@ -227,20 +359,37 @@ public class DocumentService {
 
     /**
      * 新建文件夹
-     * @param name
+     * @param fileFullName
      * @param parentId
      * @param documentCategory
      * @param id
      */
-    public Integer mkdir(String name, Integer parentId, DocumentCategory documentCategory, Integer id) {
+    public Integer mkdir(String fileFullName, Integer parentId, DocumentCategory documentCategory, Integer id) {
+        //检查文件名是否重复
+        if (!isUniqueFileNameWithNew(parentId, FileType.FOLDER, fileFullName)) {
+            throw new OAException(ResultCode.FILE_NAME_DUPLICATE_ERROR);
+        }
+
         Document document = new Document();
         document.setCategory(documentCategory);
         document.setCategoryId(id);
         document.setFileType(FileType.FOLDER);
-        document.setName(name);
+        document.setFullName(fileFullName);
         document.setParentId(parentId);
         document.setInherit(true);// 初始化启用继承
         save(document);
         return document.getId();
+    }
+
+    public void rename(Integer id, String name) {
+        Document document = findById(id);
+        //检查文件名是否重复
+        if (!isUniqueFileNameWithExists(id, document.getFileType(), name)) {
+            throw new OAException(ResultCode.FILE_NAME_DUPLICATE_ERROR);
+        }
+
+
+        document.setFullName(name);
+        save(document);
     }
 }

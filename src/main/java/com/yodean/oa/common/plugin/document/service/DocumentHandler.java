@@ -31,15 +31,11 @@ public class DocumentHandler {
      * @return
      */
     private Document getInfoFromFile(MultipartFile file) {
-        String fileName = StringUtils.stripFilenameExtension(file.getOriginalFilename());
-        String fileExt = StringUtils.getFilenameExtension(file.getOriginalFilename());
-
         Document document = new Document();
-        document.setName(fileName);
+        document.setFullName(file.getOriginalFilename());
         document.setFileType(FileType.FILE);
         document.setContentType(file.getContentType());
         document.setSize(file.getSize());
-        document.setExt(fileExt);
 
         return document;
     }

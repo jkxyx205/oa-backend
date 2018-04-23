@@ -6,6 +6,7 @@ import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.plugin.document.enums.FileType;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.io.File;
@@ -14,7 +15,8 @@ import java.io.File;
  * Created by rick on 2018/3/22.
  */
 @Entity
-@Table(name = "sys_document")
+@Table(name = "sys_document",
+        uniqueConstraints = {@UniqueConstraint(columnNames={"category", "category_id", "type", "del_flag", "name", "ext"})})
 @DynamicUpdate
 public class Document extends DataEntity {
 
@@ -57,7 +59,7 @@ public class Document extends DataEntity {
         return name;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
@@ -73,7 +75,7 @@ public class Document extends DataEntity {
         return ext;
     }
 
-    public void setExt(String ext) {
+    private void setExt(String ext) {
         this.ext = ext;
     }
 
@@ -133,7 +135,17 @@ public class Document extends DataEntity {
         this.categoryId = categoryId;
     }
 
+    public void setFullName(String fullName) {
+        String fileName = StringUtils.stripFilenameExtension(fullName);
+        String fileExt = StringUtils.getFilenameExtension(fullName);
+        setName(fileName);
+        setExt(fileExt);
+    }
+
     public String getFullName() {
+        if (StringUtils.isEmpty(this.getExt()))
+            return this.name;
+
         return this.name + "." + this.getExt();
     }
 
