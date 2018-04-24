@@ -2,6 +2,8 @@ package com.yodean.oa.sys.document.service;
 
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.DocumentCategory;
+import com.yodean.oa.common.enums.ResultCode;
+import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.enums.FileType;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
@@ -13,6 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +38,24 @@ public class AuthorityService extends SharpService {
 
     @Resource
     private JdbcTemplate jdbcTemplate;
+
+    /**
+     * 文件上传
+     * @return
+     */
+    public List<Document> upload(List<MultipartFile> files, String folderPath, Integer parentId, DocumentCategory category, Integer categoryId) {
+
+        List<Document> documents = new ArrayList<>(files.size());
+        for (MultipartFile file : files) {
+            try {
+                documents.add(documentService.upload(file, folderPath, parentId, category, categoryId));
+            } catch (IOException e) {
+                throw new OAException(ResultCode.FILE_UPLOAD_ERROR);
+            }
+        }
+
+        return documents;
+    }
 
     /**
      * 添加文件夹
@@ -80,6 +101,10 @@ public class AuthorityService extends SharpService {
         addPathAuthority(authorityDto);
     }
 
+    /**
+     * 添加路径的特殊权限
+     * @param authorityDto
+     */
     private void addPathAuthority(AuthorityDto authorityDto) {
         List<Document> parents = documentService.findParentsDocument(authorityDto.getDocumentId());
 
@@ -336,6 +361,14 @@ public class AuthorityService extends SharpService {
     }
 
     /**
+     * 逻辑彻底删除
+     * @param id
+     */
+    public void clean(Integer id) {
+        documentService.clean(id);
+    }
+
+    /**
      * 重命名
      * @param id
      * @param name
@@ -451,12 +484,20 @@ public class AuthorityService extends SharpService {
 
     /**
      * 下载
-     * @param id
+     * @param ids
      */
-    public void download(HttpServletRequest request, HttpServletResponse response, Integer id) throws IOException {
-        documentService.download(response, request, id);
+    public void download(HttpServletRequest request, HttpServletResponse response, Integer ... ids) throws IOException {
+        documentService.download(response, request, ids);
     }
 
+
+    /**
+     * 预览
+     * @param id
+     */
+    public void view(HttpServletRequest request, HttpServletResponse response, Integer id) throws IOException {
+        documentService.view(response, request, id);
+    }
 
     /**
      * 获取某个文件夹的，用户所有权限集合

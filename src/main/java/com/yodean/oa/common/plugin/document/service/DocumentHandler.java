@@ -5,7 +5,6 @@ import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.enums.FileType;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -48,9 +47,9 @@ public class DocumentHandler {
      * @return
      */
     public Document store(String folderPath, MultipartFile file) throws IOException {
-        String ext = StringUtils.getFilenameExtension(file.getOriginalFilename());
+//        String ext = StringUtils.getFilenameExtension(file.getOriginalFilename());
         String uuidName = UUID.randomUUID().toString();
-        String uuidFullName = uuidName + "." +  ext;
+        String uuidFullName = uuidName; //!文件存储,不需要带后缀。处理重命名的问题。如果带后缀，重命名下载会有问题
 
         File folder = new File(Global.DOCUMENT + File.separator + folderPath);
         FileUtils.forceMkdir(folder);

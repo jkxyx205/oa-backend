@@ -1,5 +1,6 @@
 package com.yodean.oa.common.plugin.document.service;
 
+import com.yodean.oa.common.config.Global;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.enums.ResultCode;
@@ -9,26 +10,30 @@ import com.yodean.oa.common.plugin.document.dao.DocumentRepository;
 import com.yodean.oa.common.plugin.document.dto.ImageDocument;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.enums.FileType;
+import com.yodean.oa.common.util.ZipUtil;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by rick on 2018/3/22.
@@ -47,6 +52,10 @@ public class DocumentService {
 
     @Resource
     private JdbcTemplate jdbcTemplate;
+
+    private static final String READ_ATTACHMENT = "attachment";
+
+    private static final String READ_INLINE = "inline";
 
     /**
      *
@@ -136,6 +145,18 @@ public class DocumentService {
     public void delete(Integer id) {
         documentRepository.deleteLogical(id);
     }
+
+    /***
+     * 逻辑彻底删除文件
+     * @param id
+     */
+    public void clean(Integer id) {
+        Document document = findById(id);
+        document.setDelFlag(DataEntity.DEL_FLAG_CLEAN);
+        save(document);
+    }
+
+
 
     /***
      * 绑定附件到实例上
@@ -319,19 +340,110 @@ public class DocumentService {
         return documentRepository.findAll(example);
     }
 
-    public void download(HttpServletResponse response, HttpServletRequest request, Integer id) throws IOException {
-        Document doc = findById(id);
-        if (doc.getFileType() == FileType.FOLDER)
-            throw new RuntimeException("文件夹不能下载！");
+    /**
+     * 文件下载
+     * @param response
+     * @param request
+     * @param ids
+     * @throws IOException
+     */
+    public void download(HttpServletResponse response, HttpServletRequest request, Integer ... ids) throws IOException {
+        Validate.noNullElements(ids);
 
-        OutputStream os = getResponseOutputStream(response, request, doc.getFullName());
-        File file = new File(doc.getFileAbsolutePath());
-        IOUtils.write(FileUtils.readFileToByteArray(file), os);
+        Document document;
+
+        if (ids.length > 1) { //批量下载
+            document = new Document();
+            document.setFileType(FileType.FOLDER);
+
+        } else {
+            document = findById(ids[0]);
+        }
+
+        OutputStream os;
+
+        if (document.getFileType() == FileType.FOLDER) { //压缩下载
+            //1. 检查是否有下载的权限 //TODO
+
+            //2.子文件
+            List<Document> subDocuments;
+            if (ids.length > 1) { //批量下载
+                subDocuments = new ArrayList<>(ids.length);
+                for (Integer id : ids) {
+                    subDocuments.add(findById(id));
+                }
+                document.setFullName(subDocuments.get(0).getFullName() + "等" + ids.length + "个文件");
+
+            } else { //下载单个文件夹
+                subDocuments = findSubDocument(document.getId());
+            }
+
+//           Path path = Files.createTempDirectory( Paths.get(doPrivileged(new GetPropertyAction("java.io.tmpdir"))),null);
+
+            Path path = Files.createTempDirectory( Paths.get(Global.TMP),null);
+
+            File _home = path.toFile();
+
+            File root = new File(_home, document.getFullName());
+            root.mkdir();
+
+            //4.创建
+            downloadFolder(root, subDocuments);
+
+            String zipName = document.getName() + ".zip";
+            File zipFile = new File(_home, zipName);
+
+            ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile));
+
+            ZipUtil.zipDirectoryToZipFile(_home.getAbsolutePath(), root, zipOut);
+
+            os = getResponseOutputStream(response, request, zipName, READ_ATTACHMENT);
+
+            zipOut.close();
+
+            FileCopyUtils.copy(new FileInputStream(zipFile), os);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> FileUtils.deleteQuietly(_home)));
+//           FileUtils.forceDeleteOnExit(_home);
+        } else { //单文件下载
+            os = getResponseOutputStream(response, request, document.getFullName(), READ_ATTACHMENT);
+            FileCopyUtils.copy(new FileInputStream(document.getFileAbsolutePath()), os);
+        }
+
         os.close();
     }
 
-    private static OutputStream getResponseOutputStream(HttpServletResponse response, HttpServletRequest request, String fileName) throws IOException {
-        String _fileName = fileName.replaceAll("[\\/:*?\"<>[|]]", "");
+    private void downloadFolder(File folder, List<Document> subDocuments) throws IOException {
+        for (Document subDocument :  subDocuments) {
+            if (subDocument.getFileType() == FileType.FOLDER) {//文件夹
+                File subFolder = new File(folder, subDocument.getName());
+                subFolder.mkdir();
+                downloadFolder(subFolder, findSubDocument(subDocument.getId()));
+            } else { //文件
+                FileCopyUtils.copy(new FileInputStream(subDocument.getFileAbsolutePath()), new FileOutputStream(new File(folder, subDocument.getFullName())));
+            }
+        }
+    }
+
+    /**
+     * 文件预览
+     * @param response
+     * @param request
+     * @param id
+     * @throws IOException
+     */
+    public void view(HttpServletResponse response, HttpServletRequest request, Integer id) throws IOException {
+        Document document = findById(id);
+        OutputStream os = getResponseOutputStream(response, request, document.getFullName(), READ_INLINE);
+        if (document.getFileType() == FileType.FOLDER) {
+            throw new OAException(ResultCode.FILE_DOWNLOAD_ERROR);
+        } else {
+            FileCopyUtils.copy(new FileInputStream(document.getFileAbsolutePath()), os);
+        }
+    }
+
+    private static OutputStream getResponseOutputStream(HttpServletResponse response, HttpServletRequest request, String fileName, String readType) throws IOException {
+        String _fileName = fileName.replaceAll("[/:*?\"<>[|]]", "");
 
         String browserType = request.getHeader("User-Agent").toLowerCase();
 
@@ -349,13 +461,12 @@ public class DocumentService {
 
         response.reset();// 清空输出流
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-
-
-        response.setHeader("Content-disposition", "attachment; filename="+_fileName+"");// 设定输出文件头
-        response.setContentType("application/vnd.ms-excel;charset="+StandardCharsets.UTF_8+"");// 定义输出类型
+        response.setHeader("Content-disposition", ""+readType+"; filename="+_fileName+"");// 设定输出文件头
+        response.setContentType(new MimetypesFileTypeMap().getContentType(_fileName));// 定义输出类型
         OutputStream os = response.getOutputStream(); // 取得输出流
         return os;
     }
+
 
     /**
      * 新建文件夹
@@ -387,7 +498,6 @@ public class DocumentService {
         if (!isUniqueFileNameWithExists(id, document.getFileType(), name)) {
             throw new OAException(ResultCode.FILE_NAME_DUPLICATE_ERROR);
         }
-
 
         document.setFullName(name);
         save(document);

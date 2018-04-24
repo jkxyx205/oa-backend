@@ -20,12 +20,18 @@ public class Global implements ApplicationContextAware {
 
     public static String CDN;
 
+    public static String TMP;
+
     public void setDocument(String document) {
         this.DOCUMENT = document;
     }
 
     public void setCdn(String cdn) {
         this.CDN = cdn;
+    }
+
+    public static void setTmp(String tmp) {
+        Global.TMP = tmp;
     }
 
     @Override

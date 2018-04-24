@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public Object handler(HttpServletRequest request, Exception e) {
-        logger.error("发生异常 => {}", e);
+        logger.error("发生异常", e);
 
         Result result;
 

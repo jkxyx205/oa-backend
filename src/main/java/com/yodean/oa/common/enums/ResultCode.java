@@ -18,7 +18,10 @@ public enum ResultCode {
     TOKEN_ERROR(50002, "拦截token出错"),
     EXISTS_ERROR(60000, "纪录已经存在"),
     NULL_ERROR(40001, "不合法的参数ID"),
-    FILE_NAME_DUPLICATE_ERROR(40003, "文件名不能重复");
+    FILE_NAME_DUPLICATE_ERROR(40003, "文件名不能重复"),
+    FILE_VIEW_ERROR(40005, "文件预览失败"),
+    FILE_DOWNLOAD_ERROR(40006, "文件下载失败"),
+    FILE_UPLOAD_ERROR(40004, "文件上传失败");
 
     private Integer code;
 

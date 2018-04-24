@@ -155,7 +155,7 @@ public class Document extends DataEntity {
      */
     @JsonIgnore
     public String getFileAbsolutePath() {
-        return Global.DOCUMENT + File.separator + path + "." + ext;
+        return Global.DOCUMENT + File.separator + path;
     }
 
 
