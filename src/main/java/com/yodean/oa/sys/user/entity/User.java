@@ -3,6 +3,8 @@ package com.yodean.oa.sys.user.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.sys.org.entity.Organization;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
@@ -58,7 +60,7 @@ public class User extends DataEntity {
 
 
     @Transient
-    private Set<Integer> orgIds;
+    private Integer[] orgIds;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
@@ -149,11 +151,15 @@ public class User extends DataEntity {
         this.password = password;
     }
 
-    public Set<Integer> getOrgIds() {
+    public Integer[] getOrgIds() {
         return orgIds;
     }
 
-    public void setOrgIds(Set<Integer> orgIds) {
+    public String getOrgIdsAsString() {
+        return StringUtils.join(orgIds, ";");
+    }
+
+    public void setOrgIds(Integer[] orgIds) {
         this.orgIds = orgIds;
     }
 }

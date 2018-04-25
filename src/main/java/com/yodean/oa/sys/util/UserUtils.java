@@ -14,6 +14,7 @@ public class UserUtils {
         User user = new User();
         user.setId(1);
         user.setChineseName("Rick.Xu");
+        user.setOrgIds(new Integer[] {1,2});
 //        Principal principal = getPrincipal();
 //        if (principal!=null){
 //            User user = get(principal.getId());

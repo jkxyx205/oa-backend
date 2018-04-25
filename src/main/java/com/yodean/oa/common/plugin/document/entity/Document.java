@@ -59,7 +59,7 @@ public class Document extends DataEntity {
         return name;
     }
 
-    private void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -75,7 +75,7 @@ public class Document extends DataEntity {
         return ext;
     }
 
-    private void setExt(String ext) {
+    public void setExt(String ext) {
         this.ext = ext;
     }
 
@@ -155,6 +155,7 @@ public class Document extends DataEntity {
      */
     @JsonIgnore
     public String getFileAbsolutePath() {
+        if (FileType.FOLDER == this.fileType) return null;
         return Global.DOCUMENT + File.separator + path;
     }
 
@@ -164,6 +165,7 @@ public class Document extends DataEntity {
      * @return
      */
     public String getUrlPath() {
+        if (FileType.FOLDER == this.fileType) return null;
         return Global.CDN + "/" + path + "." + ext;
     }
 }

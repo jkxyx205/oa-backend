@@ -5,7 +5,9 @@ import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.util.ResultUtil;
 import com.yodean.oa.sys.document.dto.AuthorityDto;
+import com.yodean.oa.sys.document.dto.DocumentDto;
 import com.yodean.oa.sys.document.service.AuthorityService;
+import com.yodean.oa.sys.util.UserUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -188,6 +190,27 @@ public class DocumentController {
     public Result startStopInherit(@PathVariable Integer id) {
         authorityService.startAuthInherit(id);
         return ResultUtil.success();
+    }
+
+    /**
+     * 获取文件（夹）的授权表
+     * @return
+     */
+    @GetMapping("authorities/{id}")
+    public Result<AuthorityDto> getAuthority(@PathVariable Integer id) {
+        AuthorityDto authorityDto = authorityService.findAuthorityDtoList(id);
+
+        return ResultUtil.success(authorityDto);
+    }
+
+    /**
+     * 获取列表
+     * @return
+     */
+    @GetMapping("/{id}")
+    public Result<List<DocumentDto>> list(@PathVariable Integer id) {
+        List<DocumentDto> documentDtoList = authorityService.findAuthorityDtoList(id, UserUtils.getUser().getId());
+        return ResultUtil.success(documentDtoList);
     }
 
 }

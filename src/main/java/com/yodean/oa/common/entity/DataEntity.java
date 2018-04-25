@@ -36,11 +36,11 @@ public class DataEntity implements Serializable {
     @Column(name = "create_date", nullable = false, updatable = false)
     private Date createDate;
 
-    @JsonIgnore
+//    @JsonIgnore
     @Column(name = "update_by", nullable = false)
     private String updateBy;
 
-    @JsonIgnore
+//    @JsonIgnore
 //    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name="update_date", nullable = false)
     private Date updateDate;

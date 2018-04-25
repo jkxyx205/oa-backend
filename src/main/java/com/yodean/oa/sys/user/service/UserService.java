@@ -50,7 +50,8 @@ public class UserService {
         params.put("userId", id);
 
         List<Integer> list = baseService.query(sql, params, Integer.class);
-        user.setOrgIds(new HashSet<>(list));
+        user.setOrgIds(list.toArray(new Integer[]{}));
+
         return user;
     }
 
@@ -59,11 +60,13 @@ public class UserService {
     public Integer save(User user) {
         User persist = user;
 
-        Set<Organization> organizations = new HashSet<>(user.getOrgIds().size());
-        user.getOrgIds().forEach(orgId -> {
+        Set<Organization> organizations = new HashSet<>(user.getOrgIds().length);
+
+        for (Integer orgId : user.getOrgIds()) {
             Organization organization = organizationService.findById(orgId);
             organizations.add(organization);
-        });
+        }
+
         //添加组织
         persist.setOrganizations(organizations);
 

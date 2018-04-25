@@ -7,8 +7,8 @@ server:
 
 configuration:
   document: /Users/rick/jkxyx205/tmp/oa #文件上传根路径
-  cdn: http://cdn-oa.yodean.com
-  tmp: /Users/rick/jkxyx205/tmp/tmp
+  cdn: http://cdn-oa.yodean.com         #nginx静态服务器
+  tmp: /Users/rick/jkxyx205/tmp/tmp     #临时目录
 spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss

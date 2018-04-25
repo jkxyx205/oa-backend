@@ -97,7 +97,8 @@ public class Authority extends DataEntity {
     }
 
     public static enum AuthorityArea {
-        READ("查看"), LIST("列表"), UPLOAD("上传"), DELETE("删除"), DOWNLOAD("下载"), EDIT("编辑"), PATH("路径");
+//        READ("查看"), LIST("列表"), UPLOAD("上传"), DELETE("删除"), DOWNLOAD("下载"), EDIT("编辑"), PATH("路径");
+        READ("查看"), UPLOAD("上传"), DELETE("删除"), DOWNLOAD("下载"), AUTH("授权"), PATH("路径");
         private String description;
 
         AuthorityArea(String description) {

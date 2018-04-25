@@ -10,7 +10,9 @@ import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.common.service.SharpService;
 import com.yodean.oa.sys.document.dao.AuthorityRepository;
 import com.yodean.oa.sys.document.dto.AuthorityDto;
+import com.yodean.oa.sys.document.dto.DocumentDto;
 import com.yodean.oa.sys.document.entity.Authority;
+import com.yodean.oa.sys.util.UserUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.print.Doc;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
@@ -28,7 +31,7 @@ import java.util.*;
  * Created by rick on 4/20/18.
  */
 @Service
-public class AuthorityService extends SharpService {
+public class AuthorityService  {
 
     @Resource
     private AuthorityRepository authorityRepository;
@@ -38,6 +41,9 @@ public class AuthorityService extends SharpService {
 
     @Resource
     private JdbcTemplate jdbcTemplate;
+
+    @Resource
+    private SharpService sharpService;
 
     /**
      * 文件上传
@@ -91,9 +97,10 @@ public class AuthorityService extends SharpService {
      */
     @Transactional
     public void addAuthority(AuthorityDto authorityDto) {
-        Set<Authority> allAddAuthority = new HashSet<>();
-        Set<Authority> allRemoveAuthority = new HashSet<>();
+        List<Authority> allAddAuthority = new ArrayList<>();
+        List<Authority> allRemoveAuthority = new ArrayList<>();
         addAuthority(authorityDto, true, allAddAuthority, allRemoveAuthority);
+
         authorityRepository.saveAll(allAddAuthority);  //添加权限
         authorityRepository.deleteAll(allRemoveAuthority); //删除权限
 
@@ -106,7 +113,9 @@ public class AuthorityService extends SharpService {
      * @param authorityDto
      */
     private void addPathAuthority(AuthorityDto authorityDto) {
-        List<Document> parents = documentService.findParentsDocument(authorityDto.getDocumentId());
+//        List<Document> parents = documentService.findParentsDocument(authorityDto.getDocumentId());
+
+        List<Document> parents = documentService.findDocumentPath(authorityDto.getDocumentId());
 
         if (CollectionUtils.isEmpty(parents)) return;
 
@@ -130,8 +139,10 @@ public class AuthorityService extends SharpService {
         authoritySet.forEach(authority -> {
             parents.forEach(document -> {
                 Authority _authority = SerializationUtils.clone(authority);
+                _authority.setId(null);
                 _authority.setAuthorityArea(Authority.AuthorityArea.PATH);
                 _authority.setDocumentId(document.getId());
+                _authority.setInherit(true);
                 pathAuthoritySet.add(_authority);
             });
 
@@ -144,7 +155,7 @@ public class AuthorityService extends SharpService {
      *
      * @param authorityDto
      */
-    private void addAuthority(AuthorityDto authorityDto, Boolean isCurrent, Set<Authority> allAddAuthority,  Set<Authority> allRemoveAuthority ) {
+    private void addAuthority(AuthorityDto authorityDto, Boolean isCurrent, List<Authority> allAddAuthority,  List<Authority> allRemoveAuthority ) {
         Integer docId = authorityDto.getDocumentId();
         Document curDocument = documentService.findById(docId);
 
@@ -177,7 +188,7 @@ public class AuthorityService extends SharpService {
         //3. DB权限 （继承 或 非继承）
         List<Authority> currentAuthority = findAuthorityByDocumentId(docId);
 
-        //根据1和2获取非继承权限 TODO set contains在某些清空下居然有问题...改用list
+        //根据1和2获取非继承权限 TODO set contains在某些情况下居然有问题...改用list
         List<Authority> unInheritAuthority = new ArrayList<>();
 
 
@@ -185,7 +196,7 @@ public class AuthorityService extends SharpService {
             paramsAuthority.forEach(authority -> {
                 Boolean paramInherit = authority.getInherit();
                 authority.setInherit(true);
-                if (!parentAuthority.contains(authority)) { //不是继承:在继承之中没有找到
+                if (!parentAuthority.contains(authority) && authority.getAuthorityArea() != Authority.AuthorityArea.PATH) { //不是继承:在继承之中没有找到
 
                     if (paramInherit == Boolean.TRUE) { //可能是移动或复制带过来的继承权限，不能充当非继承权限
                         allRemoveAuthority.add(authority);
@@ -201,7 +212,7 @@ public class AuthorityService extends SharpService {
         //--
         if (isCurrent) {
             unInheritAuthority.forEach(authority -> {
-                if (!currentAuthority.contains(authority)) { //添加非继承权限
+                if (!currentAuthority.contains(authority) && authority.getAuthorityArea() != Authority.AuthorityArea.PATH) { //添加非继承权限
                     authority.setDocumentId(docId);
                     allAddAuthority.add(authority);
                 }
@@ -209,7 +220,7 @@ public class AuthorityService extends SharpService {
         }
 
         parentAuthority.forEach(authority -> {
-            if (!currentAuthority.contains(authority)) { //添加继承权限
+            if (!currentAuthority.contains(authority) && authority.getAuthorityArea() != Authority.AuthorityArea.PATH) { //添加继承权限
                 authority.setDocumentId(docId);
                 allAddAuthority.add(authority);
             }
@@ -218,14 +229,14 @@ public class AuthorityService extends SharpService {
         //--
         if (isCurrent) {
             currentAuthority.forEach(authority -> {
-                if (!authority.getInherit() && !unInheritAuthority.contains(authority)) { //删除非继承权限
+                if (!authority.getInherit() && !unInheritAuthority.contains(authority) && authority.getAuthorityArea() != Authority.AuthorityArea.PATH) { //删除非继承权限
                     allRemoveAuthority.add(authority);
                 }
             });
         }
 
         currentAuthority.forEach(authority -> {
-            if (authority.getInherit() && !parentAuthority.contains(authority)) { //删除继承权限
+            if (authority.getInherit() && !parentAuthority.contains(authority) && authority.getAuthorityArea() != Authority.AuthorityArea.PATH) { //删除继承权限
                 allRemoveAuthority.add(authority);
             }
         });
@@ -347,7 +358,7 @@ public class AuthorityService extends SharpService {
         Map<String, Object> params = new HashMap<>(1);
         params.put("id", docId);
 
-        return query("SELECT  id, authority_type authorityType, authority_id authorityId, document_id documentId, authority_area authorityArea, inherit, create_by createBy, update_by updateBy, create_date createDate, update_date updateDate,del_flag delFlag FROM sys_document_auth WHERE document_id = :id",
+        return sharpService.query("SELECT  id, authority_type authorityType, authority_id authorityId, document_id documentId, authority_area authorityArea, inherit, create_by createBy, update_by updateBy, create_date createDate, update_date updateDate,del_flag delFlag FROM sys_document_auth WHERE document_id = :id",
                 params, Authority.class);
 
     }
@@ -500,13 +511,47 @@ public class AuthorityService extends SharpService {
     }
 
     /**
-     * 获取某个文件夹的，用户所有权限集合
+     * 获取文件的授权表
      * @param docId
+     * @return
+     */
+    public AuthorityDto findAuthorityDtoList(Integer docId) {
+        List<Authority> authorityList =  this.findAuthorityByDocumentId(docId);
+        Document document = documentService.findById(docId);
+
+        AuthorityDto authorityDto = new AuthorityDto();
+        authorityDto.setDocumentId(docId);
+        authorityDto.setAuthorityList(new LinkedHashSet<>(authorityList));
+        authorityDto.setInherit(document.getInherit());
+        return authorityDto;
+    }
+
+    /**
+     * 获取用户文件夹下的所有文件列表
+     * @param parentId
      * @param userId
      * @return
      */
-    public Set<Authority.AuthorityType> findAuthorities(Integer docId, Integer userId) {
-        return null;
+    public List<DocumentDto> findAuthorityDtoList(Integer parentId, Integer userId) {
+
+        String sql = sharpService.getSQL("com.yodean.oa.sys.document.dao.listDocument");
+        Map<String, Object> params = new HashMap<>(3);
+        params.put("parentId", parentId);
+        params.put("userId", userId);
+        params.put("orgIds", UserUtils.getUser().getOrgIdsAsString());
+
+        List<Document> documentList = sharpService.query(sql, params, Document.class);
+
+        List<DocumentDto> documentDtoList = new ArrayList<>(documentList.size());
+
+        for (Document document : documentList) {
+            DocumentDto documentDto = new DocumentDto();
+            documentDto.setDocument(document);
+            documentDtoList.add(documentDto);
+        }
+
+        return documentDtoList;
+
     }
 
 }
