@@ -49,12 +49,12 @@ public class AuthorityService  {
      * 文件上传
      * @return
      */
-    public List<Document> upload(List<MultipartFile> files, String folderPath, Integer parentId, DocumentCategory category, Integer categoryId) {
+    public List<Document> upload(List<MultipartFile> files, String folder, Integer parentId, DocumentCategory category, Integer categoryId) {
 
         List<Document> documents = new ArrayList<>(files.size());
         for (MultipartFile file : files) {
             try {
-                documents.add(documentService.upload(file, folderPath, parentId, category, categoryId));
+                documents.add(documentService.upload(file, folder, parentId, category, categoryId));
             } catch (IOException e) {
                 throw new OAException(ResultCode.FILE_UPLOAD_ERROR);
             }

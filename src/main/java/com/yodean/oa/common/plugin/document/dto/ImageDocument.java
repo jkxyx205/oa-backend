@@ -11,6 +11,23 @@ import java.io.File;
  */
 public class ImageDocument extends Document {
 
+
+//    private Document document;
+
+    public ImageDocument() {}
+
+    public ImageDocument(Document document) {
+//        this.document = document;
+        setName(document.getName());
+        setContentType(document.getContentType());
+        setPath(document.getPath());
+        setExt(document.getExt());
+        setUpdateBy(document.getUpdateBy());
+        setUpdateDate(document.getUpdateDate());
+        setCreateBy(document.getCreateBy());
+        setCreateDate(document.getCreateDate());
+    }
+
     /***
      *  原图
      */
@@ -32,11 +49,14 @@ public class ImageDocument extends Document {
     }
 
     public String getUrlThumbnailSmallPath() {
+
         return Global.CDN + "/" + getPath() + "-thumbnail-small." + getExt();
     }
 
+    public String getUrlThumbnailSmallPath1x1() {
+        return Global.CDN + "/" + getPath() + "-thumbnail-small-1x1." + getExt();
+    }
 
-//
 //    public String getFileThumbnailPath() {
 //        return rootPath + File.separator + getPath() + "-thumbnail." + getExt();
 //    }
@@ -52,7 +72,7 @@ public class ImageDocument extends Document {
 
     @JsonIgnore
     public String getFileAbsouteThumbnailSmallPath() {
-        return Global.DOCUMENT  + File.separator + getPath() + File.separator + getPath()  + "-thumbnail-small."  +getExt();
+        return Global.DOCUMENT  + File.separator + getPath()  + "-thumbnail-small."  + getExt();
     }
 
     public String getSource() {

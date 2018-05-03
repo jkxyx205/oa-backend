@@ -29,7 +29,7 @@ public class ImageHandler {
 
     /***
      * 图片裁剪
-     * @param folderPath
+     * @param folder
      * @param image
      * @param position
      * @param w
@@ -39,7 +39,7 @@ public class ImageHandler {
      * @return
      * @throws IOException
      */
-    public Document cropPic(String folderPath, ImageDocument image, Position position, int w, int h, int aspectRatioW, int aspectRatioH) throws IOException {
+    public Document cropPic(String folder, ImageDocument image, Position position, int w, int h, int aspectRatioW, int aspectRatioH) throws IOException {
         if (!image.getContentType().startsWith("image")) {
             return image;
         }
@@ -58,9 +58,9 @@ public class ImageHandler {
                 File file = new File(path);
 
                 String uuidFullName = uuidName + "." + image.getExt();
-                File folder = new File(Global.DOCUMENT + File.separator + folderPath);
-                FileUtils.forceMkdir(folder);
-                File imageFile = new File(folder, uuidFullName);
+                File folderPath = new File(Global.DOCUMENT + File.separator + folder);
+                FileUtils.forceMkdir(folderPath);
+                File imageFile = new File(folderPath, uuidFullName);
 
                 Thumbnails.of(file)
                         .size(wh[0], wh[1])
@@ -72,28 +72,28 @@ public class ImageHandler {
             }
         });
 
-
+        image.setName(uuidName);
         image.setSource(image.getUrlPath());
         image.setThumbnail(image.getUrlThumbnailPath());
         image.setThumbnailSmall(image.getUrlThumbnailSmallPath());
 
         //setPath必须放到最后一个
-        image.setPath((folderPath + File.separator + uuidName).replace(File.separator, DocumentHandler.FOLDER_SEPARATOR));
+        image.setPath((folder + File.separator + uuidName).replace(File.separator, DocumentHandler.FOLDER_SEPARATOR));
 
         return image;
     }
 
-    public Document cropPic(String folderPath, ImageDocument image, int x, int y, int w, int h, int aspectRatioW, int aspectRatioH) throws IOException {
+    public Document cropPic(String folder, ImageDocument image, int x, int y, int w, int h, int aspectRatioW, int aspectRatioH) throws IOException {
         Position position = new Coordinate(x, y);
-        return cropPic(folderPath, image, position, w, h, aspectRatioW, aspectRatioH);
+        return cropPic(folder, image, position, w, h, aspectRatioW, aspectRatioH);
     }
 
 
 
-    public Document cropPic(String folderPath, ImageDocument image, int aspectRatioW, int aspectRatioH) throws IOException {
+    public Document cropPic(String folder, ImageDocument image, int aspectRatioW, int aspectRatioH) throws IOException {
                 File file = new File(image.getFileAbsouteThumbnailPath());
                 BufferedImage srcImage = ImageIO.read(file);
-        return cropPic(folderPath, image, Positions.CENTER,srcImage.getWidth(), srcImage.getHeight(), aspectRatioW, aspectRatioH);
+        return cropPic(folder, image, Positions.CENTER,srcImage.getWidth(), srcImage.getHeight(), aspectRatioW, aspectRatioH);
     }
 
 

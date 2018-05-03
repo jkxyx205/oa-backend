@@ -42,31 +42,38 @@ public class DocumentHandler {
 
     /***
      * 存储文件
-     * @param folderPath
+     * @param folder
      * @param file
      * @return
      */
-    public Document store(String folderPath, MultipartFile file) throws IOException {
+    public Document store(String folder, MultipartFile file) throws IOException {
 //        String ext = StringUtils.getFilenameExtension(file.getOriginalFilename());
         String uuidName = UUID.randomUUID().toString();
         String uuidFullName = uuidName; //!文件存储,不需要带后缀。处理重命名的问题。如果带后缀，重命名下载会有问题
 
-        File folder = new File(Global.DOCUMENT + File.separator + folderPath);
-        FileUtils.forceMkdir(folder);
+        File folderPath = new File(Global.DOCUMENT + File.separator + folder);
+        FileUtils.forceMkdir(folderPath);
 
-        File srcFile = new File(folder, uuidFullName); //图片存储路径
+        File srcFile = new File(folderPath, uuidFullName); //图片存储路径
 
 		file.transferTo(srcFile);
 
         Document doc = getInfoFromFile(file);
 
-        doc.setPath((folderPath+ File.separator + uuidName).replace(File.separator, FOLDER_SEPARATOR));
+        doc.setPath((folder+ File.separator + uuidName).replace(File.separator, FOLDER_SEPARATOR));
 
         if (doc.getContentType().startsWith("image")) {//处理图片文件
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.submit(() -> {
                 try {
                     imageHandler.compress(doc);
+
+                    //自动裁剪1:1
+//                    ImageDocument image = new ImageDocument(doc);
+//                    imageHandler.cropPic(folder, image, 1, 1);
+                    //修改裁剪图名称
+//                    FileUtils.moveFile(new File(image.getFileAbsouteThumbnailSmallPath()),
+//                            new File(Global.DOCUMENT + File.separator + folder, image.getName() + "-thumbnail-small-1x1." + image.getExt()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

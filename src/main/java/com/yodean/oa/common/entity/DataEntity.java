@@ -1,5 +1,6 @@
 package com.yodean.oa.common.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yodean.oa.sys.util.UserUtils;
@@ -41,7 +42,7 @@ public class DataEntity implements Serializable {
     private String updateBy;
 
 //    @JsonIgnore
-//    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name="update_date", nullable = false)
     private Date updateDate;
 

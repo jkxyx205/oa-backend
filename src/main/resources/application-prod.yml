@@ -6,9 +6,9 @@ server:
 
 
 configuration:
-  document: /Users/rick/jkxyx205/tmp/oa #文件上传根路径
-  cdn: http://127.0.0.1:3000         #nginx静态服务器
-  tmp: /Users/rick/jkxyx205/tmp/tmp     #临时目录
+  document: /root/oa #文件上传根路径
+  cdn: http://207.148.100.137:80         #nginx静态服务器
+  tmp: /root/oa/tmp     #临时目录
 spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -18,7 +18,7 @@ spring:
       max-request-size: 50MB
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/oa?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://207.148.100.137:3306/oa?useUnicode=true&characterEncoding=UTF-8
     username: root
     password: jkxyx205
   jpa:

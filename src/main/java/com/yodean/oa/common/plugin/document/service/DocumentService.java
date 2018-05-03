@@ -23,7 +23,6 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -61,7 +60,7 @@ public class DocumentService {
     /**
      *
      * @param file 文件
-     * @param folderPath 文件存储路径
+     * @param folder 文件存储路径
      * @param parentId 所属文件夹
      * @param category 分类
      * @param Id 分类id
@@ -69,9 +68,9 @@ public class DocumentService {
      * @throws IOException
      */
     @Transactional
-    public Document upload(MultipartFile file, String folderPath, Integer parentId, DocumentCategory category, Integer Id) throws IOException {
+    public Document upload(MultipartFile file, String folder, Integer parentId, DocumentCategory category, Integer Id) throws IOException {
         //上传到服务器
-        Document document = documentHandler.store(folderPath, file);
+        Document document = documentHandler.store(folder, file);
         document.setCategory(category);
         document.setCategoryId(Id);
         document.setParentId(parentId);
