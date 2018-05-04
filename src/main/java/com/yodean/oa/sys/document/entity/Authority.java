@@ -129,28 +129,4 @@ public class Authority extends DataEntity {
         return Objects.hash(authorityType, authorityId, authorityArea, inherit);
     }
 
-    public static void main(String[] args) {
-        Set<Authority> set = new HashSet<>(2);
-        Authority a1 = new Authority();
-        a1.setAuthorityId(1);
-        a1.setDocumentId(2);
-        a1.setInherit(true);
-        a1.setAuthorityArea(AuthorityArea.UPLOAD);
-        a1.setAuthorityType(AuthorityType.USER);
-        a1.setId(2);
-
-
-        Authority a2 = new Authority();
-        a2.setAuthorityId(1);
-        a2.setDocumentId(1);
-        a2.setInherit(true);
-        a2.setAuthorityArea(AuthorityArea.UPLOAD);
-        a2.setAuthorityType(AuthorityType.USER);
-
-        set.add(a1);
-//        set.add(a2);
-        System.out.println(set.contains(a2));
-
-    }
-
 }

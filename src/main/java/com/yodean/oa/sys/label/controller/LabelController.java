@@ -22,7 +22,7 @@ public class LabelController {
      * 添加标签
      */
     @PostMapping("/{category}/{categoryId}")
-    public Result<Integer> save(@PathVariable Category category, @PathVariable Integer categoryId, @RequestBody Label label) {
+    public Result<Integer> save(@PathVariable Label.LabelCategory category, @PathVariable Integer categoryId, @RequestBody Label label) {
         return ResultUtil.success(labelService.save(category, categoryId, label));
     }
 

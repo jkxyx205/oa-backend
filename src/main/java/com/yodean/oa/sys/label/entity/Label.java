@@ -31,7 +31,7 @@ public class Label extends DataEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category category;
+    private LabelCategory category;
 
     @Column(name = "category_id", nullable = false)
     private Integer categoryId;
@@ -55,11 +55,11 @@ public class Label extends DataEntity {
         this.title = title;
     }
 
-    public Category getCategory() {
+    public LabelCategory getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(LabelCategory category) {
         this.category = category;
     }
 
@@ -69,5 +69,21 @@ public class Label extends DataEntity {
 
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public static enum LabelCategory {
+        TASK("任务"),
+        MEETING("会议"),
+        NOTE("便签"),
+        NOTICE("公告"),
+        NEWS("新闻");
+
+        private String description;
+
+        LabelCategory(String description) {
+            this.description = description;
+        }
+
+
     }
 }

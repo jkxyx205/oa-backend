@@ -42,7 +42,7 @@ public class NoteService {
 
         noteRepository.save(note);
 
-        labelService.save(Category.NOTE, note.getId(), labels);
+        labelService.save(Label.LabelCategory.NOTE, note.getId(), labels);
 
         documentService.update(note.getDocIds(), DocumentCategory.NOTE, note.getId());
 
@@ -68,7 +68,7 @@ public class NoteService {
         Optional<Note> optional = noteRepository.findById(id);
         if (optional.isPresent()) {
             Note note = optional.get();
-            note.setLabels(labelService.findLabels(Category.NOTE, id));
+            note.setLabels(labelService.findLabels(Label.LabelCategory.NOTE, id));
             note.setDocuments(documentService.findById(DocumentCategory.NOTE, id));
 
             return note;

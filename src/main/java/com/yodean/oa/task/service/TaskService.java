@@ -4,6 +4,7 @@ import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
+import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.label.service.LabelService;
 import com.yodean.oa.sys.user.entity.User;
 import com.yodean.oa.sys.user.service.UserService;
@@ -57,7 +58,7 @@ public class TaskService {
         taskRepository.save(task);
 
         //add Label
-        labelService.save(Category.TASK, task.getId(), task.getLabels());
+        labelService.save(Label.LabelCategory.TASK, task.getId(), task.getLabels());
 
         //add users
         workspaceService.tipUsers(Category.TASK, task.getId(), task.getUserIds());
@@ -82,7 +83,7 @@ public class TaskService {
         if (optional.isPresent()) {
             Task task = optional.get();
             task.setUsers(workspaceService.findUsers(Category.TASK, id));
-            task.setLabels(labelService.findLabels(Category.TASK, id));
+            task.setLabels(labelService.findLabels(Label.LabelCategory.TASK, id));
             task.setDocuments(documentService.findById(DocumentCategory.TASK, id));
 
             //get Discussion document

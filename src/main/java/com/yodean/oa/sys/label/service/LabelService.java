@@ -19,7 +19,7 @@ public class LabelService {
     @Resource
     private LabelRepository labelRepository;
 
-    public void save(Category category, Integer categoryId, List<Label> labels) {
+    public void save(Label.LabelCategory category, Integer categoryId, List<Label> labels) {
         labels.forEach(label -> {
             labelSetter(label, category, categoryId);
         });
@@ -27,7 +27,7 @@ public class LabelService {
         labelRepository.saveAll(labels);
     }
 
-    public Integer save(Category category, Integer categoryId, Label label) {
+    public Integer save(Label.LabelCategory category, Integer categoryId, Label label) {
         labelRepository.save(labelSetter(label, category, categoryId));
 
         return label.getId();
@@ -37,7 +37,7 @@ public class LabelService {
         labelRepository.deleteLogical(id);
     }
 
-    public List<Label> findLabels(Category category, Integer categoryId) {
+    public List<Label> findLabels(Label.LabelCategory category, Integer categoryId) {
         Label label = labelSetter(new Label(), category, categoryId);
 
         label.setDelFlag(DataEntity.DEL_FLAG_NORMAL);
@@ -47,7 +47,7 @@ public class LabelService {
         return labelRepository.findAll(example);
     }
 
-    private Label labelSetter(Label label, Category category, Integer categoryId) {
+    private Label labelSetter(Label label, Label.LabelCategory category, Integer categoryId) {
         label.setCategory(category);
         label.setCategoryId(categoryId);
         return label;

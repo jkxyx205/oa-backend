@@ -8,6 +8,7 @@ import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.common.service.BaseService;
 import com.yodean.oa.meeting.dao.MeetingRepository;
 import com.yodean.oa.meeting.entity.Meeting;
+import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.label.service.LabelService;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class MeetingService {
         workspaceService.tipUsers(Category.MEETING, meeting.getId(), meeting.getUserMap());
 
         //add Label
-        labelService.save(Category.MEETING, meeting.getId(), meeting.getLabels());
+        labelService.save(Label.LabelCategory.MEETING, meeting.getId(), meeting.getLabels());
 
         //add document
         documentService.update(meeting.getDocIds(), DocumentCategory.MEETING, meeting.getId());
@@ -64,7 +65,7 @@ public class MeetingService {
         if (optional.isPresent()) {
             Meeting meeting = optional.get();
             meeting.setUsers(workspaceService.findUsers(Category.MEETING, id));
-            meeting.setLabels(labelService.findLabels(Category.MEETING, id));
+            meeting.setLabels(labelService.findLabels(Label.LabelCategory.MEETING, id));
             meeting.setDocuments(documentService.findById(DocumentCategory.MEETING, id));
             return meeting;
         }
