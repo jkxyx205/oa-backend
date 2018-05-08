@@ -7,12 +7,14 @@ import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.note.dao.NoteRepository;
 import com.yodean.oa.note.entity.Note;
 import com.yodean.oa.sys.label.entity.Label;
+import com.yodean.oa.sys.label.entity.Label2;
 import com.yodean.oa.sys.label.service.LabelService;
 import com.yodean.oa.sys.util.UserUtils;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.Transient;
 import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -38,15 +40,15 @@ public class NoteService {
 
     @Transactional
     public Integer save(Note note) {
-        List<Label> labels = note.getLabels();
+//        List<Label2> labels = note.getLabels();
 
         noteRepository.save(note);
 
-        labelService.save(Label.LabelCategory.NOTE, note.getId(), labels);
+//        labelService.save(Label.LabelCategory.NOTE, note.getId(), labels);
 
-        documentService.update(note.getDocIds(), DocumentCategory.NOTE, note.getId());
-
-        workspaceService.tipUsers(Category.NOTE, note.getId(), UserUtils.getUser().getId());
+//        documentService.update(note.getDocIds(), DocumentCategory.NOTE, note.getId());
+//
+//        workspaceService.tipUsers(Category.NOTE, note.getId(), UserUtils.getUser().getId());
 
         return note.getId();
     }
@@ -68,8 +70,8 @@ public class NoteService {
         Optional<Note> optional = noteRepository.findById(id);
         if (optional.isPresent()) {
             Note note = optional.get();
-            note.setLabels(labelService.findLabels(Label.LabelCategory.NOTE, id));
-            note.setDocuments(documentService.findById(DocumentCategory.NOTE, id));
+//            note.setLabels(labelService.findLabels(Label.LabelCategory.NOTE, id));
+//            note.setDocuments(documentService.findById(DocumentCategory.NOTE, id));
 
             return note;
         }

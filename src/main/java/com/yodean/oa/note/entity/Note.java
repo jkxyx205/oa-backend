@@ -3,12 +3,14 @@ package com.yodean.oa.note.entity;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.enums.Priority;
-import com.yodean.oa.sys.label.entity.Label;
+import com.yodean.oa.sys.label.entity.Label2;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -62,11 +64,23 @@ public class Note extends DataEntity {
     @Column
     private Priority priority;
 
+//    @Transient
+//    @Enumerated(EnumType.STRING)
+//    @Column(name = "category")
+//    private Label2.LabelCategory labelCategory = Label2.LabelCategory.NOTE;
+
     /***
      * 标签
      */
-    @Transient
-    private List<Label> labels;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @Where(clause = "category = 'NOTE'")
+//    @JoinColumns(
+//            {       @JoinColumn(name = "category", referencedColumnName = "category"),
+//                    @JoinColumn(name = "category_id", referencedColumnName = "id")
+//            }
+//    )
+    private List<Label2> labels = new ArrayList<>();
 
     /***
      * 附件
@@ -76,6 +90,7 @@ public class Note extends DataEntity {
 
     @Transient
     private Set<Integer> docIds;
+
 
     public String getTitle() {
         return title;
@@ -133,11 +148,11 @@ public class Note extends DataEntity {
         this.content = content;
     }
 
-    public List<Label> getLabels() {
+    public List<Label2> getLabels() {
         return labels;
     }
 
-    public void setLabels(List<Label> labels) {
+    public void setLabels(List<Label2> labels) {
         this.labels = labels;
     }
 

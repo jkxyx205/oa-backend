@@ -26,7 +26,8 @@ public class NoticeController {
     }
 
     @PutMapping("/{id}")
-    public Result update(@PathVariable("id") @RequestBody Notice notice) {
+    public Result update(@PathVariable("id") Integer id, @RequestBody Notice notice) {
+        notice.setId(id);
         noticeService.update(notice);
         return ResultUtil.success();
     }
