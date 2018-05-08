@@ -1,7 +1,6 @@
 package com.yodean.oa.sys.label.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.util.ResultUtil;
 import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.label.service.LabelService;

@@ -4,7 +4,7 @@ import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.ResultCode;
 import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.exception.OANoSuchElementException;
-import com.yodean.oa.common.util.NullAwareBeanUtilsBean;
+import com.yodean.oa.common.util.EntityBeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -36,19 +36,41 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
     }
 
 
+    /**
+     * 单实体操作，不做级联更新操作，忽略为null的属性
+     * @param t
+     */
     @Transactional
-    public void updateNonNull(T t) {
+    public <S extends T> S update(S t)  {
+        return update(t, false);
+    }
+
+    /**
+     * 做级联更新操作
+     * @param t
+     */
+    @Transactional
+    public <S extends T> S updateCascade(S t)  {
+        return update(t, true);
+    }
+
+
+    private <S extends T> S update(S t, boolean deep) {
+        S persist;
         try {
             ID id = (ID)PropertyUtils.getProperty(t, ENTITY_ID);
             Optional<T> optional = findById(id);
             if (!optional.isPresent()) throw new OANoSuchElementException();
 
-            T persist = optional.get();
-            NullAwareBeanUtilsBean.getInstance().copyProperties(persist, t);
+            persist = (S) optional.get();
+            EntityBeanUtils.merge(persist, t, deep);
             save(persist);
         } catch (Exception e) {
             throw new OAException(ResultCode.UNKNOW_ERROR);
         }
+
+        return persist;
+
     }
 
 

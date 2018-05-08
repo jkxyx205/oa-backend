@@ -4,7 +4,6 @@ import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.enums.Priority;
 import com.yodean.oa.sys.label.entity.Label;
-import com.yodean.oa.sys.workspace.dto.Participant;
 import com.yodean.oa.sys.workspace.entity.Workspace;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
@@ -106,7 +105,7 @@ public class Meeting extends DataEntity {
      * 参与人员
      */
     @Transient
-    private List<Participant> users;
+    private List<Workspace> users;
 
     public String getTitle() {
         return title;
@@ -220,11 +219,11 @@ public class Meeting extends DataEntity {
         this.userMap = userMap;
     }
 
-    public List<Participant> getUsers() {
+    public List<Workspace> getUsers() {
         return users;
     }
 
-    public void setUsers(List<Participant> users) {
+    public void setUsers(List<Workspace> users) {
         this.users = users;
     }
 }

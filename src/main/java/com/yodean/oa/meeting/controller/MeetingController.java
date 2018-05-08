@@ -58,7 +58,7 @@ public class MeetingController {
      */
     @PostMapping("{id}/users")
     public Result addUser(@PathVariable Integer id, @RequestBody Map<Integer, Workspace.UserType> userMap) {
-        workspaceService.tipUsers(Category.MEETING, id, userMap);
+//        workspaceService.tipUsers(Category.MEETING, id, userMap);
         return ResultUtil.success();
     }
 

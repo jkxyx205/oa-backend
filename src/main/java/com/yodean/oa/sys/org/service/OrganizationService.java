@@ -34,7 +34,7 @@ public class OrganizationService {
 
     public void update(Organization organization, Integer id) {
         organization.setId(id);
-        organizationRepository.updateNonNull(organization);
+//        organizationRepository.updateNonNull(organization);
     }
 
     @Transactional

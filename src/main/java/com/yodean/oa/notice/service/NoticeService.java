@@ -5,7 +5,7 @@ import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.enums.ResultCode;
 import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
-import com.yodean.oa.common.util.NullAwareBeanUtilsBean;
+import com.yodean.oa.common.util.EntityBeanUtils;
 import com.yodean.oa.notice.dao.NoticeRepository;
 import com.yodean.oa.notice.entity.Notice;
 import com.yodean.oa.notice.entity.NoticeAuthority;
@@ -56,7 +56,8 @@ public class NoticeService {
         Notice persist = findById(notice.getId());
         try {
             persist.getNoticeAuthorityList().clear(); //清空
-            NullAwareBeanUtilsBean.getInstance().copyProperties(persist, notice);
+//            NullAwareBeanUtilsBean.getInstance().copyProperties(persist, notice);
+            EntityBeanUtils.merge(persist, notice);
         } catch (Exception e) {
             throw new OAException(ResultCode.UNKNOW_ERROR);
         }

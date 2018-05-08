@@ -84,7 +84,7 @@ public class UserService {
 
     public void update(User user, Integer id) {
         user.setId(id);
-       userRepository.updateNonNull(user);
+//       userRepository.updateNonNull(user);
     }
 
 }

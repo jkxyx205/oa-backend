@@ -3,7 +3,8 @@ package com.yodean.oa.note.entity;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.enums.Priority;
-import com.yodean.oa.sys.label.entity.Label2;
+import com.yodean.oa.sys.label.entity.Label;
+import com.yodean.oa.sys.workspace.entity.Workspace;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
@@ -64,32 +65,36 @@ public class Note extends DataEntity {
     @Column
     private Priority priority;
 
-//    @Transient
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "category")
-//    private Label2.LabelCategory labelCategory = Label2.LabelCategory.NOTE;
 
     /***
      * 标签
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
     @Where(clause = "category = 'NOTE'")
-//    @JoinColumns(
-//            {       @JoinColumn(name = "category", referencedColumnName = "category"),
-//                    @JoinColumn(name = "category_id", referencedColumnName = "id")
-//            }
-//    )
-    private List<Label2> labels = new ArrayList<>();
+    private List<Label> labels = new ArrayList<>();
 
     /***
      * 附件
      */
-    @Transient
+    @OneToMany
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'NOTE'")
     private List<Document> documents;
 
+    /**
+     * 获取附件id
+     */
     @Transient
     private Set<Integer> docIds;
+
+    /***
+     * 授权对象
+     */
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'NOTE'")
+    private List<Workspace> workspaces = new ArrayList<>();
 
 
     public String getTitle() {
@@ -148,11 +153,11 @@ public class Note extends DataEntity {
         this.content = content;
     }
 
-    public List<Label2> getLabels() {
+    public List<Label> getLabels() {
         return labels;
     }
 
-    public void setLabels(List<Label2> labels) {
+    public void setLabels(List<Label> labels) {
         this.labels = labels;
     }
 
@@ -170,5 +175,13 @@ public class Note extends DataEntity {
 
     public void setDocIds(Set<Integer> docIds) {
         this.docIds = docIds;
+    }
+
+    public List<Workspace> getWorkspaces() {
+        return workspaces;
+    }
+
+    public void setWorkspaces(List<Workspace> workspaces) {
+        this.workspaces = workspaces;
     }
 }

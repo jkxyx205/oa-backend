@@ -1,26 +1,28 @@
 package com.yodean.oa.sys.label.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.sys.label.enums.ColorEnum;
+import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 
 /**
  * Created by rick on 2018/3/20.
  */
 @Entity(name = "sys_label")
+@DynamicUpdate
 public class Label extends DataEntity {
+
+    @JsonIgnore
+    @Embedded
+    private LabelId labelId;
 
     /***
      * 标签颜色
      */
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private ColorEnum color;
+    private ColorEnum color = ColorEnum.COLOR_1;
 
     /***
      * 便签名称
@@ -28,13 +30,6 @@ public class Label extends DataEntity {
     @Column(nullable = false)
     private String title;
 
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private LabelCategory category;
-
-    @Column(name = "category_id", nullable = false)
-    private Integer categoryId;
 
     public Label() {
     }
@@ -55,28 +50,19 @@ public class Label extends DataEntity {
         this.title = title;
     }
 
-    public LabelCategory getCategory() {
-        return category;
+    public LabelId getLabelId() {
+        return labelId;
     }
 
-    public void setCategory(LabelCategory category) {
-        this.category = category;
-    }
-
-    public Integer getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
+    public void setLabelId(LabelId labelId) {
+        this.labelId = labelId;
     }
 
     public static enum LabelCategory {
         TASK("任务"),
         MEETING("会议"),
         NOTE("便签"),
-        NOTICE("公告"),
-        NEWS("新闻");
+        NOTICE("公告");
 
         private String description;
 
@@ -85,5 +71,38 @@ public class Label extends DataEntity {
         }
 
 
+    }
+
+    @Embeddable
+    public static class LabelId {
+        @Column(name = "category")
+        @Enumerated(EnumType.STRING)
+        private LabelCategory category;
+
+        @Column(name = "category_id")
+        private Integer categoryId;
+
+        public LabelId(){}
+
+        public LabelId(LabelCategory category, Integer categoryId) {
+            this.categoryId = categoryId;
+            this.category = category;
+        }
+
+        public Integer getCategoryId() {
+            return categoryId;
+        }
+
+        public void setCategoryId(Integer categoryId) {
+            this.categoryId = categoryId;
+        }
+
+        public LabelCategory getCategory() {
+            return category;
+        }
+
+        public void setCategory(LabelCategory category) {
+            this.category = category;
+        }
     }
 }

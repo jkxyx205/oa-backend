@@ -1,7 +1,6 @@
 package com.yodean.oa.sys.label.service;
 
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.sys.label.dao.LabelRepository;
 import com.yodean.oa.sys.label.entity.Label;
 import org.springframework.data.domain.Example;
@@ -48,8 +47,7 @@ public class LabelService {
     }
 
     private Label labelSetter(Label label, Label.LabelCategory category, Integer categoryId) {
-        label.setCategory(category);
-        label.setCategoryId(categoryId);
+        label.setLabelId(new Label.LabelId(category, categoryId));
         return label;
     }
 

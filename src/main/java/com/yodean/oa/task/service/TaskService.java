@@ -3,11 +3,12 @@ package com.yodean.oa.task.service;
 import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.exception.OANoSuchElementException;
+import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
 import com.yodean.oa.sys.label.entity.Label;
-import com.yodean.oa.sys.label.service.LabelService;
 import com.yodean.oa.sys.user.entity.User;
 import com.yodean.oa.sys.user.service.UserService;
+import com.yodean.oa.sys.workspace.entity.Workspace;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
 import com.yodean.oa.task.dao.DiscussionRepository;
 import com.yodean.oa.task.dao.TaskLogRepository;
@@ -21,7 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.print.Doc;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -45,9 +48,6 @@ public class TaskService {
     private TaskRepository taskRepository;
 
     @Resource
-    private LabelService labelService;
-
-    @Resource
     private WorkspaceService workspaceService;
 
     @Resource
@@ -55,24 +55,49 @@ public class TaskService {
 
     @Transactional
     public Integer save(Task task) {
+        build(task);
+
         taskRepository.save(task);
 
-        //add Label
-        labelService.save(Label.LabelCategory.TASK, task.getId(), task.getLabels());
-
-        //add users
-        workspaceService.tipUsers(Category.TASK, task.getId(), task.getUserIds());
-
         //add document
-        documentService.update(task.getDocIds(), DocumentCategory.TASK, task.getId());
-
-        logger.info("saved task【{}】,detail is {}",task.getTitle(), task);
+//        documentService.update(task.getDocIds(), DocumentCategory.TASK, task.getId());
 
         //add log
-        addTaskLog(task, true);
-
+//        addTaskLog(task, true);
 
        return task.getId();
+    }
+
+    private void build(Task task) {
+        List<Label> labels = task.getLabels();
+        labels.forEach(label -> label.setLabelId(new Label.LabelId(Label.LabelCategory.TASK, task.getId())));
+
+        List<Workspace> workspaces =  task.getWorkspaces();
+        workspaces.forEach(workspace -> workspace.setCategory(Category.TASK));
+
+        //
+        task.getDocIds().forEach(docId -> {
+            Document document = documentService.findById(docId);
+            document.setCategory(DocumentCategory.TASK);
+            task.getDocuments().add(document);
+        });
+
+    }
+
+    @Transactional
+    public void update(Task task, Integer id) {
+        task.setId(id);
+        build(task);
+
+        taskRepository.updateCascade(task);
+
+        //add document
+//        documentService.update(task.getDocIds(), DocumentCategory.TASK, task.getId());
+
+        workspaceService.tip(Category.TASK, task.getId());
+
+        //add log
+//        addTaskLog(task, false);
     }
 
 
@@ -82,9 +107,9 @@ public class TaskService {
 
         if (optional.isPresent()) {
             Task task = optional.get();
-            task.setUsers(workspaceService.findUsers(Category.TASK, id));
-            task.setLabels(labelService.findLabels(Label.LabelCategory.TASK, id));
-            task.setDocuments(documentService.findById(DocumentCategory.TASK, id));
+//            task.setUsers(workspaceService.findUsers(Category.TASK, id));
+//            task.setLabels(labelService.findLabels(Label.LabelCategory.TASK, id));
+//            task.setDocuments(documentService.findById(DocumentCategory.TASK, id));
 
             //get Discussion document
             for (Discussion discussion : task.getDiscussions()) {
@@ -97,15 +122,7 @@ public class TaskService {
         throw new OANoSuchElementException();
     }
 
-    @Transactional
-    public void update(Task task, Integer id) {
-        task.setId(id);
-        taskRepository.updateNonNull(task);
-        workspaceService.tipAll(Category.TASK, task.getId());
 
-        //add log
-        addTaskLog(task, false);
-    }
 
     private void addTaskLog(Task task, boolean isSave) {
 
@@ -133,7 +150,7 @@ public class TaskService {
 
     @Transactional
     public void addUser(Integer id, Integer userId) {
-        workspaceService.tipUsers(Category.TASK, id, userId);
+//        workspaceService.tipUsers(Category.TASK, id, userId);
         //addLog
         addUserLog(id, userId, TaskLogType.USER_ADD);
 

@@ -9,7 +9,6 @@ import com.yodean.oa.photo.dao.PhotoRepository;
 import com.yodean.oa.photo.entity.Photo;
 import com.yodean.oa.sys.document.service.AuthorityService;
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.mapping.Collection;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;

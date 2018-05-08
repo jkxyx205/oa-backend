@@ -1,7 +1,6 @@
 package com.yodean.oa.meeting.service;
 
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
@@ -42,7 +41,7 @@ public class MeetingService {
     public Integer save(Meeting meeting) {
         meetingRepository.save(meeting);
 
-        workspaceService.tipUsers(Category.MEETING, meeting.getId(), meeting.getUserMap());
+//        workspaceService.tipUsers(Category.MEETING, meeting.getId(), meeting.getUserMap());
 
         //add Label
         labelService.save(Label.LabelCategory.MEETING, meeting.getId(), meeting.getLabels());
@@ -56,15 +55,15 @@ public class MeetingService {
     @Transactional
     public void update(Meeting meeting, Integer id) {
         meeting.setId(id);
-        meetingRepository.updateNonNull(meeting);
-        workspaceService.tipAll(Category.TASK, meeting.getId());
+//        meetingRepository.updateNonNull(meeting);
+//        workspaceService.tipAll(Category.TASK, meeting.getId());
     }
 
     public Meeting findById(Integer id) {
         Optional<Meeting> optional = meetingRepository.findById(id);
         if (optional.isPresent()) {
             Meeting meeting = optional.get();
-            meeting.setUsers(workspaceService.findUsers(Category.MEETING, id));
+//            meeting.setUsers(workspaceService.findUsers(Category.MEETING, id));
             meeting.setLabels(labelService.findLabels(Label.LabelCategory.MEETING, id));
             meeting.setDocuments(documentService.findById(DocumentCategory.MEETING, id));
             return meeting;

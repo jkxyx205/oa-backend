@@ -4,9 +4,7 @@ import com.yodean.oa.common.entity.DataEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Created by rick on 4/17/18.

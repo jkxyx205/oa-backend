@@ -10,6 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by rick on 2018/3/15.
@@ -122,6 +123,28 @@ public class DataEntity implements Serializable {
 
         this.setUpdateBy(UserUtils.getUser().getId() + "");
         this.setUpdateDate(now);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+
+        if (obj instanceof DataEntity) {
+
+            DataEntity dataEntity = (DataEntity)obj;
+            if (Objects.isNull(this.id) || Objects.isNull(dataEntity.id))
+                return false;
+
+            if (this.getId().intValue() == dataEntity.getId().intValue())
+                return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 
     public String toString() {

@@ -4,13 +4,15 @@ import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.enums.Priority;
 import com.yodean.oa.sys.label.entity.Label;
-import com.yodean.oa.sys.workspace.dto.Participant;
+import com.yodean.oa.sys.workspace.entity.Workspace;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -71,29 +73,46 @@ public class Task extends DataEntity {
     @Column
     private Integer progress;
 
+    /**
+     * 日志
+     */
     @OneToMany(mappedBy = "task")
     private List<TaskLog> taskLogs;
 
+    /**
+     * 讨论
+     */
     @OneToMany(mappedBy = "task")
     private Set<Discussion> discussions;
 
     /***
-     * 参与人
+     * 标签
      */
-    @Transient
-    private Integer[] userIds;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'TASK'")
+    private List<Label> labels = new ArrayList<>();
 
-    @Transient
-    private List<Participant> users;
+    /***
+     * 附件
+     */
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'TASK'")
+    private List<Document> documents = new ArrayList<>();
 
-    @Transient
-    private List<Label> labels;
 
     @Transient
     private Set<Integer> docIds;
 
-    @Transient
-    private List<Document> documents;
+
+    /***
+     * 授权对象
+     */
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'TASK'")
+    private List<Workspace> workspaces = new ArrayList<>();
 
     public String getTitle() {
         return title;
@@ -101,6 +120,14 @@ public class Task extends DataEntity {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Date getStartDate() {
@@ -143,52 +170,12 @@ public class Task extends DataEntity {
         this.priority = priority;
     }
 
-    public String getContent() {
-        return content;
+    public Integer getProgress() {
+        return progress;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Integer[] getUserIds() {
-        return userIds;
-    }
-
-    public void setUserIds(Integer[] userIds) {
-        this.userIds = userIds;
-    }
-
-    public List<Participant> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<Participant> users) {
-        this.users = users;
-    }
-
-    public List<Label> getLabels() {
-        return labels;
-    }
-
-    public void setLabels(List<Label> labels) {
-        this.labels = labels;
-    }
-
-    public Set<Integer> getDocIds() {
-        return docIds;
-    }
-
-    public void setDocIds(Set<Integer> docIds) {
-        this.docIds = docIds;
-    }
-
-    public List<Document> getDocuments() {
-        return documents;
-    }
-
-    public void setDocuments(List<Document> documents) {
-        this.documents = documents;
+    public void setProgress(Integer progress) {
+        this.progress = progress;
     }
 
     public List<TaskLog> getTaskLogs() {
@@ -207,11 +194,35 @@ public class Task extends DataEntity {
         this.discussions = discussions;
     }
 
-    public Integer getProgress() {
-        return progress;
+    public List<Label> getLabels() {
+        return labels;
     }
 
-    public void setProgress(Integer progress) {
-        this.progress = progress;
+    public void setLabels(List<Label> labels) {
+        this.labels = labels;
+    }
+
+    public List<Document> getDocuments() {
+        return documents;
+    }
+
+    public void setDocuments(List<Document> documents) {
+        this.documents = documents;
+    }
+
+    public Set<Integer> getDocIds() {
+        return docIds;
+    }
+
+    public void setDocIds(Set<Integer> docIds) {
+        this.docIds = docIds;
+    }
+
+    public List<Workspace> getWorkspaces() {
+        return workspaces;
+    }
+
+    public void setWorkspaces(List<Workspace> workspaces) {
+        this.workspaces = workspaces;
     }
 }
