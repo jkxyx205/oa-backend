@@ -3,8 +3,10 @@ package com.yodean.oa.task.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -16,9 +18,13 @@ import java.util.Set;
 public class Discussion extends DataEntity {
 
     private String content;
-
-    @Transient
-    private List<Document> documents;
+    /***
+     * 附件
+     */
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'TASK_DISCUSSION'")
+    private List<Document> documents = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "task_id", nullable = false)

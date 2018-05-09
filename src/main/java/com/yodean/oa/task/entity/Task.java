@@ -83,6 +83,7 @@ public class Task extends DataEntity {
      * 讨论
      */
     @OneToMany(mappedBy = "task")
+    @Where(clause = "del_flag = '1'")
     private Set<Discussion> discussions;
 
     /***

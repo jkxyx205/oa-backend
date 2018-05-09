@@ -1,12 +1,13 @@
 package com.yodean.oa.common.util;
 
 import com.yodean.oa.common.entity.DataEntity;
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.commons.beanutils.*;
+import org.hibernate.validator.internal.util.StringHelper;
+import org.thymeleaf.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Blob;
@@ -42,12 +43,7 @@ public class EntityBeanUtils {
         PropertyUtilsBean propertyUtilsBean = BeanUtilsBean.getInstance().getPropertyUtils();
         PropertyDescriptor[] propertyDescriptorsOfSrc = propertyUtilsBean.getPropertyDescriptors(src.getClass());
 
-        PropertyDescriptor[] propertyDescriptorsOfObj = propertyUtilsBean.getPropertyDescriptors(obj.getClass());
-
-        Set<String> propertyNames = new HashSet<>(propertyDescriptorsOfObj.length);
-        for (PropertyDescriptor propertyDescriptor : propertyDescriptorsOfObj) {
-            propertyNames.add(propertyDescriptor.getName());
-        }
+        Set<String> propertyNames = setterNames(src.getClass()); //new HashSet<>(propertyDescriptorsOfObj.length);
 
         for (PropertyDescriptor propertyDescriptor : propertyDescriptorsOfSrc) {
             String name = propertyDescriptor.getName();
@@ -129,5 +125,25 @@ public class EntityBeanUtils {
 
     private interface SetValueAble {
         boolean beforeSetProperty(Object src, String propertyName, Object srcValue, Object objValue);
+    }
+
+
+    private static Set<String> setterNames(Class<?> c) {
+        Set<String> set = new HashSet<>();
+
+        Method[] methods = c.getMethods();
+        for (Method method : methods) {
+            if (isSetter(method)) {
+                set.add(StringUtils.unCapitalize(method.getName().substring(3)));
+            }
+        }
+
+        return set;
+    }
+
+    public static boolean isSetter(Method method){
+        if(!method.getName().startsWith("set")) return false;
+        if(method.getParameterTypes().length != 1) return false;
+        return true;
     }
 }
