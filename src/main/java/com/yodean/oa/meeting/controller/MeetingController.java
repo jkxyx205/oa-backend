@@ -57,19 +57,8 @@ public class MeetingController {
      * @return
      */
     @PostMapping("{id}/users")
-    public Result addUser(@PathVariable Integer id, @RequestBody Map<Integer, Workspace.UserType> userMap) {
-//        workspaceService.tipUsers(Category.MEETING, id, userMap);
+    public Result addUser(@PathVariable Integer id, @RequestBody Meeting meeting) {
+        meetingService.addUser(id, meeting);
         return ResultUtil.success();
     }
-
-    /***
-     * 移除参与者
-     * @return
-     */
-    @DeleteMapping("{id}/users/{userId}")
-    public Result removeUser(@PathVariable Integer id, @PathVariable Integer userId) {
-        workspaceService.remove(Category.MEETING, id, userId);
-        return ResultUtil.success();
-    }
-
 }

@@ -12,6 +12,7 @@ configuration:
 spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+    joda-date-time-format: yyyy-MM-mm HH:mm:ss
   servlet:
     multipart:
       max-file-size: 5MB

@@ -27,8 +27,7 @@ public class NoticeController {
 
     @PutMapping("/{id}")
     public Result update(@PathVariable("id") Integer id, @RequestBody Notice notice) {
-        notice.setId(id);
-        noticeService.update(notice);
+        noticeService.update(notice, id);
         return ResultUtil.success();
     }
 
@@ -43,9 +42,9 @@ public class NoticeController {
         return ResultUtil.success(noticeService.findById(id));
     }
 
-    @GetMapping
-    public Result<Page<Notice>> findAll(String title) {
-        return ResultUtil.success(noticeService.findAll2(title));
-    }
+//    @GetMapping
+//    public Result<Page<Notice>> findAll(String title) {
+//        return ResultUtil.success(noticeService.findAll2(title));
+//    }
 
 }

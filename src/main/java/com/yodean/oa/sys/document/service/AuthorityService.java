@@ -182,7 +182,7 @@ public class AuthorityService  {
         }
 
         //2. 参数权限（继承 或 非继承）
-        Set<Authority>  paramsAuthority =authorityDto.getAuthorityList();
+        Set<Authority>  paramsAuthority = authorityDto.getAuthorityList();
 
         //3. DB权限 （继承 或 非继承）
         List<Authority> currentAuthority = findAuthorityByDocumentId(docId);

@@ -1,8 +1,14 @@
 package com.yodean.oa.common.util;
 
 import com.yodean.oa.common.entity.DataEntity;
-import org.apache.commons.beanutils.*;
-import org.hibernate.validator.internal.util.StringHelper;
+import com.yodean.oa.common.enums.ResultCode;
+import com.yodean.oa.common.exception.OAException;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.commons.lang3.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.thymeleaf.util.StringUtils;
 
 import java.beans.PropertyDescriptor;
@@ -19,8 +25,10 @@ import java.util.*;
  * Created by rick on 5/8/18.
  */
 public class EntityBeanUtils {
+    private static final transient Logger logger = LoggerFactory.getLogger(EntityBeanUtils.class);
 
     /**
+     * 对象是POJO，不能是集合对象
      * 合并对象属性，将obj的非null值合并到src，
      * 合并基本数据类型+ String + 枚举 + Date
      *
@@ -32,7 +40,20 @@ public class EntityBeanUtils {
     }
 
     public static void merge(Object src, Object obj, boolean deep) {
-        merge(src, obj, deep, (src1, propertyName, srcValue, objValue) -> Objects.nonNull(objValue));
+
+        logger.info("Begin merge entity:{}", src.getClass());
+
+        merge(src, obj, deep, (src1, propertyName, srcValue, objValue) -> {
+            if (Objects.nonNull(objValue) && isNotEqual(srcValue, objValue)) {
+                //if Date
+
+                logger.info("Modify entity [{}] property [{}] from [{}] to [{}]", src1.getClass(), propertyName, srcValue, objValue);
+                return true;
+            }
+            return  false;
+        });
+
+        logger.info("End merge entity:{}", src.getClass());
     }
 
     private static void merge(Object src, Object obj, boolean deep, SetValueAble setValueable) {
@@ -88,6 +109,7 @@ public class EntityBeanUtils {
 
                             }  else {//不存在直接添加
                                 srcCollection.add(objSub);
+                                logger.info("Add entity [{}] property [{}] with [{}]", src.getClass(), name, objSub);
                             }
 
                         }
@@ -97,6 +119,7 @@ public class EntityBeanUtils {
                             Object objSrc = iterator.next();
                             if (!objCollection.contains(objSrc)) {
                                 iterator.remove();
+                                logger.info("Remove entity [{}] property [{}] with [{}]", src.getClass(), name, objSrc);
                             }
                         }
                     } else if (DataEntity.class.isAssignableFrom(type)){// Entity Object
@@ -104,12 +127,8 @@ public class EntityBeanUtils {
                     }
                 }
 
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                throw new OAException(ResultCode.SERVER_ERROR, e);
             }
 
         }
@@ -139,6 +158,22 @@ public class EntityBeanUtils {
         }
 
         return set;
+    }
+
+    private static boolean isNotEqual(Object obj1, Object obj2) {
+        if (Objects.equals(obj1, obj2)) {
+            return false;
+        }
+
+        if (obj1 instanceof Date && obj2 instanceof Date) {
+            Date date1 = (Date)obj1;
+            Date date2 = (Date)obj2;
+
+            return date1.getTime() != date2.getTime();
+        }
+
+        return true;
+
     }
 
     public static boolean isSetter(Method method){

@@ -18,7 +18,7 @@ public interface ExtendedRepository<T, ID extends Serializable> extends JpaRepos
     <S extends T> S update(S t);
 
     /**
-     * 级联更新所有
+     * 级联更新所有,只更新不为null的字段
      * @param t
      */
     <S extends T> S updateCascade(S t);

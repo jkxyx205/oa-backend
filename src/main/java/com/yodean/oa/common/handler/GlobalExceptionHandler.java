@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * Created by rick on 2018/3/15.
@@ -22,16 +23,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public Object handler(HttpServletRequest request, Exception e) {
-        logger.error("发生异常", e);
-
         Result result;
 
         if (e instanceof  OAException) {
             OAException ex = (OAException)e;
             result = ResultUtil.error(ex.getCode(), ex.getMessage());
-         } else if (e instanceof MaxUploadSizeExceededException) {
+            if (Objects.nonNull(ex.getException()))
+                logger.error("{}", ex);
+            else
+                logger.error("{}", e);
+        } else if (e instanceof MaxUploadSizeExceededException) {
             result = ResultUtil.error(ResultCode.VALIDATE_ERROR, "文件不能超过5M");
         }else {
+            logger.error("{}", e);
             result = ResultUtil.error(e.getMessage());
         }
 

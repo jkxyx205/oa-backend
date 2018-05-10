@@ -2,6 +2,8 @@ package com.yodean.oa.note.service;
 
 import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.enums.DocumentCategory;
+import com.yodean.oa.common.enums.ResultCode;
+import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
@@ -90,6 +92,6 @@ public class NoteService {
             return note;
         }
 
-        throw new OANoSuchElementException();
+        throw new OAException(ResultCode.NOT_FOUND_ERROR);
     }
 }

@@ -1,5 +1,6 @@
 package com.yodean.oa.common.dao;
 
+import com.yodean.oa.common.config.Global;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.ResultCode;
 import com.yodean.oa.common.exception.OAException;
@@ -22,10 +23,6 @@ import java.util.Optional;
  * Created by rick on 3/29/18.
  */
 public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements ExtendedRepository<T, ID> {
-
-    private static final String ENTITY_ID = "id";
-
-    private static final String ENTITY_DEL_FLAG = "delFlag";
 
     private EntityManager entityManager;
 
@@ -58,15 +55,17 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
     private <S extends T> S update(S t, boolean deep) {
         S persist;
         try {
-            ID id = (ID)PropertyUtils.getProperty(t, ENTITY_ID);
+            ID id = (ID)PropertyUtils.getProperty(t, Global.ENTITY_ID);
             Optional<T> optional = findById(id);
             if (!optional.isPresent()) throw new OANoSuchElementException();
 
             persist = (S) optional.get();
             EntityBeanUtils.merge(persist, t, deep);
             save(persist);
+        } catch (OANoSuchElementException e) {
+            throw new OAException(ResultCode.NOT_FOUND_ERROR, e);
         } catch (Exception e) {
-            throw new OAException(ResultCode.UNKNOW_ERROR);
+            throw new OAException(ResultCode.UNKNOW_ERROR, e);
         }
 
         return persist;
@@ -91,7 +90,7 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
         T t;
         try {
             t = tClass.newInstance();
-            PropertyUtils.setProperty(t, ENTITY_DEL_FLAG, DataEntity.DEL_FLAG_NORMAL);
+            PropertyUtils.setProperty(t, Global.ENTITY_DEL_FLAG, DataEntity.DEL_FLAG_NORMAL);
         } catch (Exception e) {
             throw new OAException(ResultCode.SERVER_ERROR);
         }

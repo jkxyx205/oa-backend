@@ -1,5 +1,6 @@
 package com.yodean.oa.task.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.enums.Priority;
@@ -12,10 +13,7 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by rick on 2018/3/19.
@@ -104,7 +102,8 @@ public class Task extends DataEntity {
 
 
     @Transient
-    private Set<Integer> docIds;
+    @JsonIgnore
+    private Set<Integer> docIds = new HashSet<>();
 
 
     /***

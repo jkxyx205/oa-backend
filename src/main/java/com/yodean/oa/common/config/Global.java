@@ -14,6 +14,10 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("configuration")
 public class Global implements ApplicationContextAware {
 
+    public static final String ENTITY_ID = "id";
+
+    public static final String ENTITY_DEL_FLAG = "delFlag";
+
     public static ApplicationContext applicationContext;
 
     public static String DOCUMENT;

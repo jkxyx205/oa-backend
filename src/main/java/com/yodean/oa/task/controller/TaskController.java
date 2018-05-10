@@ -7,6 +7,7 @@ import com.yodean.oa.sys.workspace.service.WorkspaceService;
 import com.yodean.oa.task.entity.Discussion;
 import com.yodean.oa.task.entity.Task;
 import com.yodean.oa.task.service.TaskService;
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,32 +50,22 @@ public class TaskController {
     }
 
     /***
-     * 添加参与者
-     * @return
-     */
-    @PostMapping("{id}/users/{userId}")
-    public Result addUser(@PathVariable Integer id, @PathVariable Integer userId) {
-        taskService.addUser(id, userId);
-        return ResultUtil.success();
-    }
-
-    /***
-     * 移除参与者
-     * @return
-     */
-    @DeleteMapping("{id}/users/{userId}")
-    public Result removeUser(@PathVariable Integer id, @PathVariable Integer userId) {
-        taskService.removeUser(id, userId);
-        return ResultUtil.success();
-    }
-
-    /***
      * 添加讨论
      * @return
      */
     @PostMapping("{id}/discussions")
     public Result addDiscussion(@PathVariable Integer id, @RequestBody Discussion discussion) {
         taskService.addDiscussion(id, discussion);
+        return ResultUtil.success();
+    }
+
+    /***
+     * 删除讨论
+     * @return
+     */
+    @DeleteMapping("discussions/{id}")
+    public Result deleteDiscussion(@PathVariable Integer id) {
+        taskService.deleteDiscussion(id);
         return ResultUtil.success();
     }
 

@@ -3,10 +3,12 @@ package com.yodean.oa.sys.workspace.entity;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.sys.workspace.enums.CategoryStatus;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Created by rick on 3/27/18.
@@ -88,7 +90,8 @@ public class Workspace extends DataEntity {
         setCategoryStatus(CategoryStatus.INBOX);
         setFollow(false);
         setReaded(false);
-        setUserType(UserType.MUST);
+        if (Objects.isNull(userType))
+            setUserType(UserType.MUST);
     }
 
 //    @PreUpdate
@@ -167,5 +170,26 @@ public class Workspace extends DataEntity {
 
     public void setAuthorityName(String authorityName) {
         this.authorityName = authorityName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (super.equals(o)) return true;
+        if (!(o instanceof Workspace)) return false;
+
+        Workspace workspace = (Workspace) o;
+
+        return new EqualsBuilder().append(category, workspace.category)
+                .append(categoryId, workspace.categoryId)
+                .append(authorityType, workspace.authorityType)
+                .append(authorityId, workspace.authorityId)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+       return Objects.hash(category, categoryId, authorityType, authorityId);
     }
 }

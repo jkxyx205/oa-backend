@@ -1,19 +1,23 @@
 package com.yodean.oa.meeting.service;
 
 import com.yodean.oa.common.entity.DataEntity;
+import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.enums.DocumentCategory;
-import com.yodean.oa.common.exception.OANoSuchElementException;
+import com.yodean.oa.common.enums.ResultCode;
+import com.yodean.oa.common.exception.OAException;
+import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
-import com.yodean.oa.common.service.BaseService;
 import com.yodean.oa.meeting.dao.MeetingRepository;
 import com.yodean.oa.meeting.entity.Meeting;
 import com.yodean.oa.sys.label.entity.Label;
-import com.yodean.oa.sys.label.service.LabelService;
+import com.yodean.oa.sys.workspace.entity.Workspace;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,52 +33,85 @@ public class MeetingService {
     private WorkspaceService workspaceService;
 
     @Resource
-    private LabelService labelService;
-
-    @Resource
     private DocumentService documentService;
 
-    @Resource
-    private BaseService baseService;
+    private void build(Meeting meeting) {
+
+        List<Label> labels = meeting.getLabels();
+        labels.forEach(label -> label.setLabelId(new Label.LabelId(Label.LabelCategory.MEETING, meeting.getId())));
+
+        List<Workspace> mustWorkspaces =  meeting.getMustWorkspaces();
+        mustWorkspaces.forEach(workspace -> {
+            workspace.setCategoryId(meeting.getId());
+            workspace.setCategory(Category.MEETING);
+            workspace.setAuthorityType(Workspace.AuthorityType.USER);
+        });
+
+        List<Workspace> optionWorkspaces =  meeting.getOptionWorkspaces();
+        optionWorkspaces.forEach(workspace -> {
+            workspace.setCategoryId(meeting.getId());
+            workspace.setCategory(Category.MEETING);
+            workspace.setAuthorityType(Workspace.AuthorityType.USER);
+            workspace.setUserType(Workspace.UserType.OPTIONAL);
+        });
+
+        //
+        meeting.getDocIds().forEach(docId -> {
+            Document document = documentService.findById(docId);
+            document.setCategory(DocumentCategory.MEETING);
+            meeting.getDocuments().add(document);
+        });
+
+    }
 
     @Transactional
     public Integer save(Meeting meeting) {
+        build(meeting);
         meetingRepository.save(meeting);
-
-//        workspaceService.tipUsers(Category.MEETING, meeting.getId(), meeting.getUserMap());
-
-        //add Label
-        labelService.save(Label.LabelCategory.MEETING, meeting.getId(), meeting.getLabels());
-
-        //add document
-        documentService.update(meeting.getDocIds(), DocumentCategory.MEETING, meeting.getId());
-
         return meeting.getId();
     }
 
     @Transactional
     public void update(Meeting meeting, Integer id) {
         meeting.setId(id);
-//        meetingRepository.updateNonNull(meeting);
-//        workspaceService.tipAll(Category.TASK, meeting.getId());
+        build(meeting);
+        meetingRepository.updateCascade(meeting);
+        workspaceService.tip(Category.MEETING, id);
     }
 
     public Meeting findById(Integer id) {
         Optional<Meeting> optional = meetingRepository.findById(id);
         if (optional.isPresent()) {
             Meeting meeting = optional.get();
-//            meeting.setUsers(workspaceService.findUsers(Category.MEETING, id));
-            meeting.setLabels(labelService.findLabels(Label.LabelCategory.MEETING, id));
-            meeting.setDocuments(documentService.findById(DocumentCategory.MEETING, id));
             return meeting;
         }
 
-        throw new OANoSuchElementException();
+        throw new OAException(ResultCode.NOT_FOUND_ERROR);
     }
 
+    /**
+     * 取消会议
+     * @param id
+     */
     public void cancel(Integer id) {
-        Meeting meeting = findById(id);
+        Meeting meeting = DataEntity.of(Meeting.class, id);
         meeting.setDelFlag(DataEntity.DEL_FLAG_REMOVE);
-        meetingRepository.save(meeting);
+
+        meetingRepository.update(meeting);
+        workspaceService.tip(Category.MEETING, id);
+    }
+
+    /**
+     * 添加开会人
+     */
+    public void addWorkspace(Integer id, List<Workspace> workspaces) {
+        workspaceService.tip(Category.MEETING, id, workspaces);
+    }
+
+    public void addUser(Integer id, Meeting meeting) {
+        meeting.setId(id);
+        build(meeting);
+        meeting.getMustWorkspaces().addAll(meeting.getOptionWorkspaces());
+        workspaceService.tip(Category.MEETING, id, meeting.getMustWorkspaces());
     }
 }

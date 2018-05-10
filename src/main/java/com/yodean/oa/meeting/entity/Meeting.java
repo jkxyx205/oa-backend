@@ -1,28 +1,28 @@
 package com.yodean.oa.meeting.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.enums.Priority;
 import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.workspace.entity.Workspace;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.print.Doc;
 import javax.validation.constraints.NotBlank;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by rick on 2018/3/19.
  */
 @Entity(name = "t_meeting")
 @DynamicUpdate
-public class Meeting extends DataEntity {
+public class Meeting extends DataEntity<Meeting> {
 
-    public enum MeetingType {
+    private enum MeetingType {
         MEETING, SCHEDULE;
     }
 
@@ -86,26 +86,46 @@ public class Meeting extends DataEntity {
     /***
      * 标签
      */
-    @Transient
-    private List<Label> labels;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'MEETING'")
+    private List<Label> labels = new ArrayList<>();
 
 
     @Transient
-    private Set<Integer> docIds;
+    @JsonIgnore
+    private Set<Integer> docIds = new HashSet<>();
     /***
      * 附件
      */
-    @Transient
-    private List<Document> documents;
-
-    @Transient
-    private Map<Integer, Workspace.UserType> userMap;
+    @OneToMany
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'MEETING'")
+    private List<Document> documents = new ArrayList<>();
 
     /***
-     * 参与人员
+    * 授权对象(必须参加人)
+    */
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'MEETING' AND user_type = 'MUST'")
+    private List<Workspace> mustWorkspaces = new ArrayList<>();
+
+    /***
+     * 授权对象(可选参加人)
      */
-    @Transient
-    private List<Workspace> users;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'MEETING' AND user_type = 'OPTIONAL'")
+    private List<Workspace> optionWorkspaces = new ArrayList<>();
+
+    public MeetingType getMeetingType() {
+        return meetingType;
+    }
+
+    public void setMeetingType(MeetingType meetingType) {
+        this.meetingType = meetingType;
+    }
 
     public String getTitle() {
         return title;
@@ -121,6 +141,22 @@ public class Meeting extends DataEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Boolean getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(Boolean privacy) {
+        this.privacy = privacy;
     }
 
     public Date getStartDate() {
@@ -171,30 +207,6 @@ public class Meeting extends DataEntity {
         this.labels = labels;
     }
 
-    public MeetingType getMeetingType() {
-        return meetingType;
-    }
-
-    public void setMeetingType(MeetingType meetingType) {
-        this.meetingType = meetingType;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Boolean getPrivacy() {
-        return privacy;
-    }
-
-    public void setPrivacy(Boolean privacy) {
-        this.privacy = privacy;
-    }
-
     public Set<Integer> getDocIds() {
         return docIds;
     }
@@ -211,19 +223,19 @@ public class Meeting extends DataEntity {
         this.documents = documents;
     }
 
-    public Map<Integer, Workspace.UserType> getUserMap() {
-        return userMap;
+    public List<Workspace> getMustWorkspaces() {
+        return mustWorkspaces;
     }
 
-    public void setUserMap(Map<Integer, Workspace.UserType> userMap) {
-        this.userMap = userMap;
+    public void setMustWorkspaces(List<Workspace> mustWorkspaces) {
+        this.mustWorkspaces = mustWorkspaces;
     }
 
-    public List<Workspace> getUsers() {
-        return users;
+    public List<Workspace> getOptionWorkspaces() {
+        return optionWorkspaces;
     }
 
-    public void setUsers(List<Workspace> users) {
-        this.users = users;
+    public void setOptionWorkspaces(List<Workspace> optionWorkspaces) {
+        this.optionWorkspaces = optionWorkspaces;
     }
 }

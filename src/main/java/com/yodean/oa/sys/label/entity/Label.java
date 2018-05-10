@@ -3,14 +3,18 @@ package com.yodean.oa.sys.label.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.sys.label.enums.ColorEnum;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Created by rick on 2018/3/20.
  */
-@Entity(name = "sys_label")
+@Entity
+@Table(name = "sys_label",
+        uniqueConstraints = {@UniqueConstraint(columnNames={"category", "category_id", "title", "color"})})
 @DynamicUpdate
 public class Label extends DataEntity {
 
@@ -104,5 +108,28 @@ public class Label extends DataEntity {
         public void setCategory(LabelCategory category) {
             this.category = category;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (super.equals(o)) return true;
+        if (!(o instanceof Label)) return false;
+
+        Label label = (Label) o;
+
+        return new EqualsBuilder().append(labelId.category, label.labelId.category)
+                .append(labelId.categoryId, label.labelId.categoryId)
+                .append(title, label.title)
+                .append(color, label.color)
+                .isEquals();
+
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(labelId.category, labelId.categoryId, title, color);
     }
 }

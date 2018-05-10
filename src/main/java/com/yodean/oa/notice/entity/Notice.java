@@ -1,10 +1,15 @@
 package com.yodean.oa.notice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.sys.label.entity.Label;
+import com.yodean.oa.sys.workspace.entity.Workspace;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,25 +31,33 @@ public class Notice extends DataEntity {
      */
     private Boolean top;
 
+    /***
+     * 标签
+     */
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'NOTICE'")
+    private List<Label> labels = new ArrayList<>();
 
-    /**
+    /***
      * 附件
      */
-    @Transient
-    private List<Document> documents;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'NOTICE'")
+    private List<Document> documents = new ArrayList<>();
 
     @Transient
-    private Set<Integer> docIds;
+    @JsonIgnore
+    private Set<Integer> docIds = new HashSet<>();
 
-    @Transient
-    private List<Label> labels;
-
-    /**
-     * 查看范围
+    /***
+     * 授权对象
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name="notice_id")
-    private List<NoticeAuthority> noticeAuthorityList;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "none",value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "category = 'NOTICE'")
+    private List<Workspace> workspaces = new ArrayList<>();
 
     /**
      * 封面路径
@@ -107,11 +120,15 @@ public class Notice extends DataEntity {
         this.docIds = docIds;
     }
 
-    public List<NoticeAuthority> getNoticeAuthorityList() {
-        return noticeAuthorityList;
+    public Boolean getTop() {
+        return top;
     }
 
-    public void setNoticeAuthorityList(List<NoticeAuthority> noticeAuthorityList) {
-        this.noticeAuthorityList = noticeAuthorityList;
+    public List<Workspace> getWorkspaces() {
+        return workspaces;
+    }
+
+    public void setWorkspaces(List<Workspace> workspaces) {
+        this.workspaces = workspaces;
     }
 }

@@ -11,8 +11,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 /**
  * Created by rick on 3/27/18.
@@ -89,11 +91,43 @@ public class WorkspaceService {
     }
 
     /**
-     * 通知所有用户
+     * 通知当前所有对象
      * @param category
      * @param id
      */
     public void tip(Category category, Integer id) {
         jdbcTemplate.update(TIP_SQL, category.name(), id);
+    }
+
+    /**
+     * 通知目标对象，没有则先添加
+     * @param category
+     * @param id
+     * @param workspaces
+     */
+    public void tip(Category category, Integer id, List<Workspace> workspaces) {
+
+        Workspace workspace = new Workspace();
+        workspace.setCategory(category);
+        workspace.setCategoryId(id);
+        workspace.setAuthorityType(Workspace.AuthorityType.USER);
+
+        Example<Workspace> example = Example.of(workspace);
+        //获取所有参与者
+        List<Workspace> persistList = workspaceRepository.findAll(example);
+
+        Set<Workspace> uniqueSet = new HashSet<>(persistList);
+
+        uniqueSet.addAll(workspaces);
+
+
+        uniqueSet.forEach(_workspace -> {
+            if (workspaces.contains(_workspace)) {
+                _workspace.setCategoryStatus(CategoryStatus.INBOX);
+                _workspace.setReaded(false);
+            }
+        });
+
+        workspaceRepository.saveAll(uniqueSet);
     }
 }

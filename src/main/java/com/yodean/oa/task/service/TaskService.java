@@ -2,6 +2,8 @@ package com.yodean.oa.task.service;
 
 import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.enums.DocumentCategory;
+import com.yodean.oa.common.enums.ResultCode;
+import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.common.exception.OANoSuchElementException;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.service.DocumentService;
@@ -64,7 +66,10 @@ public class TaskService {
         labels.forEach(label -> label.setLabelId(new Label.LabelId(Label.LabelCategory.TASK, task.getId())));
 
         List<Workspace> workspaces =  task.getWorkspaces();
-        workspaces.forEach(workspace -> workspace.setCategory(Category.TASK));
+        workspaces.forEach(workspace -> {
+            workspace.setCategory(Category.TASK);
+            workspace.setAuthorityType(Workspace.AuthorityType.USER);
+        });
 
         //
         task.getDocIds().forEach(docId -> {
@@ -96,7 +101,7 @@ public class TaskService {
             return task;
         }
 
-        throw new OANoSuchElementException();
+        throw new OAException(ResultCode.NOT_FOUND_ERROR);
     }
 
     public void delete(Integer id) {

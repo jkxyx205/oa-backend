@@ -6,7 +6,8 @@ package com.yodean.oa.common.enums;
 public enum Category {
     TASK("任务"),
     MEETING("会议"),
-    NOTE("便签");
+    NOTE("便签"),
+    NOTICE("通知");
 
     private String description;
 

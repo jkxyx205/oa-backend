@@ -3,7 +3,12 @@ package com.yodean.oa.common.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yodean.oa.common.config.Global;
+import com.yodean.oa.common.enums.ResultCode;
+import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.sys.util.UserUtils;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -17,12 +22,26 @@ import java.util.Objects;
  */
 @MappedSuperclass
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DataEntity implements Serializable {
+public class DataEntity<T> implements Serializable {
+
     public static String DEL_FLAG_NORMAL = "1";
 
     public static String DEL_FLAG_REMOVE = "0";
 
     public static String DEL_FLAG_CLEAN = "2"; //彻底删除
+
+
+    public static  <T> T of(Class<T> tClass, Integer id) {
+        T t;
+        try {
+            t = tClass.newInstance();
+            PropertyUtils.setProperty(t, Global.ENTITY_ID,  id);
+        } catch (Exception e) {
+            throw new OAException(ResultCode.UNKNOW_ERROR, e);
+        }
+        return t;
+
+    }
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -128,14 +147,10 @@ public class DataEntity implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if(this == obj) return true;
-
+        if (obj == null || getClass() != obj.getClass()) return false;
         if (obj instanceof DataEntity) {
-
             DataEntity dataEntity = (DataEntity)obj;
-            if (Objects.isNull(this.id) || Objects.isNull(dataEntity.id))
-                return false;
-
-            if (this.getId().intValue() == dataEntity.getId().intValue())
+            if (new EqualsBuilder().append(dataEntity.id, id).isEquals())
                 return true;
         }
 
