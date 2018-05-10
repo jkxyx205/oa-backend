@@ -1,16 +1,13 @@
 package com.yodean.oa.meeting.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.enums.Category;
 import com.yodean.oa.common.util.ResultUtil;
 import com.yodean.oa.meeting.entity.Meeting;
 import com.yodean.oa.meeting.service.MeetingService;
-import com.yodean.oa.sys.workspace.entity.Workspace;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 /**
  * Created by rick on 3/27/18.

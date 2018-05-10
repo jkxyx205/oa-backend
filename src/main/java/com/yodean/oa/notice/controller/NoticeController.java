@@ -4,7 +4,6 @@ import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.util.ResultUtil;
 import com.yodean.oa.notice.entity.Notice;
 import com.yodean.oa.notice.service.NoticeService;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

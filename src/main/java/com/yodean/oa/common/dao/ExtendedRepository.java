@@ -12,13 +12,13 @@ import java.util.List;
 @NoRepositoryBean
 public interface ExtendedRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
     /**
-     * 父实体，只更新不为null的字段
+     * 父实体，只更新不为null的字段，t为非瞬时状态
      * @param t
      */
     <S extends T> S update(S t);
 
     /**
-     * 级联更新所有,只更新不为null的字段
+     * 级联更新所有,只更新不为null的字段，t为非瞬时状态
      * @param t
      */
     <S extends T> S updateCascade(S t);
