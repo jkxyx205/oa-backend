@@ -19,7 +19,7 @@ import java.util.*;
  */
 @Entity(name = "t_meeting")
 @DynamicUpdate
-public class Meeting extends DataEntity<Meeting> {
+public class Meeting extends DataEntity {
 
     private enum MeetingType {
         MEETING, SCHEDULE;
@@ -237,4 +237,6 @@ public class Meeting extends DataEntity<Meeting> {
     public void setOptionWorkspaces(List<Workspace> optionWorkspaces) {
         this.optionWorkspaces = optionWorkspaces;
     }
+
+
 }

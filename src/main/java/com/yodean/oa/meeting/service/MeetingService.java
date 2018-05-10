@@ -103,10 +103,6 @@ public class MeetingService {
     /**
      * 添加开会人
      */
-    public void addWorkspace(Integer id, List<Workspace> workspaces) {
-        workspaceService.tip(Category.MEETING, id, workspaces);
-    }
-
     public void addUser(Integer id, Meeting meeting) {
         meeting.setId(id);
         build(meeting);

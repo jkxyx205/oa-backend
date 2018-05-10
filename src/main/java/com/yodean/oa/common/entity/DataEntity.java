@@ -21,7 +21,7 @@ import java.util.Date;
  */
 @MappedSuperclass
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class DataEntity<T> implements Serializable {
+public class DataEntity implements Serializable {
 
     public static String DEL_FLAG_NORMAL = "1";
 
