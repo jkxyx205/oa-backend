@@ -1,5 +1,7 @@
 package com.yodean.oa.common.dto;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 /**
  * Created by rick on 2018/3/15.
  */
@@ -33,4 +35,10 @@ public class Result<T> {
     public void setData(T data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+    }
+
 }

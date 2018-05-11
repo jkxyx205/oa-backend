@@ -1,5 +1,6 @@
 package com.yodean.oa.common.aspect;
 
+import com.yodean.oa.sys.util.UserUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
@@ -12,20 +13,21 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * Created by rick on 2018/3/15.
+ * 记录请求信息
  */
 @Aspect
 @Component
-public class LogAspect {
-    private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
+public class ControllerAspect {
+    private static final Logger logger = LoggerFactory.getLogger(ControllerAspect.class);
 
-    @Pointcut("execution(public * com.yodean.oa.sys.user.controller.UserController.*(..))")
+    @Pointcut("execution(public * com.yodean..*Controller.*(..))")
     public void log() {
 
     }
 
     @Before("log()")
     public void logBefore(JoinPoint joinPoint) {
-        logger.info("Before => logAspect");
+        logger.info("Before => logAspect => {},{}" , UserUtils.getUser().getId(), UserUtils.getUser().getChineseName());
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
 
@@ -48,7 +50,7 @@ public class LogAspect {
 
     @After("log()")
     public void logAfter() {
-        logger.info("After => logAspect");
+//        logger.info("After => logAspect");
     }
 
     @AfterReturning(returning="obj",pointcut = "log()")

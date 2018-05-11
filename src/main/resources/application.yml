@@ -14,3 +14,12 @@ mybatis:
   type-aliases-package: com.yodean.oa
   config-locations: classpath*:mybatis-config.xml
   mapper-locations: mapper/*.xml
+
+logging:
+  level:
+    org.springframework.web: ERROR
+    com.yodean.oa.common.aspect: ERROR
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file: /Users/rick/jkxyx205/log/oa.log
