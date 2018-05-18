@@ -44,7 +44,7 @@ public class VehicleServiceTest {
         Vehicle vehicle = new Vehicle();
         vehicle.setId(1);
         vehicle.setLicence("京Q 123456");
-        vehicleService.update(vehicle);
+        vehicleService.update(vehicle, 1);
     }
 
     @Test

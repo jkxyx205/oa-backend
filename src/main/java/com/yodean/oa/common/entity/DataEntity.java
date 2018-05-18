@@ -149,7 +149,7 @@ public class DataEntity implements Serializable {
         if (obj == null || getClass() != obj.getClass()) return false;
         if (obj instanceof DataEntity) {
             DataEntity dataEntity = (DataEntity)obj;
-            if (new EqualsBuilder().append(dataEntity.id, id).isEquals())
+            if (dataEntity.id !=null && new EqualsBuilder().append(dataEntity.id, id).isEquals())
                 return true;
         }
 

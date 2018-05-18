@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.util.StringUtils;
 
+import javax.persistence.Convert;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -71,8 +73,10 @@ public class EntityBeanUtils {
 
             Class<?> type = propertyDescriptor.getPropertyType();
 
-            try {
 
+
+
+            try {
                 Object srcPropertyValue = propertyUtilsBean.getProperty(src, name);
                 Object objPropertyValue = propertyUtilsBean.getProperty(obj, name);
 
@@ -88,6 +92,11 @@ public class EntityBeanUtils {
                     if (setValueable.beforeSetProperty(src, name, srcPropertyValue, objPropertyValue)) {
                         PropertyUtils.setProperty(src, name, objPropertyValue);
                     }
+
+                } else if(isConverter(src.getClass(), name)) { //hibernate自定义属性
+
+                    merge(srcPropertyValue, objPropertyValue, deep, setValueable);
+
                 }  else if (deep) {
 
                     if (Collection.class.isAssignableFrom(type)) { //Collection
@@ -172,6 +181,12 @@ public class EntityBeanUtils {
 
         return true;
 
+    }
+
+    private static boolean isConverter(Class<?> aClass, String name) throws NoSuchFieldException {
+        Field field = aClass.getDeclaredField(name);
+
+        return field.isAnnotationPresent(Convert.class);
     }
 
     public static boolean isSetter(Method method){

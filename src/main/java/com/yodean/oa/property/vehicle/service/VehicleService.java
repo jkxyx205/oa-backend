@@ -28,13 +28,14 @@ public class VehicleService {
 
 
 
-    @CachePut(value = "vehicles", key = "#vehicle.id")
+    @CacheEvict(value = "vehicles", key = "#vehicle.id")
     public Vehicle save(Vehicle vehicle) {
         return vehicleRepository.save(vehicle);
     }
 
-    @CachePut(value = "vehicles", key = "#vehicle.id")
-    public Vehicle update(Vehicle vehicle) {
+    @CacheEvict(value = "vehicles", key = "#id")
+    public Vehicle update(Vehicle vehicle, int id) {
+        vehicle.setId(id);
         return vehicleRepository.update(vehicle);
     }
 
@@ -43,14 +44,14 @@ public class VehicleService {
      * @param id
      * @param vehicleStatus
      */
-    @CachePut(value = "vehicles", key = "#id")
+    @CacheEvict(value = "vehicles", key = "#id")
     public void changeStatus(Integer id, Vehicle.VehicleStatus vehicleStatus) {
         Vehicle vehicle = findById(id);
         vehicle.setVehicleStatus(vehicleStatus);
         save(vehicle);
     }
 
-    @CacheEvict(value = "vehicles", key = "#id", allEntries = true)
+    @CacheEvict(value = "vehicles", key = "#id")
     public void delete(Integer id) {
         vehicleRepository.deleteLogical(id);
     }
@@ -59,7 +60,9 @@ public class VehicleService {
     public Vehicle findById(Integer id) {
         Optional<Vehicle> optional = vehicleRepository.findById(id);
         if (optional.isPresent()) {
-            return optional.get();
+            Vehicle vehicle = optional.get();
+            DictionaryUtils.parse(vehicle);
+            return vehicle;
         }
         throw new OAException(ResultCode.NOT_FOUND_ERROR);
     }

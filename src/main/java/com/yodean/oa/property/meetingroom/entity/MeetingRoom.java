@@ -2,6 +2,7 @@ package com.yodean.oa.property.meetingroom.entity;
 
 import com.yodean.oa.common.entity.DataEntity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -15,6 +16,7 @@ public class MeetingRoom extends DataEntity {
     /**
      * 会议室名称
      */
+    @Column(nullable = false)
     private String title;
 
     /**
@@ -30,6 +32,7 @@ public class MeetingRoom extends DataEntity {
     /**
      * 会议室地址
      */
+    @Column(nullable = false)
     private String address;
 
     public String getTitle() {

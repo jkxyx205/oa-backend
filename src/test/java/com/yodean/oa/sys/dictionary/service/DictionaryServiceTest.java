@@ -53,7 +53,7 @@ public class DictionaryServiceTest {
 
     @Test
     public void findByCategoryAndName() throws Exception {
-        Word word = dictionaryService.findByCategoryAndName("VEHICLE_BRAND", "NS");
+        Word word = dictionaryService.findByCategoryAndName("VEHICLE_BRAND", "DZ");
         System.out.println(word);
     }
 

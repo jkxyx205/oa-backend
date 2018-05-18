@@ -24,19 +24,50 @@ public class VehicleController {
     private VehicleService vehicleService;
 
 
+
+
+
+    @PostMapping
+    public Result<Integer> save(@Valid @RequestBody Vehicle vehicle, BindingResult result) {
+        if (result.hasErrors())
+            return ResultUtil.error(ResultCode.VALIDATE_ERROR, result.getAllErrors());
+
+        return ResultUtil.success(vehicleService.save(vehicle).getId());
+
+    }
+
+    @PutMapping("/{id}")
+    public Result update(@RequestBody Vehicle vehicle, @PathVariable Integer id) {
+        vehicleService.update(vehicle, id);
+        return ResultUtil.success();
+    }
+
+    /**
+     * 启用 禁用 报废
+     * @param status
+     * @param id
+     * @return
+     */
+    @PutMapping("/{id}/{status}")
+    public Result status(@PathVariable Vehicle.VehicleStatus status, @PathVariable Integer id) {
+        vehicleService.changeStatus(id, status);
+        return ResultUtil.success();
+    }
+
+    @GetMapping("/{id}")
+    public Result<Vehicle> findById(@PathVariable Integer id) {
+        return ResultUtil.success(vehicleService.findById(id));
+    }
+
     @GetMapping("/list")
     public Result<Page<Vehicle>> findByKeywords(String kw, int pageNo, int rows) {
         return ResultUtil.success(vehicleService.list(kw, pageNo, rows));
     }
 
-
-    @PostMapping
-    public Result save(@Valid @RequestBody Vehicle vehicle, BindingResult result) {
-        if (result.hasErrors())
-            return ResultUtil.error(ResultCode.VALIDATE_ERROR, result.getAllErrors());
-
-        return ResultUtil.success(vehicleService.save(vehicle));
-
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable int id) {
+        vehicleService.delete(id);
+        return ResultUtil.success();
     }
 
 }

@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public Object handler(HttpServletRequest request, Exception e) {
+        e.printStackTrace();
         Result result;
 
         if (e instanceof  OAException) {

@@ -17,6 +17,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by rick on 5/17/18.
@@ -24,7 +25,7 @@ import java.util.Map;
 @Service
 public class DictionaryService {
 
-    private static final String KEY = "dictionary";
+//    private static final String KEY = "dictionary";
 
     private static final String QUERY_SQL = "select category, name, description, remark from sys_dictionary where category = :category and name = :name";
 
