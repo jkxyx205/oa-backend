@@ -3,8 +3,6 @@ server:
   servlet:
     context-path: /oa
 
-
-
 configuration:
   document: /Users/rick/jkxyx205/tmp/oa #文件上传根路径
   cdn: http://127.0.0.1:3000         #nginx静态服务器

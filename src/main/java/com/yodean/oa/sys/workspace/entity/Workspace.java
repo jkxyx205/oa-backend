@@ -57,7 +57,7 @@ public class Workspace extends DataEntity {
     private AuthorityType authorityType;
 
     public static enum AuthorityType {
-        GROUP("组"), USER("用户");
+        GROUP("组"), USER("用户"), ROOM("会议室");
         private String description;
 
         AuthorityType(String description) {

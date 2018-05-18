@@ -12,8 +12,8 @@ public final class ResultUtil {
         return success(null);
     }
 
-    public static Result success(Object data) {
-        Result<Object> result = new Result();
+    public static <T> Result success(T data) {
+        Result<T> result = new Result();
         result.setData(data);
         result.setCode(ResultCode.SUCCESS.getCode());
         result.setMsg(ResultCode.SUCCESS.getMessage());

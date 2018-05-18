@@ -27,7 +27,7 @@ public interface ExtendedRepository<T, ID extends Serializable> extends JpaRepos
      * 逻辑删除
      * @param ids
      */
-    void deleteLogical(ID ...ids);
+    List<T> deleteLogical(ID ...ids);
 
     /***
      * 查找所有未被删除的纪录

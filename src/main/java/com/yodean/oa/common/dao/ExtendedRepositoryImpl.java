@@ -74,7 +74,7 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
 
 
     @Transactional
-    public void deleteLogical(ID ...ids) {
+    public List<T> deleteLogical(ID ...ids) {
         if (Objects.isNull(ids)) throw new OAException(ResultCode.NULL_ERROR);
 
         List<T> list = findAllById(Arrays.asList(ids));
@@ -82,6 +82,8 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
             ((DataEntity)t).setDelFlag(DataEntity.DEL_FLAG_REMOVE);
         }
         saveAll(list);
+
+        return list;
     }
 
 

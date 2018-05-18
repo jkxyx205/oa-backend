@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Created by rick on 4/12/18.
  */
-@Configuration
+//@Configuration
 public class ShiroConfiguration {
 
     /**
