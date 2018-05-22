@@ -34,4 +34,18 @@ public interface ExtendedRepository<T, ID extends Serializable> extends JpaRepos
      * @return
      */
     List<T> findAllNormal();
+
+    /**
+     * 如果未能发现符合条件的记录，load方法会抛出一个ObjectNotFoundException
+     * @param id
+     * @return
+     */
+    T load(ID id);
+
+    /**
+     * 如果未能发现符合条件的记录，get方法返回null
+     * @param id
+     * @return
+     */
+    T get(ID id);
 }

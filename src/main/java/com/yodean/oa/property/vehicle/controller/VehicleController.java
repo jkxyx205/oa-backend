@@ -3,12 +3,11 @@ package com.yodean.oa.property.vehicle.controller;
 import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.enums.ResultCode;
 import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.property.vehicle.entity.UsageRecord;
 import com.yodean.oa.property.vehicle.entity.Vehicle;
 import com.yodean.oa.property.vehicle.service.VehicleService;
-import com.yodean.oa.sys.dictionary.entity.Word;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -22,10 +21,6 @@ import javax.validation.Valid;
 public class VehicleController {
     @Resource
     private VehicleService vehicleService;
-
-
-
-
 
     @PostMapping
     public Result<Integer> save(@Valid @RequestBody Vehicle vehicle, BindingResult result) {
@@ -67,6 +62,12 @@ public class VehicleController {
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable int id) {
         vehicleService.delete(id);
+        return ResultUtil.success();
+    }
+
+    @PostMapping("/records")
+    public Result addRecord(@RequestBody UsageRecord usageRecord) {
+        vehicleService.addVehicleUsageRecord(usageRecord);
         return ResultUtil.success();
     }
 

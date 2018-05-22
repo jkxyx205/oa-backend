@@ -2,13 +2,14 @@ package com.yodean.oa.property.vehicle.service;
 
 import com.yodean.oa.common.enums.ResultCode;
 import com.yodean.oa.common.exception.OAException;
+import com.yodean.oa.property.vehicle.dao.UsageRecordRepository;
 import com.yodean.oa.property.vehicle.dao.VehicleRepository;
+import com.yodean.oa.property.vehicle.entity.UsageRecord;
 import com.yodean.oa.property.vehicle.entity.Vehicle;
 import com.yodean.oa.sys.dictionary.core.DictionaryUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,6 +27,8 @@ public class VehicleService {
     @Autowired
     private VehicleRepository vehicleRepository;
 
+    @Autowired
+    private UsageRecordRepository usageRecordRepository;
 
 
     @CacheEvict(value = "vehicles", key = "#vehicle.id")
@@ -123,5 +126,14 @@ public class VehicleService {
 
 
         return vehicleRepository.findAll(example, pageable);
+    }
+
+    /**
+     * 添加出行纪录
+     * @param usageRecord
+     */
+    public void addVehicleUsageRecord(UsageRecord usageRecord) {
+        usageRecord.getVehicle().setId(usageRecord.getVehicleId());
+        usageRecordRepository.save(usageRecord);
     }
 }

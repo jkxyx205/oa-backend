@@ -21,7 +21,8 @@ public enum ResultCode {
     FILE_NAME_DUPLICATE_ERROR(40003, "文件名不能重复"),
     FILE_VIEW_ERROR(40005, "文件预览失败"),
     FILE_DOWNLOAD_ERROR(40006, "文件下载失败"),
-    FILE_UPLOAD_ERROR(40004, "文件上传失败");
+    FILE_UPLOAD_ERROR(40004, "文件上传失败"),
+    UNIT_FORMAT_EXCEPTION(40007, "单位无法转换");
 
     private Integer code;
 

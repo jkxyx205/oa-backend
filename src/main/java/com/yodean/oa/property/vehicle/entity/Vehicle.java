@@ -9,7 +9,9 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by rick on 5/16/18.
@@ -71,7 +73,13 @@ public class Vehicle extends DataEntity {
     @Enumerated(EnumType.STRING)
     private VehicleStatus vehicleStatus;
 
-    public static enum VehicleType {
+    /**
+     * 车辆出行纪录
+     */
+    @OneToMany(mappedBy = "vehicle")
+    private List<UsageRecord> usageRecords = new ArrayList<>();
+
+    public enum VehicleType {
         SMALL
     }
 
@@ -166,5 +174,13 @@ public class Vehicle extends DataEntity {
 
     public void setVehicleStatus(VehicleStatus vehicleStatus) {
         this.vehicleStatus = vehicleStatus;
+    }
+
+    public List<UsageRecord> getUsageRecords() {
+        return usageRecords;
+    }
+
+    public void setUsageRecords(List<UsageRecord> usageRecords) {
+        this.usageRecords = usageRecords;
     }
 }

@@ -56,10 +56,7 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
         S persist;
         try {
             ID id = (ID)PropertyUtils.getProperty(t, Global.ENTITY_ID);
-            Optional<T> optional = findById(id);
-            if (!optional.isPresent()) throw new OANoSuchElementException();
-
-            persist = (S) optional.get();
+            persist = (S) load(id);
             EntityBeanUtils.merge(persist, t, deep);
             save(persist);
         } catch (OANoSuchElementException e) {
@@ -99,6 +96,24 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
 
         Example<T> example = Example.of(t);
         return this.findAll(example);
+    }
+
+    @Override
+    public T load(ID id) {
+        Optional<T> optional = findById(id);
+        if (optional.isPresent())
+            return optional.get();
+
+        throw new OAException(ResultCode.NOT_FOUND_ERROR);
+    }
+
+    @Override
+    public T get(ID id) {
+        Optional<T> optional = findById(id);
+        if (optional.isPresent())
+            return optional.get();
+
+        return null;
     }
 }
 
