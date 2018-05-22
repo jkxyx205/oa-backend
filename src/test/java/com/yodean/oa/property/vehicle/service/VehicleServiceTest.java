@@ -10,8 +10,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by rick on 5/16/18.
  */
