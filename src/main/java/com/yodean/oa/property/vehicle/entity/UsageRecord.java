@@ -35,7 +35,7 @@ public class UsageRecord extends DataEntity {
     private UseType useType;
 
     @ManyToOne
-    @JoinColumn(name="vehicle_id")
+    @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle = new Vehicle();
 
     @Transient

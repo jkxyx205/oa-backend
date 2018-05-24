@@ -44,6 +44,7 @@ public class VehicleService {
 
     /**
      * 修改操作状态
+     *
      * @param id
      * @param vehicleStatus
      */
@@ -72,6 +73,7 @@ public class VehicleService {
 
     /**
      * 列表：根据关键词查询
+     *
      * @param keyword
      * @param pageNo
      * @param row
@@ -83,7 +85,7 @@ public class VehicleService {
         StringUtils.defaultIfBlank(keyword, "");
 
 
-        Pageable pageable = PageRequest.of(pageNo, row,  new Sort(Sort.Direction.DESC, "updateDate")
+        Pageable pageable = PageRequest.of(pageNo, row, new Sort(Sort.Direction.DESC, "updateDate")
                 .and(new Sort(Sort.Direction.ASC, "vehicleBrand")));
 
         Page<Vehicle> list = vehicleRepository.findAll((Specification<Vehicle>) (root, cq, cb) -> {
@@ -105,6 +107,7 @@ public class VehicleService {
 
     /**
      * 列表组合查询,字符串包含
+     *
      * @param vehicle
      * @param pageNo
      * @param row
@@ -112,7 +115,7 @@ public class VehicleService {
      */
     public Page<Vehicle> list2(Vehicle vehicle, Integer pageNo, Integer row) {
 
-        Pageable pageable = PageRequest.of(pageNo, row,  new Sort(Sort.Direction.DESC, "updateDate")
+        Pageable pageable = PageRequest.of(pageNo, row, new Sort(Sort.Direction.DESC, "updateDate")
                 .and(new Sort(Sort.Direction.ASC, "vehicleBrand")));
 
 
@@ -130,6 +133,7 @@ public class VehicleService {
 
     /**
      * 添加出行纪录
+     *
      * @param usageRecord
      */
     public void addVehicleUsageRecord(UsageRecord usageRecord) {

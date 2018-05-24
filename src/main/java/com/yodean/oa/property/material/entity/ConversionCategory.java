@@ -10,7 +10,7 @@ import java.util.List;
  * Created by rick on 5/22/18.
  */
 @Entity
-@Table(name = "sys_conversion_category")
+@Table(name = "t_material_conversion_category")
 public class ConversionCategory extends DataEntity {
 
     /**

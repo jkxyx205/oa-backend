@@ -35,19 +35,21 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
 
     /**
      * 单实体操作，不做级联更新操作，忽略为null的属性
+     *
      * @param t
      */
     @Transactional
-    public <S extends T> S update(S t)  {
+    public <S extends T> S update(S t) {
         return update(t, false);
     }
 
     /**
      * 做级联更新操作
+     *
      * @param t
      */
     @Transactional
-    public <S extends T> S updateCascade(S t)  {
+    public <S extends T> S updateCascade(S t) {
         return update(t, true);
     }
 
@@ -55,7 +57,7 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
     private <S extends T> S update(S t, boolean deep) {
         S persist;
         try {
-            ID id = (ID)PropertyUtils.getProperty(t, Global.ENTITY_ID);
+            ID id = (ID) PropertyUtils.getProperty(t, Global.ENTITY_ID);
             persist = (S) load(id);
             EntityBeanUtils.merge(persist, t, deep);
             save(persist);
@@ -71,12 +73,12 @@ public class ExtendedRepositoryImpl<T, ID extends Serializable> extends SimpleJp
 
 
     @Transactional
-    public List<T> deleteLogical(ID ...ids) {
+    public List<T> deleteLogical(ID... ids) {
         if (Objects.isNull(ids)) throw new OAException(ResultCode.NULL_ERROR);
 
         List<T> list = findAllById(Arrays.asList(ids));
-        for(T t : list) {
-            ((DataEntity)t).setDelFlag(DataEntity.DEL_FLAG_REMOVE);
+        for (T t : list) {
+            ((DataEntity) t).setDelFlag(DataEntity.DEL_FLAG_REMOVE);
         }
         saveAll(list);
 

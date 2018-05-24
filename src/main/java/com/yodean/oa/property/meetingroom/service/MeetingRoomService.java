@@ -25,6 +25,7 @@ public class MeetingRoomService {
 
     /**
      * 新增会议室
+     *
      * @param meetingRoom
      * @return
      */
@@ -36,6 +37,7 @@ public class MeetingRoomService {
 
     /**
      * 编辑会议室
+     *
      * @param meetingRoom
      * @return
      */
@@ -47,6 +49,7 @@ public class MeetingRoomService {
 
     /**
      * 删除会议室室
+     *
      * @param id
      */
     public Integer delete(int id) {
@@ -55,6 +58,7 @@ public class MeetingRoomService {
 
     /**
      * 会议室详情
+     *
      * @param id
      * @return
      */
@@ -68,21 +72,22 @@ public class MeetingRoomService {
 
     /**
      * 根据关键字查询会议室
+     *
      * @param kw
      * @param page
      * @param size
      * @return
      */
     public Page<MeetingRoom> list(String kw, int page, int size) {
-        StringUtils.defaultIfBlank(kw,"");
+        StringUtils.defaultIfBlank(kw, "");
 
         Pageable pageable = PageRequest.of(page, size, new Sort(Sort.Direction.ASC, "title"));
 
 
         return meetingRoomRepository.findAll((Specification<MeetingRoom>) (root, query, cb) -> cb.or(
-                cb.like(cb.lower(root.get("title").as(String.class)), "%"+kw.toLowerCase()+"%"),
-                cb.like(cb.lower(root.get("equipment").as(String.class)), "%"+kw.toLowerCase()+"%"),
-                cb.like(cb.lower(root.get("address").as(String.class)), "%"+kw.toLowerCase()+"%")
+                cb.like(cb.lower(root.get("title").as(String.class)), "%" + kw.toLowerCase() + "%"),
+                cb.like(cb.lower(root.get("equipment").as(String.class)), "%" + kw.toLowerCase() + "%"),
+                cb.like(cb.lower(root.get("address").as(String.class)), "%" + kw.toLowerCase() + "%")
         ), pageable);
 
     }

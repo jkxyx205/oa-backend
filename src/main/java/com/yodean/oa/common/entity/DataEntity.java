@@ -30,11 +30,11 @@ public class DataEntity implements Serializable {
     public static String DEL_FLAG_CLEAN = "2"; //彻底删除
 
 
-    public static  <T> T of(Class<T> tClass, Integer id) {
+    public static <T> T of(Class<T> tClass, Integer id) {
         T t;
         try {
             t = tClass.newInstance();
-            PropertyUtils.setProperty(t, Global.ENTITY_ID,  id);
+            PropertyUtils.setProperty(t, Global.ENTITY_ID, id);
         } catch (Exception e) {
             throw new OAException(ResultCode.UNKNOW_ERROR, e);
         }
@@ -43,7 +43,7 @@ public class DataEntity implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false, nullable = false)
     private Integer id;
 
@@ -56,20 +56,20 @@ public class DataEntity implements Serializable {
     @Column(name = "create_date", nullable = false, updatable = false)
     private Date createDate;
 
-//    @JsonIgnore
+    //    @JsonIgnore
     @Column(name = "update_by", nullable = false)
     private String updateBy;
 
-//    @JsonIgnore
+    //    @JsonIgnore
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name="update_date", nullable = false)
+    @Column(name = "update_date", nullable = false)
     private Date updateDate;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String remarks;
 
     @JsonIgnore
-    @Column(name="del_flag", length = 1, nullable = false)
+    @Column(name = "del_flag", length = 1, nullable = false)
     private String delFlag;
 
     public Integer getId() {
@@ -145,11 +145,11 @@ public class DataEntity implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj) return true;
+        if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         if (obj instanceof DataEntity) {
-            DataEntity dataEntity = (DataEntity)obj;
-            if (dataEntity.id !=null && new EqualsBuilder().append(dataEntity.id, id).isEquals())
+            DataEntity dataEntity = (DataEntity) obj;
+            if (dataEntity.id != null && new EqualsBuilder().append(dataEntity.id, id).isEquals())
                 return true;
         }
 

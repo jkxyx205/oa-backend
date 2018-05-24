@@ -13,21 +13,24 @@ import java.util.List;
 public interface ExtendedRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
     /**
      * 父实体，只更新不为null的字段，t为非瞬时状态
+     *
      * @param t
      */
     <S extends T> S update(S t);
 
     /**
      * 级联更新所有,只更新不为null的字段，t为非瞬时状态
+     *
      * @param t
      */
     <S extends T> S updateCascade(S t);
 
     /**
      * 逻辑删除
+     *
      * @param ids
      */
-    List<T> deleteLogical(ID ...ids);
+    List<T> deleteLogical(ID... ids);
 
     /***
      * 查找所有未被删除的纪录
@@ -37,6 +40,7 @@ public interface ExtendedRepository<T, ID extends Serializable> extends JpaRepos
 
     /**
      * 如果未能发现符合条件的记录，load方法会抛出一个ObjectNotFoundException
+     *
      * @param id
      * @return
      */
@@ -44,6 +48,7 @@ public interface ExtendedRepository<T, ID extends Serializable> extends JpaRepos
 
     /**
      * 如果未能发现符合条件的记录，get方法返回null
+     *
      * @param id
      * @return
      */

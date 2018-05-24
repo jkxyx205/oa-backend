@@ -25,15 +25,18 @@ public class UnitConversionService {
 
     /**
      * 添加分类
+     *
      * @param conversionCategory
      * @return
      */
     public ConversionCategory addCategory(ConversionCategory conversionCategory) {
+        conversionCategory.getBaseUnit().setConversionCategory(conversionCategory);
         return conversionCategoryRepository.save(conversionCategory);
     }
 
     /**
      * 更新分类
+     *
      * @param conversionCategory
      * @param id
      * @return
@@ -45,7 +48,8 @@ public class UnitConversionService {
 
     /**
      * 添加单位
-      * @param conversionUnit
+     *
+     * @param conversionUnit
      */
     public ConversionUnit addUnit(ConversionUnit conversionUnit) {
         return conversionUnitRepository.save(conversionUnit);
@@ -53,6 +57,7 @@ public class UnitConversionService {
 
     /**
      * 更新单位
+     *
      * @param conversionUnit
      */
     public ConversionUnit updateUnit(ConversionUnit conversionUnit, Integer id) {
@@ -61,7 +66,17 @@ public class UnitConversionService {
     }
 
     /**
+     * 删除单位
+     *
+     * @param id
+     */
+    public void deleteUnit(Integer id) {
+        conversionUnitRepository.deleteById(id);
+    }
+
+    /**
      * 查找分类下，所有单位
+     *
      * @param id
      * @return
      */
@@ -76,6 +91,7 @@ public class UnitConversionService {
 
     /**
      * 根据Id查找单位
+     *
      * @param id
      * @return
      */
@@ -84,10 +100,9 @@ public class UnitConversionService {
     }
 
     /**
-     *
      * @param convertNumber 转换数量
-     * @param srcUnitId 原单位
-     * @param distUnitId 需要转换单位
+     * @param srcUnitId     原单位
+     * @param distUnitId    需要转换单位
      * @return
      */
     public String convertUnit(Double convertNumber, Integer srcUnitId, Integer distUnitId) {
@@ -103,6 +118,4 @@ public class UnitConversionService {
         return srcConversionUnit.getConversionValue();
 
     }
-
-
 }
