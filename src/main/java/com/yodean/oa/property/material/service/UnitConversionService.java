@@ -1,7 +1,5 @@
 package com.yodean.oa.property.material.service;
 
-import com.yodean.oa.common.enums.ResultCode;
-import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.property.material.dao.ConversionCategoryRepository;
 import com.yodean.oa.property.material.dao.ConversionUnitRepository;
 import com.yodean.oa.property.material.entity.ConversionCategory;
@@ -105,17 +103,23 @@ public class UnitConversionService {
      * @param distUnitId    需要转换单位
      * @return
      */
-    public String convertUnit(Double convertNumber, Integer srcUnitId, Integer distUnitId) {
+    public double convertUnit(Double convertNumber, Integer srcUnitId, Integer distUnitId) {
+        if (srcUnitId.intValue() == distUnitId.intValue()) return convertNumber;
+
         ConversionUnit srcConversionUnit = findUnitById(srcUnitId);
         ConversionUnit distConversionUnit = findUnitById(distUnitId);
-        if (!Objects.equals(srcConversionUnit.getConversionCategory().getBaseUnit(), distConversionUnit.getConversionCategory().getBaseUnit())) {
-            throw new OAException(ResultCode.UNIT_FORMAT_EXCEPTION);
-        }
+
+
+
+        // TODO
+//        if (!Objects.equals(srcConversionUnit.getConversionCategory().getBaseUnit(), distConversionUnit.getConversionCategory().getBaseUnit())) {
+//            throw new OAException(ResultCode.UNIT_FORMAT_EXCEPTION);
+//        }
 
         srcConversionUnit.setConvertedUnit(distConversionUnit);
         srcConversionUnit.setConvertedNumber(convertNumber);
 
-        return srcConversionUnit.getConversionValue();
+        return new Double(srcConversionUnit.getConversionValue());
 
     }
 }

@@ -2,6 +2,7 @@ package com.yodean.oa.property.material.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
 import java.text.DecimalFormat;
@@ -9,6 +10,7 @@ import java.util.Objects;
 
 /**
  * Created by rick on 5/22/18.
+ * 预设的维度category_id为父值
  */
 @Entity
 @Table(name = "t_material_conversion_unit")
@@ -41,7 +43,7 @@ public class ConversionUnit extends DataEntity {
      * 所属分类
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
     @JsonIgnore
     private ConversionCategory conversionCategory;
 
@@ -160,5 +162,22 @@ public class ConversionUnit extends DataEntity {
         if (Objects.isNull(convertedUnit)) return null;
         StringBuilder sb = new StringBuilder("A * " + this.title + " = (A * " + this.numerator + "/" + this.denominator + "  + " + this.constant + ") * " + this.conversionCategory.getBaseUnit().title + "");
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ConversionUnit)) return false;
+        if (super.equals(o)) return true;
+
+        ConversionUnit that = (ConversionUnit) o;
+
+        return new EqualsBuilder().append(this.name, that.name).isEquals();
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name);
     }
 }

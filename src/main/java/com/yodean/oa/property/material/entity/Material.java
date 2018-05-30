@@ -3,6 +3,8 @@ package com.yodean.oa.property.material.entity;
 import com.yodean.oa.common.entity.DataEntity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by rick on 5/22/18.
@@ -22,11 +24,18 @@ public class Material extends DataEntity {
     private String title;
 
     /**
-     * 计量单位
+     * 计量单位(仓库基本单位)
      */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "unit_id")
     private ConversionUnit unit = new ConversionUnit();
+
+    /**
+     *  物料转换关系
+     */
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
+    private List<ConversionUnit> selfUnit = new ArrayList<>();
 
     @Transient
     private Integer unitId;
@@ -74,5 +83,13 @@ public class Material extends DataEntity {
 
     public void setUnitId(Integer unitId) {
         this.unitId = unitId;
+    }
+
+    public List<ConversionUnit> getSelfUnit() {
+        return selfUnit;
+    }
+
+    public void setSelfUnit(List<ConversionUnit> selfUnit) {
+        this.selfUnit = selfUnit;
     }
 }

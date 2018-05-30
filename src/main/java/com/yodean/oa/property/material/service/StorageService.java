@@ -25,6 +25,16 @@ public class StorageService {
     }
 
     /**
+     * 编辑库位
+     * @param storage
+     * @param id
+     */
+    public void update(Storage storage, Integer id) {
+        storage.setId(id);
+        storageRepository.update(storage);
+    }
+
+    /**
      * 根据Id查找
      *
      * @param id
@@ -34,4 +44,20 @@ public class StorageService {
         return storageRepository.get(id);
     }
 
+    /**
+     * 切换状态
+     */
+    public void switchStatus(Integer id, Character status) {
+        Storage storage = storageRepository.load(id);
+        storage.setStatus(status);
+        save(storage);
+    }
+
+    /**
+     * 删除
+     * @param id
+     */
+    public void delete(Integer id) {
+        storageRepository.deleteLogical(id);
+    }
 }

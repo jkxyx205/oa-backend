@@ -29,6 +29,7 @@ public class ConversionCategory extends DataEntity {
      * 分类所有单位
      */
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "conversionCategory")
+    @org.hibernate.annotations.ForeignKey(name = "none")
     private List<ConversionUnit> conversionDetailList = new ArrayList<>();
 
     public String getTitle() {

@@ -27,4 +27,10 @@ public class MaterialController {
         return ResultUtil.success(materialService.findById(id));
     }
 
+    @PutMapping("/{id}")
+    public Result update(@RequestBody Material material, @PathVariable Integer id) {
+        materialService.update(material, id);
+        return ResultUtil.success();
+    }
+
 }

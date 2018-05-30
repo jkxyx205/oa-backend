@@ -14,6 +14,11 @@ import java.util.Objects;
 @Entity
 @Table(name = "t_material_storage")
 public class Storage extends DataEntity {
+
+    public static final Character STATUS_AVAILABLE = '1';
+
+    public static final Character STATUS_FORBIDDEN = '0';
+
     /**
      * 库位Id
      */
@@ -26,6 +31,8 @@ public class Storage extends DataEntity {
 
     /**
      * 状态
+     * '0' 禁用
+     * '1' 启用
      */
     private Character status = '1';
 
