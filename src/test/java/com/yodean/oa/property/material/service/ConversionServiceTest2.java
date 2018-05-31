@@ -2,6 +2,7 @@ package com.yodean.oa.property.material.service;
 
 import com.yodean.oa.property.material.entity.ConversionCategory;
 import com.yodean.oa.property.material.entity.ConversionUnit;
+import com.yodean.oa.property.material.entity.Material;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,9 @@ public class ConversionServiceTest2 {
 
     @Autowired
     private UnitConversionService conversionService;
+
+    @Autowired
+    private MaterialService materialService;
 
     @Test
     public void addCategory() throws Exception {
@@ -90,6 +94,12 @@ public class ConversionServiceTest2 {
     public void convertUnitTest() {
         System.out.println("->" +  conversionService.convertUnit(10d, 2, 1));
 
+    }
+
+    @Test
+    public void tstMe() {
+        Material material = materialService.findById(1);
+        System.out.println(material);
     }
 
 }

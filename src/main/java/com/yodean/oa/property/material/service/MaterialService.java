@@ -1,8 +1,11 @@
 package com.yodean.oa.property.material.service;
 
 import com.yodean.oa.property.material.Constant;
+import com.yodean.oa.property.material.dao.ConversionCategoryRepository;
 import com.yodean.oa.property.material.dao.IncomingRepository;
 import com.yodean.oa.property.material.dao.MaterialRepository;
+import com.yodean.oa.property.material.entity.ConversionCategory;
+import com.yodean.oa.property.material.entity.ConversionUnit;
 import com.yodean.oa.property.material.entity.Incoming;
 import com.yodean.oa.property.material.entity.Material;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class MaterialService {
     @Autowired
     private UnitConversionService unitConversionService;
 
+    @Autowired
+    private ConversionCategoryRepository conversionCategoryRepository;
+
     /**
      * 保存物料主数据
      *
@@ -33,10 +39,9 @@ public class MaterialService {
      */
     @Transactional
     public Material save(Material material) {
-        material.getUnit().setId(material.getUnitId());
+        bind(material);
         material = materialRepository.save(material);
         //保存单位转换 TODO
-
         return material;
     }
 
@@ -46,10 +51,38 @@ public class MaterialService {
      * @param material
      * @return
      */
+    @Transactional
     public Material update(Material material, Integer id) {
         material.setId(id);
+        bind(material);
         material = materialRepository.updateCascade(material);
         return material;
+    }
+
+    private void bind(Material material) {
+        //换算关系
+        ConversionCategory category = new ConversionCategory();
+
+        if (Objects.nonNull(material.getId())) { //修改
+            ConversionCategory _category = conversionCategoryRepository.findByMaterial(material);
+            if (Objects.nonNull(_category)) {
+                category.setId(_category.getId());
+                category.setBaseUnit(_category.getBaseUnit());
+            }
+        } else {//新增
+            ConversionUnit baseUnit = unitConversionService.findUnitById(material.getBaseUnitId());
+            category.setBaseUnit(baseUnit);
+        }
+
+        category.setMaterial(material);
+        category.setTitle(material.getTitle());
+        category.setConversionDetailList(material.getConversionUnits());
+        category.getConversionDetailList().forEach(_conversionUnit -> {
+            _conversionUnit.setConversionCategory(category);
+            _conversionUnit.setCategoryId(category.getId());
+        });
+
+        material.setCategory(category);
     }
 
     /**

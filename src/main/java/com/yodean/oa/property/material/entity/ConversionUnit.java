@@ -43,7 +43,7 @@ public class ConversionUnit extends DataEntity {
      * 所属分类
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name = "category_id")
     @JsonIgnore
     private ConversionCategory conversionCategory;
 
@@ -158,7 +158,7 @@ public class ConversionUnit extends DataEntity {
      *
      * @return
      */
-    public String getConversionFULLText() {
+    public String getConversionFullText() {
         if (Objects.isNull(convertedUnit)) return null;
         StringBuilder sb = new StringBuilder("A * " + this.title + " = (A * " + this.numerator + "/" + this.denominator + "  + " + this.constant + ") * " + this.conversionCategory.getBaseUnit().title + "");
         return sb.toString();
@@ -172,12 +172,14 @@ public class ConversionUnit extends DataEntity {
 
         ConversionUnit that = (ConversionUnit) o;
 
-        return new EqualsBuilder().append(this.name, that.name).isEquals();
-
+        return new EqualsBuilder()
+                .append(this.getConversionCategory().getId(), that.getConversionCategory().getId())
+                .append(this.name, that.name)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.name);
+        return Objects.hash(this.getConversionCategory().getId(), this.name);
     }
 }

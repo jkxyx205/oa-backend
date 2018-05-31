@@ -1,5 +1,6 @@
 package com.yodean.oa.common.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yodean.oa.common.entity.DataEntity;
 import com.yodean.oa.common.enums.ResultCode;
 import com.yodean.oa.common.exception.OAException;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.Convert;
+import javax.persistence.Transient;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -25,6 +27,7 @@ import java.util.*;
  * Created by rick on 5/8/18.
  */
 public class EntityBeanUtils {
+
     private static final transient Logger logger = LoggerFactory.getLogger(EntityBeanUtils.class);
 
     /**
@@ -75,7 +78,6 @@ public class EntityBeanUtils {
 
 
 
-
             try {
                 Object srcPropertyValue = propertyUtilsBean.getProperty(src, name);
                 Object objPropertyValue = propertyUtilsBean.getProperty(obj, name);
@@ -93,7 +95,7 @@ public class EntityBeanUtils {
                         PropertyUtils.setProperty(src, name, objPropertyValue);
                     }
 
-                } else if(isConverter(src.getClass(), name)) { //hibernate自定义属性
+                } else if(isConverter(src.getClass(), name)) { //hibernate自定义属性@Converter
 
                     merge(srcPropertyValue, objPropertyValue, deep, setValueable);
 
@@ -106,13 +108,19 @@ public class EntityBeanUtils {
                         Map<Integer, Object> srcMapping = new HashMap<>(srcCollection.size());
 
                         for (Object objSrc : srcCollection) {
-                            srcMapping.put(((DataEntity)(objSrc)).getId(), objSrc);
+                            srcMapping.put(((DataEntity)(objSrc)).getId(), objSrc); //主键id
+                            srcMapping.put(objSrc.hashCode(), objSrc); //hashCode
                         }
 
                         for (Object objSub : objCollection) {
                             if (srcCollection.contains(objSub)) { //存在合并
 
-                                merge(srcMapping.get(((DataEntity)(objSub)).getId()), objSub, deep, setValueable);
+                                Integer id = ((DataEntity)(objSub)).getId();
+
+                                if (Objects.isNull(id))
+                                    id = objSub.hashCode();
+
+                                merge(srcMapping.get(id), objSub, deep, setValueable);
 
                             }  else {//不存在直接添加
                                 srcCollection.add(objSub);
@@ -129,15 +137,16 @@ public class EntityBeanUtils {
                                 logger.info("Remove entity [{}] property [{}] with [{}]", src.getClass(), name, objSrc);
                             }
                         }
-                    } else if (DataEntity.class.isAssignableFrom(type)){// Entity Object
+                    } else if (DataEntity.class.isAssignableFrom(type) && isNotIgnoreObject(src.getClass(), name)){// Entity Object
                         merge(srcPropertyValue, objPropertyValue, deep, setValueable);
                     }
                 }
 
+            } catch (NoSuchMethodException e) {
+                continue;
             } catch (Exception e) {
                 throw new OAException(ResultCode.SERVER_ERROR, e);
             }
-
         }
     }
 
@@ -183,10 +192,26 @@ public class EntityBeanUtils {
 
     }
 
-    private static boolean isConverter(Class<?> aClass, String name) throws NoSuchFieldException {
-        Field field = aClass.getDeclaredField(name);
+    private static boolean isConverter(Class<?> aClass, String name){
+        Field field;
+        try {
+            field = aClass.getDeclaredField(name);
+            return field.isAnnotationPresent(Convert.class) ;
+        } catch (NoSuchFieldException e) {
+            return false;
+        }
 
-        return field.isAnnotationPresent(Convert.class);
+    }
+
+    private static boolean isNotIgnoreObject(Class<?> aClass, String name) {
+        Field field;
+        try {
+            field = aClass.getDeclaredField(name);
+            return !(field.isAnnotationPresent(JsonIgnore.class) || field.isAnnotationPresent(Transient.class));
+        } catch (NoSuchFieldException e) {
+            return true;
+        }
+
     }
 
     public static boolean isSetter(Method method){

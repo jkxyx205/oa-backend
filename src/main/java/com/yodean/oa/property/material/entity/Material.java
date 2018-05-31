@@ -1,10 +1,13 @@
 package com.yodean.oa.property.material.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yodean.oa.common.entity.DataEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 /**
  * Created by rick on 5/22/18.
@@ -12,7 +15,6 @@ import java.util.List;
 @Entity
 @Table(name = "t_material")
 public class Material extends DataEntity {
-
     /**
      * 物料id
      */
@@ -23,27 +25,24 @@ public class Material extends DataEntity {
      */
     private String title;
 
-    /**
-     * 计量单位(仓库基本单位)
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "unit_id")
-    private ConversionUnit unit = new ConversionUnit();
-
-    /**
-     *  物料转换关系
-     */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
-    private List<ConversionUnit> selfUnit = new ArrayList<>();
-
-    @Transient
-    private Integer unitId;
 
     /**
      * 物料规格
      */
     private String specification;
+
+    /**
+     * 换算维度
+     */
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "material")
+    private ConversionCategory category;
+
+    @Transient
+    @JsonInclude(NON_EMPTY)
+    private List<ConversionUnit> conversionUnits = new ArrayList<>();
+
+    @Transient
+    private Integer baseUnitId;
 
     public String getBid() {
         return bid;
@@ -61,14 +60,6 @@ public class Material extends DataEntity {
         this.title = title;
     }
 
-    public ConversionUnit getUnit() {
-        return unit;
-    }
-
-    public void setUnit(ConversionUnit unit) {
-        this.unit = unit;
-    }
-
     public String getSpecification() {
         return specification;
     }
@@ -77,19 +68,28 @@ public class Material extends DataEntity {
         this.specification = specification;
     }
 
-    public Integer getUnitId() {
-        return unitId;
+    public ConversionCategory getCategory() {
+        return category;
     }
 
-    public void setUnitId(Integer unitId) {
-        this.unitId = unitId;
+    public void setCategory(ConversionCategory category) {
+        this.category = category;
     }
 
-    public List<ConversionUnit> getSelfUnit() {
-        return selfUnit;
+
+    public List<ConversionUnit> getConversionUnits() {
+        return conversionUnits;
     }
 
-    public void setSelfUnit(List<ConversionUnit> selfUnit) {
-        this.selfUnit = selfUnit;
+    public void setConversionUnits(List<ConversionUnit> conversionUnits) {
+        this.conversionUnits = conversionUnits;
+    }
+
+    public Integer getBaseUnitId() {
+        return baseUnitId;
+    }
+
+    public void setBaseUnitId(Integer baseUnitId) {
+        this.baseUnitId = baseUnitId;
     }
 }
