@@ -1,5 +1,7 @@
 package com.yodean.oa.property.material.service;
 
+import com.yodean.oa.common.enums.ResultCode;
+import com.yodean.oa.common.exception.OAException;
 import com.yodean.oa.property.material.Constant;
 import com.yodean.oa.property.material.dao.ConversionCategoryRepository;
 import com.yodean.oa.property.material.dao.IncomingRepository;
@@ -8,6 +10,7 @@ import com.yodean.oa.property.material.entity.ConversionCategory;
 import com.yodean.oa.property.material.entity.ConversionUnit;
 import com.yodean.oa.property.material.entity.Incoming;
 import com.yodean.oa.property.material.entity.Material;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +44,7 @@ public class MaterialService {
     public Material save(Material material) {
         bind(material);
         material = materialRepository.save(material);
-        //保存单位转换 TODO
+        //保存单位转换 TODO 检查单位换算是否与预设产生冲突，如果产生冲突自动纠错
         return material;
     }
 
@@ -59,6 +62,10 @@ public class MaterialService {
         return material;
     }
 
+    /**
+     * 根据前台传递的参数，组装实体类
+     * @param material
+     */
     private void bind(Material material) {
         //换算关系
         ConversionCategory category = new ConversionCategory();
@@ -109,7 +116,42 @@ public class MaterialService {
      * 入库操作
      */
     public void addIncoming(Incoming incoming) {
+        //单位转换
+        Material material = findById(incoming.getMaterialId());
+        incoming.setBaseUnitId(material.getCategory().getBaseUnit().getId());
+
+        incoming.setBaseNum(convertUnit(incoming.getNum(), incoming.getUnitId(), material));
+        incoming.setBatchNum(RandomStringUtils.randomAlphanumeric(16));
+        //如果是设备
+        if (Material.EQUIPMENT.equals(material.getType())) { //TODO
+            //序列号
+        } else { //耗材
+
+        }
+
         incomingRepository.save(incoming);
+    }
+
+    /**
+     * 单位转换
+     * @param num
+     * @param unitId
+     * @param material
+     * @return
+     */
+    private double convertUnit(double num, int unitId, Material material) {
+        ConversionUnit baseUnit = material.getCategory().getBaseUnit(); //获取基准id
+        ConversionUnit inputUnit = unitConversionService.findUnitById(unitId);
+
+        int baseId;
+        if (baseUnit.getConversionCategory().getId().equals(inputUnit.getConversionCategory().getId())) { //预设单位维度
+            baseId = baseUnit.getId();
+        } else {
+            ConversionUnit storageUnit = unitConversionService.findByConversionCategoryAndName(inputUnit.getConversionCategory(), baseUnit.getName());
+            baseId = storageUnit.getId();
+        }
+
+        return unitConversionService.convertUnit(num, unitId, baseId);
     }
 
     /**
@@ -122,19 +164,23 @@ public class MaterialService {
     }
 
     /**
-     * sno不为空，则为设备；否则为耗材
-     * @param id
+     * 则为设备；否则为耗材
+     * @param id incoming Id
      * @param borrowNum 借用数量
      * @param borrowUnit 借用单位
      */
-    public void borrow(Integer id, double borrowNum, Integer borrowUnit) {
+    public Incoming borrow(Integer id, double borrowNum, Integer borrowUnit) {
         Incoming incoming = incomingRepository.load(id);
 
+        Material material = findById(incoming.getMaterialId());
 
-        borrowNum =  unitConversionService.convertUnit(borrowNum, borrowUnit, incoming.getBaseUnitId());
+        borrowNum = convertUnit(borrowNum, borrowUnit, material);
 
         //删减数量
-        incoming.setBaseNum(incoming.getBaseNum() - borrowNum); //TODO check
+        incoming.setBaseNum(incoming.getBaseNum() - borrowNum);
+        if(incoming.getBaseNum() < 0) {
+            throw new OAException(ResultCode.NUM_NOT_ENOUGH);
+        }
 
         //修改状态
         if (0 == incoming.getBaseNum()) {
@@ -154,9 +200,37 @@ public class MaterialService {
             }
             incomingRepository.save(incoming);
         }
+
+        return incoming;
     }
 
-    public void back() {
+    /**设备归还
+     * @param id incoming Id
+     * @param borrowNum 借用数量
+     * @param borrowUnit 借用单位
+     * @param storageId 库位id
+     */
+    public void back(int id, double borrowNum, Integer borrowUnit, Integer storageId) {
+        Incoming incoming = incomingRepository.load(id);
+
+        Material material = findById(incoming.getMaterialId());
+
+        borrowNum = convertUnit(borrowNum, borrowUnit, material);
+
+        //添加数量
+        incoming.setBaseNum(incoming.getBaseNum() + borrowNum);
+
+        incoming.setStatus(Constant.STATUS_RICH);
+        incoming.setStorageId(storageId);
+
+        incomingRepository.save(incoming);
+    }
+
+    /**
+     * 移库操作
+     */
+    public void move() {
 
     }
+
 }

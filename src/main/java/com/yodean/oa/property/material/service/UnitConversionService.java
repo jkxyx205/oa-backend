@@ -109,8 +109,6 @@ public class UnitConversionService {
         ConversionUnit srcConversionUnit = findUnitById(srcUnitId);
         ConversionUnit distConversionUnit = findUnitById(distUnitId);
 
-
-
         // TODO
 //        if (!Objects.equals(srcConversionUnit.getConversionCategory().getBaseUnit(), distConversionUnit.getConversionCategory().getBaseUnit())) {
 //            throw new OAException(ResultCode.UNIT_FORMAT_EXCEPTION);
@@ -121,5 +119,9 @@ public class UnitConversionService {
 
         return new Double(srcConversionUnit.getConversionValue());
 
+    }
+
+    public ConversionUnit findByConversionCategoryAndName(ConversionCategory category, String name) {
+        return conversionUnitRepository.findByConversionCategoryAndName(category, name);
     }
 }

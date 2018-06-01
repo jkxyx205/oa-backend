@@ -22,7 +22,8 @@ public enum ResultCode {
     FILE_VIEW_ERROR(40005, "文件预览失败"),
     FILE_DOWNLOAD_ERROR(40006, "文件下载失败"),
     FILE_UPLOAD_ERROR(40004, "文件上传失败"),
-    UNIT_FORMAT_EXCEPTION(40007, "单位无法转换");
+    UNIT_FORMAT_EXCEPTION(40007, "单位无法转换"),
+    NUM_NOT_ENOUGH(80007, "没有足够的数量");
 
     private Integer code;
 

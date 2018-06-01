@@ -21,9 +21,9 @@ public class Incoming extends DataEntity {
     private String batchNum;
 
     /**
-     * 物料编号
+     * 物料id
      */
-    private String bid;
+    private Integer materialId;
 
     /**
      * 入库数量
@@ -81,12 +81,12 @@ public class Incoming extends DataEntity {
      */
     private Character status;
 
-    public String getBid() {
-        return bid;
+    public Integer getMaterialId() {
+        return materialId;
     }
 
-    public void setBid(String bid) {
-        this.bid = bid;
+    public void setMaterialId(Integer materialId) {
+        this.materialId = materialId;
     }
 
     public Double getNum() {

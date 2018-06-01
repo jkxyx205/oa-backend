@@ -15,6 +15,10 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 @Entity
 @Table(name = "t_material")
 public class Material extends DataEntity {
+    public static final Character EQUIPMENT = '0';
+
+    public static final Character CONSUMABLE = '1';
+
     /**
      * 物料id
      */
@@ -36,6 +40,13 @@ public class Material extends DataEntity {
      */
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "material")
     private ConversionCategory category;
+
+    /**
+     * 物料类型
+     * 0 设备
+     * 2 耗材
+     */
+    private Character type;
 
     @Transient
     @JsonInclude(NON_EMPTY)
@@ -91,5 +102,13 @@ public class Material extends DataEntity {
 
     public void setBaseUnitId(Integer baseUnitId) {
         this.baseUnitId = baseUnitId;
+    }
+
+    public Character getType() {
+        return type;
+    }
+
+    public void setType(Character type) {
+        this.type = type;
     }
 }
