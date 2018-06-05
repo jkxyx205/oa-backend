@@ -28,7 +28,6 @@ public class VehicleController {
             return ResultUtil.error(ResultCode.VALIDATE_ERROR, result.getAllErrors());
 
         return ResultUtil.success(vehicleService.save(vehicle).getId());
-
     }
 
     @PutMapping("/{id}")
@@ -55,8 +54,8 @@ public class VehicleController {
         return ResultUtil.success(vehicleService.findById(id));
     }
 
-    @GetMapping("/list")
-    public Result<Page<Vehicle>> findByKeywords(String kw, int pageNo, int rows) {
+    @GetMapping
+    public Result<Page<Vehicle>> findByKeywords(@RequestParam(defaultValue = "") String kw, @RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "15") Integer rows) {
         return ResultUtil.success(vehicleService.list(kw, pageNo, rows));
     }
 

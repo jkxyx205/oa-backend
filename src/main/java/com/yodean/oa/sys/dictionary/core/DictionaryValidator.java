@@ -22,6 +22,8 @@ public class DictionaryValidator implements ConstraintValidator<DictionaryConstr
 
     @Override
     public boolean isValid(Word word, ConstraintValidatorContext constraintValidatorContext) {
+        if(Objects.isNull(word)) return true;
+
         String category = constraintAnnotation.name();
 
         if (Objects.nonNull(category) && !Objects.equals(category, word.getCategory())) return false;

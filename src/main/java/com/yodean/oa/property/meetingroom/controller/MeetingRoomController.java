@@ -71,7 +71,7 @@ public class MeetingRoomController {
      * @return
      */
     @GetMapping
-    public Result<Page<MeetingRoom>> list(@RequestParam(defaultValue = "") String kw, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "15") int size) {
+    public Result<Page<MeetingRoom>> list(@RequestParam(defaultValue = "") String kw, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "15") int size) {
         return ResultUtil.success(meetingRoomService.list(kw, page, size));
     }
 }

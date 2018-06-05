@@ -36,7 +36,7 @@ public class Vehicle extends DataEntity {
     /**
      * 品牌型号（从字典中获取）
      */
-    @DictionaryConstraint(name = "VEHICLE_BRAND")
+//    @DictionaryConstraint(name = "VEHICLE_BRAND")
     @Convert(converter = WordJpaConverter.class)
     private Word vehicleBrand;
 
@@ -72,6 +72,11 @@ public class Vehicle extends DataEntity {
      */
     @Enumerated(EnumType.STRING)
     private VehicleStatus vehicleStatus;
+
+    /**
+     * 是否关联审批
+     */
+    private Boolean needApprove;
 
     /**
      * 车辆出行纪录
@@ -182,5 +187,13 @@ public class Vehicle extends DataEntity {
 
     public void setUsageRecords(List<UsageRecord> usageRecords) {
         this.usageRecords = usageRecords;
+    }
+
+    public Boolean getNeedApprove() {
+        return needApprove;
+    }
+
+    public void setNeedApprove(Boolean needApprove) {
+        this.needApprove = needApprove;
     }
 }

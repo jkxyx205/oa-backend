@@ -1,7 +1,9 @@
 package com.yodean.oa.common.config;
 
 import com.yodean.oa.common.interceptor.TestInterceptor;
+import com.yodean.oa.sys.dictionary.core.StringToWordConverter;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -25,27 +27,10 @@ public class OAWebMvcConfigurer implements WebMvcConfigurer {
                 .maxAge(3600);
     }
 
-//    @Bean
-//    public ServletWebServerFactory servletContainer() {
-//        TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
-//        tomcat.addAdditionalTomcatConnectors(createConnector());
-//        return tomcat;
-//    }
-//
-//    private Connector createConnector() {
-//        Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-//        Http11NioProtocol protocol = (Http11NioProtocol) connector.getProtocolHandler();
-//        try {
-//            connector.setScheme("http");
-//            connector.setPort(8080);
-//            protocol.setMaxSwallowSize(-1); //解决
-//            return connector;
-//        }
-//        catch (Exception ex) {
-//            throw new IllegalStateException("can't access keystore: [" + "keystore"
-//                    + "] or truststore: [" + "keystore" + "]", ex);
-//        }
-//    }
 
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToWordConverter());
+    }
 
 }

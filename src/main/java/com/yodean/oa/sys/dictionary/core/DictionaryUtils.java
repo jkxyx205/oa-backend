@@ -8,6 +8,7 @@ import com.yodean.oa.sys.dictionary.service.DictionaryService;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.commons.lang3.StringUtils;
 
 import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
@@ -21,6 +22,7 @@ import java.util.*;
  * Created by rick on 5/17/18.
  */
 public final class DictionaryUtils {
+    private static final String PARAM_SEPARATOR = "#";
 
     private static Word parse(String category, String name) {
         DictionaryService dictionaryService = Global.applicationContext.getBean(DictionaryService.class);
@@ -83,5 +85,16 @@ public final class DictionaryUtils {
                 || type == Date.class || type == java.sql.Date.class || type == String.class || type == BigInteger.class || type == BigDecimal.class
                 || type == Byte[].class || type == Blob.class || type == Clob.class || type == Timestamp.class
                 || type.isEnum();
+    }
+
+    static Word string2Word(String s) {
+        if (StringUtils.isBlank(s)) return null;
+
+        String[] values = s.split(PARAM_SEPARATOR);
+
+        Word word = new Word();
+        word.setCategory(values[0]);
+        word.setName(values[1]);
+        return word;
     }
 }

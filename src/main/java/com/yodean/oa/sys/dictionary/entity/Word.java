@@ -1,6 +1,8 @@
 package com.yodean.oa.sys.dictionary.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.yodean.oa.common.entity.DataEntity;
+import com.yodean.oa.sys.dictionary.core.WordDeserializer;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.Entity;
@@ -14,6 +16,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "sys_dictionary",
         uniqueConstraints = {@UniqueConstraint(columnNames={"category", "name"})})
+@JsonDeserialize(using = WordDeserializer.class)
 public class Word extends DataEntity {
 
     private String category;
@@ -23,8 +26,6 @@ public class Word extends DataEntity {
     private String description;
 
     private String seq;
-
-    private String remark;
 
 
     public String getCategory() {
@@ -49,14 +50,6 @@ public class Word extends DataEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
     }
 
     public String getSeq() {

@@ -80,10 +80,7 @@ public class VehicleService {
      * @return
      */
     public Page<Vehicle> list(String keyword, Integer pageNo, Integer row) {
-
-
         StringUtils.defaultIfBlank(keyword, "");
-
 
         Pageable pageable = PageRequest.of(pageNo, row, new Sort(Sort.Direction.DESC, "updateDate")
                 .and(new Sort(Sort.Direction.ASC, "vehicleBrand")));

@@ -69,7 +69,7 @@ public class ConversionController {
 
     @GetMapping("/units/{id}")
     public Result<ConversionUnit> findById(@PathVariable Integer id) {
-        return ResultUtil.success(conversionService.findCategoryById(id));
+        return ResultUtil.success(conversionService.findUnitById(id));
     }
 
 

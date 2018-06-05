@@ -25,15 +25,6 @@ public class WordJpaConverter implements AttributeConverter<Word, String> {
 
     @Override
     public Word convertToEntityAttribute(String s) {
-        if (StringUtils.hasText(s)) {
-            String[] values = s.split(PARAM_SEPARATOR);
-
-            Word word = new Word();
-            word.setCategory(values[0]);
-            word.setName(values[1]);
-            return word;
-
-        }
-        return null;
+        return DictionaryUtils.string2Word(s);
     }
 }
