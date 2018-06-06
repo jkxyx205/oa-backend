@@ -3,8 +3,7 @@ package com.yodean.oa.property.material.entity;
 import com.yodean.oa.common.entity.DataEntity;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by rick on 5/29/18.
@@ -44,7 +43,9 @@ public class Incoming extends DataEntity {
     /**
      *  仓库基本单位
      */
-    private Integer baseUnitId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "base_unit_id")
+    private ConversionUnit baseUnit;
 
     /**
      * 入库库位Id
@@ -113,12 +114,12 @@ public class Incoming extends DataEntity {
         this.baseNum = baseNum;
     }
 
-    public Integer getBaseUnitId() {
-        return baseUnitId;
+    public ConversionUnit getBaseUnit() {
+        return baseUnit;
     }
 
-    public void setBaseUnitId(Integer baseUnitId) {
-        this.baseUnitId = baseUnitId;
+    public void setBaseUnit(ConversionUnit baseUnit) {
+        this.baseUnit = baseUnit;
     }
 
     public Integer getStorageId() {

@@ -42,7 +42,7 @@ public class ConversionUnit extends DataEntity {
     /**
      * 所属分类
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     @JsonIgnore
     private ConversionCategory conversionCategory;

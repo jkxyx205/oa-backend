@@ -44,7 +44,7 @@ public class Material extends DataEntity {
     /**
      * 物料类型
      * 0 设备
-     * 2 耗材
+     * 1 耗材
      */
     private Character type;
 

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -118,7 +119,10 @@ public class MaterialService {
     public void addIncoming(Incoming incoming) {
         //单位转换
         Material material = findById(incoming.getMaterialId());
-        incoming.setBaseUnitId(material.getCategory().getBaseUnit().getId());
+
+        ConversionUnit baseUnit = new ConversionUnit();
+        baseUnit.setId(material.getCategory().getBaseUnit().getId());
+        incoming.setBaseUnit(baseUnit);
 
         incoming.setBaseNum(convertUnit(incoming.getNum(), incoming.getUnitId(), material));
         incoming.setBatchNum(RandomStringUtils.randomAlphanumeric(16));
@@ -130,6 +134,13 @@ public class MaterialService {
         }
 
         incomingRepository.save(incoming);
+    }
+
+    /**
+     * 移库操作
+     */
+    public void move() { //TODO
+
     }
 
     /**
@@ -174,63 +185,53 @@ public class MaterialService {
 
         Material material = findById(incoming.getMaterialId());
 
-        borrowNum = convertUnit(borrowNum, borrowUnit, material);
 
-        //删减数量
-        incoming.setBaseNum(incoming.getBaseNum() - borrowNum);
-        if(incoming.getBaseNum() < 0) {
-            throw new OAException(ResultCode.NUM_NOT_ENOUGH);
-        }
-
-        //修改状态
-        if (0 == incoming.getBaseNum()) {
+        if (Material.EQUIPMENT.equals(material.getType())) { //设备
             incoming.setStatus(Constant.STATUS_NONE);
-        } else {
-            incoming.setStatus(Constant.STATUS_RICH);
-        }
-
-
-        if (Objects.nonNull(incoming.getSno())) { //设备
             incomingRepository.save(incoming);
-        } else {//耗材
-            if (Constant.STATUS_NONE == incoming.getStatus()) {//库存0 删除记录
+        } else { //耗材
+            borrowNum = convertUnit(borrowNum, borrowUnit, material);
+
+            //删减数量
+            incoming.setBaseNum(incoming.getBaseNum() - borrowNum);
+            if(incoming.getBaseNum() < 0) {
+                throw new OAException(ResultCode.NUM_NOT_ENOUGH);
+            }
+
+            //修改状态
+            if (0 == incoming.getBaseNum()) {
+                incoming.setStatus(Constant.STATUS_NONE);
                 incomingRepository.delete(incoming);
             } else {
-
+                incoming.setStatus(Constant.STATUS_RICH);
+                incomingRepository.save(incoming);
             }
+        }
+
+        return incoming;
+    }
+
+    /** 设备归还
+     * @param id incoming Id
+     * @param storageId 库位id
+     */
+    public Incoming back(int id, Integer storageId) {
+        Incoming incoming = incomingRepository.load(id);
+        Material material = findById(incoming.getMaterialId());
+
+        if (Material.EQUIPMENT.equals(material.getType())) { //设备
+            incoming.setStatus(Constant.STATUS_RICH);
+            incoming.setStorageId(storageId);
             incomingRepository.save(incoming);
         }
 
         return incoming;
     }
 
-    /**设备归还
-     * @param id incoming Id
-     * @param borrowNum 借用数量
-     * @param borrowUnit 借用单位
-     * @param storageId 库位id
-     */
-    public void back(int id, double borrowNum, Integer borrowUnit, Integer storageId) {
-        Incoming incoming = incomingRepository.load(id);
 
-        Material material = findById(incoming.getMaterialId());
 
-        borrowNum = convertUnit(borrowNum, borrowUnit, material);
-
-        //添加数量
-        incoming.setBaseNum(incoming.getBaseNum() + borrowNum);
-
-        incoming.setStatus(Constant.STATUS_RICH);
-        incoming.setStorageId(storageId);
-
-        incomingRepository.save(incoming);
+    public List<Incoming> listIncoming(String kw, Integer pageNo, Integer rows) {
+        List<Incoming>  incomings = incomingRepository.findAll();
+        return  incomings;
     }
-
-    /**
-     * 移库操作
-     */
-    public void move() {
-
-    }
-
 }
