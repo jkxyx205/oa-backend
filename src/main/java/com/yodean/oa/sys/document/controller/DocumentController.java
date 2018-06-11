@@ -3,7 +3,7 @@ package com.yodean.oa.sys.document.controller;
 import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.enums.DocumentCategory;
 import com.yodean.oa.common.plugin.document.entity.Document;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.sys.document.dto.AuthorityDto;
 import com.yodean.oa.sys.document.dto.DocumentDto;
 import com.yodean.oa.sys.document.service.AuthorityService;
@@ -42,7 +42,7 @@ public class DocumentController {
     @PostMapping("/{category}/{categoryId}/upload")
     public Result<List<Document>> upload(MultipartHttpServletRequest multipartRequest, @PathVariable DocumentCategory category, @PathVariable Integer categoryId, Integer parentId) throws IOException {
         List<MultipartFile> files = multipartRequest.getFiles(UPLOAD_NAME);
-        return ResultUtil.success(authorityService.upload(files, UPLOAD_PATH, parentId, category, categoryId));
+        return ResultUtils.success(authorityService.upload(files, UPLOAD_PATH, parentId, category, categoryId));
     }
 
     /***
@@ -64,7 +64,7 @@ public class DocumentController {
     @PostMapping("/{category}/mkdir")
     public Result<Integer> addFolder(@RequestBody Document document, @PathVariable DocumentCategory category) {
         Integer docId = authorityService.mkdir(document.getParentId(), document.getName(), category);
-        return ResultUtil.success(docId);
+        return ResultUtils.success(docId);
     }
 
     /**
@@ -75,7 +75,7 @@ public class DocumentController {
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id) {
         authorityService.delete(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /**
@@ -85,7 +85,7 @@ public class DocumentController {
     @PostMapping("/{id}/putBack")
     public Result putBack(@PathVariable Integer id) {
         authorityService.putBack(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
 
@@ -98,7 +98,7 @@ public class DocumentController {
     @PutMapping("/{id}")
     public Result rename(@PathVariable Integer id, @RequestBody Document document) {
         authorityService.rename(id, document.getName());
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
 
@@ -141,7 +141,7 @@ public class DocumentController {
     @PostMapping("/{id}/{parentId}/move")
     public Result move(@PathVariable Integer id, @PathVariable Integer parentId) throws IOException {
         authorityService.move(id, parentId);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /**
@@ -152,7 +152,7 @@ public class DocumentController {
     @PostMapping("/{id}/{parentId}/copy")
     public Result copy(@PathVariable Integer id, @PathVariable Integer parentId) throws IOException {
         authorityService.copy(id, parentId);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
 
@@ -167,7 +167,7 @@ public class DocumentController {
         authorityDto.setDocumentId(id);
         authorityService.addAuthority(authorityDto);
 
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /**
@@ -178,7 +178,7 @@ public class DocumentController {
     @PostMapping("/{id}/stopAuthInherit")
     public Result authStopInherit(@PathVariable Integer id) {
         authorityService.stopAuthInherit(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /**
@@ -189,7 +189,7 @@ public class DocumentController {
     @PostMapping("/{id}/startAuthInherit")
     public Result startStopInherit(@PathVariable Integer id) {
         authorityService.startAuthInherit(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /**
@@ -200,7 +200,7 @@ public class DocumentController {
     public Result<AuthorityDto> getAuthority(@PathVariable Integer id) {
         AuthorityDto authorityDto = authorityService.findAuthorityDtoList(id);
 
-        return ResultUtil.success(authorityDto);
+        return ResultUtils.success(authorityDto);
     }
 
     /**
@@ -210,7 +210,7 @@ public class DocumentController {
     @GetMapping("/{id}")
     public Result<List<DocumentDto>> list(@PathVariable Integer id) {
         List<DocumentDto> documentDtoList = authorityService.findAuthorityDtoList(id, UserUtils.getUser().getId());
-        return ResultUtil.success(documentDtoList);
+        return ResultUtils.success(documentDtoList);
     }
 
 }

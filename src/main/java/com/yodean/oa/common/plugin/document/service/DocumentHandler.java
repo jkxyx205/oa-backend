@@ -4,6 +4,8 @@ import com.yodean.oa.common.config.Global;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.enums.FileType;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +21,9 @@ import java.util.concurrent.Executors;
  */
 @Service
 public class DocumentHandler {
+
+    private static Logger logger = LoggerFactory.getLogger(DocumentHandler.class);
+
     public static final String FOLDER_SEPARATOR = "/"; // path分割符
 
     @Resource
@@ -75,7 +80,7 @@ public class DocumentHandler {
 //                    FileUtils.moveFile(new File(image.getFileAbsouteThumbnailSmallPath()),
 //                            new File(Global.DOCUMENT + File.separator + folder, image.getName() + "-thumbnail-small-1x1." + image.getExt()));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("image[{}] compress error", doc.getId());
                 }
             });
         }

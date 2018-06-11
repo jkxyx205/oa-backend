@@ -12,11 +12,11 @@ import java.util.zip.ZipOutputStream;
 /**
  * Created by rick on 4/24/18.
  */
-public final class ZipUtil {
+public final class ZipUtils {
 
-    private static final transient Logger logger = LoggerFactory.getLogger(ZipUtil.class);
+    private static final transient Logger logger = LoggerFactory.getLogger(ZipUtils.class);
 
-    private ZipUtil() {}
+    private ZipUtils() {}
     /**
      * 压缩文件或目录
      * @param srcDirName 压缩的根目录

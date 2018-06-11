@@ -6,7 +6,7 @@ import com.yodean.oa.common.enums.ResultCode;
 /**
  * Created by rick on 2018/3/15.
  */
-public final class ResultUtil {
+public final class ResultUtils {
 
     public static Result success() {
         return success(null);

@@ -1,7 +1,7 @@
 package com.yodean.oa.notice.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.notice.entity.Notice;
 import com.yodean.oa.notice.service.NoticeService;
 import org.springframework.web.bind.annotation.*;
@@ -21,24 +21,24 @@ public class NoticeController {
     @PostMapping
     public Result<Integer> save(@RequestBody Notice notice) {
         noticeService.save(notice);
-        return ResultUtil.success(notice.getId());
+        return ResultUtils.success(notice.getId());
     }
 
     @PutMapping("/{id}")
     public Result update(@PathVariable("id") Integer id, @RequestBody Notice notice) {
         noticeService.update(notice, id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id) {
         noticeService.delete(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     @GetMapping("/{id}")
     public Result<Notice> findById(@PathVariable Integer id) {
-        return ResultUtil.success(noticeService.findById(id));
+        return ResultUtils.success(noticeService.findById(id));
     }
 
 //    @GetMapping

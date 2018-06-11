@@ -69,7 +69,6 @@ public final class DictionaryUtils {
                         parse(value);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
                     throw new OAException(ResultCode.SERVER_ERROR, e);
                 }
 

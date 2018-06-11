@@ -1,7 +1,7 @@
 package com.yodean.oa.sys.label.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.sys.label.entity.Label;
 import com.yodean.oa.sys.label.service.LabelService;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +22,7 @@ public class LabelController {
      */
     @PostMapping("/{category}/{categoryId}")
     public Result<Integer> save(@PathVariable Label.LabelCategory category, @PathVariable Integer categoryId, @RequestBody Label label) {
-        return ResultUtil.success(labelService.save(category, categoryId, label));
+        return ResultUtils.success(labelService.save(category, categoryId, label));
     }
 
 
@@ -32,7 +32,7 @@ public class LabelController {
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id) {
         labelService.delete(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
 }

@@ -50,7 +50,7 @@ public class UserService {
         params.put("userId", id);
 
         List<Integer> list = baseService.query(sql, params, Integer.class);
-        user.setOrgIds(list.toArray(new Integer[]{}));
+        user.setOrgIds(list.toArray(new Integer[0]));
 
         return user;
     }

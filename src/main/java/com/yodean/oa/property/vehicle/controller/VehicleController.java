@@ -2,7 +2,7 @@ package com.yodean.oa.property.vehicle.controller;
 
 import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.enums.ResultCode;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.property.vehicle.entity.UsageRecord;
 import com.yodean.oa.property.vehicle.entity.Vehicle;
 import com.yodean.oa.property.vehicle.service.VehicleService;
@@ -25,15 +25,15 @@ public class VehicleController {
     @PostMapping
     public Result<Integer> save(@Valid @RequestBody Vehicle vehicle, BindingResult result) {
         if (result.hasErrors())
-            return ResultUtil.error(ResultCode.VALIDATE_ERROR, result.getAllErrors());
+            return ResultUtils.error(ResultCode.VALIDATE_ERROR, result.getAllErrors());
 
-        return ResultUtil.success(vehicleService.save(vehicle).getId());
+        return ResultUtils.success(vehicleService.save(vehicle).getId());
     }
 
     @PutMapping("/{id}")
     public Result update(@RequestBody Vehicle vehicle, @PathVariable Integer id) {
         vehicleService.update(vehicle, id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /**
@@ -46,29 +46,29 @@ public class VehicleController {
     @PutMapping("/{id}/{status}")
     public Result status(@PathVariable Vehicle.VehicleStatus status, @PathVariable Integer id) {
         vehicleService.changeStatus(id, status);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     @GetMapping("/{id}")
     public Result<Vehicle> findById(@PathVariable Integer id) {
-        return ResultUtil.success(vehicleService.findById(id));
+        return ResultUtils.success(vehicleService.findById(id));
     }
 
     @GetMapping
     public Result<Page<Vehicle>> findByKeywords(@RequestParam(defaultValue = "") String kw, @RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "15") Integer rows) {
-        return ResultUtil.success(vehicleService.list(kw, pageNo, rows));
+        return ResultUtils.success(vehicleService.list(kw, pageNo, rows));
     }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable int id) {
         vehicleService.delete(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     @PostMapping("/records")
     public Result addRecord(@RequestBody UsageRecord usageRecord) {
         vehicleService.addVehicleUsageRecord(usageRecord);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
 }

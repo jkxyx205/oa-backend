@@ -10,8 +10,8 @@ import com.yodean.oa.common.plugin.document.dao.DocumentRepository;
 import com.yodean.oa.common.plugin.document.dto.ImageDocument;
 import com.yodean.oa.common.plugin.document.entity.Document;
 import com.yodean.oa.common.plugin.document.enums.FileType;
-import com.yodean.oa.common.util.MimeTypesUtil;
-import com.yodean.oa.common.util.ZipUtil;
+import com.yodean.oa.common.util.MimeTypesUtils;
+import com.yodean.oa.common.util.ZipUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -395,7 +395,7 @@ public class DocumentService {
 
             ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile));
 
-            ZipUtil.zipDirectoryToZipFile(_home.getAbsolutePath(), root, zipOut);
+            ZipUtils.zipDirectoryToZipFile(_home.getAbsolutePath(), root, zipOut);
 
             os = getResponseOutputStream(response, request, zipName, READ_ATTACHMENT);
 
@@ -462,7 +462,7 @@ public class DocumentService {
         response.reset();// 清空输出流
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setHeader("Content-disposition", ""+readType+"; filename="+_fileName+"");// 设定输出文件头
-        response.setContentType(MimeTypesUtil.getContentType(_fileName));// 定义输出类型
+        response.setContentType(MimeTypesUtils.getContentType(_fileName));// 定义输出类型
         OutputStream os = response.getOutputStream(); // 取得输出流
         return os;
     }

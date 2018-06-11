@@ -3,7 +3,7 @@ package com.yodean.oa.sys.org.controller;
 import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.plugin.ztree.dto.TreeNode;
 import com.yodean.oa.common.plugin.ztree.service.ZtreeService;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.sys.org.entity.Organization;
 import com.yodean.oa.sys.org.service.OrganizationService;
 import org.springframework.web.bind.annotation.*;
@@ -27,31 +27,31 @@ public class OrganizationController {
 
     @PostMapping
     public Result saveOrganization(@RequestBody Organization organization) {
-        return ResultUtil.success(organizationService.save(organization));
+        return ResultUtils.success(organizationService.save(organization));
     }
 
     @PutMapping("/{id}")
     public Result update(@PathVariable Integer id, @RequestBody Organization organization) {
         organizationService.update(organization, id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     @GetMapping("/{id}")
     public Result<Organization> findById(@PathVariable Integer id) {
-        return ResultUtil.success(organizationService.findById(id));
+        return ResultUtils.success(organizationService.findById(id));
     }
 
     @DeleteMapping("/{id}")
     public Result<Organization> delete(@PathVariable Integer id) {
         organizationService.delete(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
 
     @GetMapping
     public Result<List<Organization>> getOrgsAsList() {
         List<Organization> list = organizationService.findAll();
-        return ResultUtil.success(list);
+        return ResultUtils.success(list);
     }
 
     @GetMapping("/tree")

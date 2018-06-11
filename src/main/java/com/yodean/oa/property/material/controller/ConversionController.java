@@ -1,7 +1,7 @@
 package com.yodean.oa.property.material.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.property.material.entity.ConversionCategory;
 import com.yodean.oa.property.material.entity.ConversionUnit;
 import com.yodean.oa.property.material.service.UnitConversionService;
@@ -23,7 +23,7 @@ public class ConversionController {
     @PostMapping("/categories")
     public Result<Integer> addCategory(@RequestBody ConversionCategory category) {
         conversionService.addCategory(category);
-        return ResultUtil.success(category.getId());
+        return ResultUtils.success(category.getId());
     }
 
     /**
@@ -34,7 +34,7 @@ public class ConversionController {
      */
     @GetMapping("/categories/{id}")
     public Result<ConversionCategory> findCategoryById(@PathVariable Integer id) {
-        return ResultUtil.success(conversionService.findCategoryById(id));
+        return ResultUtils.success(conversionService.findCategoryById(id));
     }
 
     /**
@@ -43,7 +43,7 @@ public class ConversionController {
     @PostMapping("/units")
     public Result<Integer> addUnit(@RequestBody ConversionUnit conversionUnit) {
         conversionService.addUnit(conversionUnit);
-        return ResultUtil.success(conversionUnit.getId());
+        return ResultUtils.success(conversionUnit.getId());
     }
 
     /**
@@ -52,7 +52,7 @@ public class ConversionController {
     @PutMapping("/units/{id}")
     public Result updateUnit(@RequestBody ConversionUnit conversionUnit, @PathVariable Integer id) {
         conversionService.updateUnit(conversionUnit, id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /**
@@ -64,12 +64,12 @@ public class ConversionController {
     @DeleteMapping("units/{id}")
     public Result deleteUnits(@PathVariable Integer id) {
         conversionService.deleteUnit(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     @GetMapping("/units/{id}")
     public Result<ConversionUnit> findById(@PathVariable Integer id) {
-        return ResultUtil.success(conversionService.findUnitById(id));
+        return ResultUtils.success(conversionService.findUnitById(id));
     }
 
 

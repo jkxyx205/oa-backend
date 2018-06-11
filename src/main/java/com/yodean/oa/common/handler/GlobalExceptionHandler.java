@@ -3,7 +3,7 @@ package com.yodean.oa.common.handler;
 import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.enums.ResultCode;
 import com.yodean.oa.common.exception.OAException;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,21 +23,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     public Object handler(HttpServletRequest request, Exception e) {
-        e.printStackTrace();
+//        e.printStackTrace();
         Result result;
 
         if (e instanceof  OAException) {
             OAException ex = (OAException)e;
-            result = ResultUtil.error(ex.getCode(), ex.getMessage());
+            result = ResultUtils.error(ex.getCode(), ex.getMessage());
             if (Objects.nonNull(ex.getException()))
                 logger.error("{}", ex);
             else
                 logger.error("{}", e);
         } else if (e instanceof MaxUploadSizeExceededException) {
-            result = ResultUtil.error(ResultCode.VALIDATE_ERROR, "文件不能超过5M");
+            result = ResultUtils.error(ResultCode.VALIDATE_ERROR, "文件不能超过5M");
         }else {
             logger.error("{}", e);
-            result = ResultUtil.error(e.getMessage());
+            result = ResultUtils.error(e.getMessage());
         }
 
 //        if (isAjaxRequest(request)) {

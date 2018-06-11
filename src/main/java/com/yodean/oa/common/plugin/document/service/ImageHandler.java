@@ -8,6 +8,8 @@ import net.coobird.thumbnailator.geometry.Coordinate;
 import net.coobird.thumbnailator.geometry.Position;
 import net.coobird.thumbnailator.geometry.Positions;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
@@ -23,6 +25,9 @@ import java.util.concurrent.Executors;
  */
 @Service
 public class ImageHandler {
+
+    private static Logger logger = LoggerFactory.getLogger(ImageHandler.class);
+
     private static final double COMPRESS_SIZE = 500 * 1024;
 
     private static final double COMPRESS_SMALL_SIZE = 50 * 1024;
@@ -68,7 +73,7 @@ public class ImageHandler {
 //						.scale(.5)
                         .toFile(imageFile);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("image[{}] crop error", image.getId());
             }
         });
 

@@ -1,7 +1,7 @@
 package com.yodean.oa.property.meetingroom.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.property.meetingroom.entity.MeetingRoom;
 import com.yodean.oa.property.meetingroom.service.MeetingRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class MeetingRoomController {
     @PostMapping
     public Result<MeetingRoom> save(@RequestBody MeetingRoom meetingRoom) {
         meetingRoom = meetingRoomService.save(meetingRoom);
-        return ResultUtil.success(meetingRoom);
+        return ResultUtils.success(meetingRoom);
     }
 
     /**
@@ -39,7 +39,7 @@ public class MeetingRoomController {
     @PutMapping("/{id}")
     public Result<MeetingRoom> update(@RequestBody MeetingRoom meetingRoom, @PathVariable Integer id) {
         meetingRoom = meetingRoomService.update(meetingRoom, id);
-        return ResultUtil.success(meetingRoom);
+        return ResultUtils.success(meetingRoom);
     }
 
     /**
@@ -50,7 +50,7 @@ public class MeetingRoomController {
      */
     @DeleteMapping("/{id}")
     public Result<Integer> delete(@PathVariable Integer id) {
-        return ResultUtil.success(meetingRoomService.delete(id));
+        return ResultUtils.success(meetingRoomService.delete(id));
     }
 
     /**
@@ -61,7 +61,7 @@ public class MeetingRoomController {
      */
     @GetMapping("/{id}")
     public Result<MeetingRoom> findById(@PathVariable Integer id) {
-        return ResultUtil.success(meetingRoomService.findById(id));
+        return ResultUtils.success(meetingRoomService.findById(id));
     }
 
     /**
@@ -72,6 +72,6 @@ public class MeetingRoomController {
      */
     @GetMapping
     public Result<Page<MeetingRoom>> list(@RequestParam(defaultValue = "") String kw, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "15") int size) {
-        return ResultUtil.success(meetingRoomService.list(kw, page, size));
+        return ResultUtils.success(meetingRoomService.list(kw, page, size));
     }
 }

@@ -3,8 +3,8 @@ package com.yodean.oa.common.util;
 /**
  * Created by rick on 4/25/18.
  */
-public final class MimeTypesUtil {
-    private MimeTypesUtil() {}
+public final class MimeTypesUtils {
+    private MimeTypesUtils() {}
 
     /**
      * 根据“文件名的后缀”获取文件内容类型（而非根据File.getContentType()读取的文件类型）

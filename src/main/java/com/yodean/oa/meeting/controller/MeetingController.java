@@ -1,7 +1,7 @@
 package com.yodean.oa.meeting.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.meeting.entity.Meeting;
 import com.yodean.oa.meeting.service.MeetingService;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
@@ -24,18 +24,18 @@ public class MeetingController {
 
     @PostMapping
     public Result<Integer> save(@RequestBody Meeting meeting) {
-        return ResultUtil.success(meetingService.save(meeting));
+        return ResultUtils.success(meetingService.save(meeting));
     }
 
     @GetMapping("/{id}")
     public Result<Meeting> findById(@PathVariable Integer id) {
-        return ResultUtil.success(meetingService.findById(id));
+        return ResultUtils.success(meetingService.findById(id));
     }
 
     @PutMapping("/{id}")
     public Result update(@PathVariable Integer id, @RequestBody Meeting meeting) {
         meetingService.update(meeting, id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /***
@@ -46,7 +46,7 @@ public class MeetingController {
     @PutMapping("/{id}/cancel")
     public Result cancel(@PathVariable Integer id) {
         meetingService.cancel(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /***
@@ -56,6 +56,6 @@ public class MeetingController {
     @PostMapping("{id}/users")
     public Result addUser(@PathVariable Integer id, @RequestBody Meeting meeting) {
         meetingService.addUser(id, meeting);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 }

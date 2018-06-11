@@ -1,12 +1,11 @@
 package com.yodean.oa.property.material.controller;
 
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.property.material.entity.Incoming;
 import com.yodean.oa.property.material.entity.Material;
 import com.yodean.oa.property.material.service.MaterialService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class MaterialController {
      */
     @PostMapping
     public Result<Material> save(@RequestBody Material material) {
-        return ResultUtil.success(materialService.save(material));
+        return ResultUtils.success(materialService.save(material));
     }
 
     /**
@@ -38,7 +37,7 @@ public class MaterialController {
      */
     @GetMapping("/{id}")
     public Result<Material> findById(@PathVariable Integer id) {
-        return ResultUtil.success(materialService.findById(id));
+        return ResultUtils.success(materialService.findById(id));
     }
 
     /**
@@ -50,7 +49,7 @@ public class MaterialController {
     @PutMapping("/{id}")
     public Result update(@RequestBody Material material, @PathVariable Integer id) {
         materialService.update(material, id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /**
@@ -61,12 +60,12 @@ public class MaterialController {
     @PostMapping("/incoming")
     public Result incoming(@RequestBody Incoming incoming) {
         materialService.addIncoming(incoming);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     @GetMapping("/incoming")
     public Result<List<Incoming>> list(@RequestParam(defaultValue = "") String kw,  @RequestParam(defaultValue = "0") Integer pageNo, @RequestParam(defaultValue = "15") Integer rows) {
-        return ResultUtil.success(materialService.listIncoming(kw, pageNo, rows));
+        return ResultUtils.success(materialService.listIncoming(kw, pageNo, rows));
     }
 
     /**
@@ -78,12 +77,12 @@ public class MaterialController {
      */
     @PostMapping("/incoming/{id}/borrow")
     public Result<Incoming> borrow(@PathVariable Integer id, Integer num, Integer unitId) {
-        return ResultUtil.success(materialService.borrow(id, num, unitId));
+        return ResultUtils.success(materialService.borrow(id, num, unitId));
     }
 
     @PostMapping("/incoming/{id}/back/{storageId}")
     public Result<Incoming> borrow(@PathVariable Integer id, @PathVariable Integer storageId) {
-        return ResultUtil.success(materialService.back(id, storageId));
+        return ResultUtils.success(materialService.back(id, storageId));
     }
 
 }

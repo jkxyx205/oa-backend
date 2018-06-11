@@ -2,7 +2,7 @@ package com.yodean.oa.task.controller;
 
 import com.yodean.oa.common.dto.Result;
 import com.yodean.oa.common.enums.ResultCode;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.sys.workspace.service.WorkspaceService;
 import com.yodean.oa.task.entity.Discussion;
 import com.yodean.oa.task.entity.Task;
@@ -30,22 +30,22 @@ public class TaskController {
     @PostMapping
     public Result<Integer> save(@Valid @RequestBody Task task, BindingResult result) {
         if (result.hasErrors()) {
-            return ResultUtil.error(ResultCode.VALIDATE_ERROR, result.getAllErrors());
+            return ResultUtils.error(ResultCode.VALIDATE_ERROR, result.getAllErrors());
         }
 
-        return ResultUtil.success(taskService.save(task));
+        return ResultUtils.success(taskService.save(task));
     }
 
     @PutMapping("/{id}")
     public Result<Integer> update(@RequestBody Task task, @PathVariable Integer id) {
         taskService.update(task, id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     @GetMapping("/{id}")
     public Result<Task> findById(@PathVariable Integer id) {
         Task task = taskService.findById(id);
-        return ResultUtil.success(task);
+        return ResultUtils.success(task);
     }
 
     /***
@@ -55,7 +55,7 @@ public class TaskController {
     @PostMapping("{id}/discussions")
     public Result addDiscussion(@PathVariable Integer id, @RequestBody Discussion discussion) {
         taskService.addDiscussion(id, discussion);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /***
@@ -65,7 +65,7 @@ public class TaskController {
     @DeleteMapping("discussions/{id}")
     public Result deleteDiscussion(@PathVariable Integer id) {
         taskService.deleteDiscussion(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
 }

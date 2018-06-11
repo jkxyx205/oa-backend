@@ -2,7 +2,7 @@ package com.yodean.oa.note.controller;
 
 import com.yodean.oa.common.dto.IdsDto;
 import com.yodean.oa.common.dto.Result;
-import com.yodean.oa.common.util.ResultUtil;
+import com.yodean.oa.common.util.ResultUtils;
 import com.yodean.oa.note.entity.Note;
 import com.yodean.oa.note.service.NoteService;
 import org.springframework.web.bind.annotation.*;
@@ -22,24 +22,24 @@ public class NoteController {
 
     @PostMapping
     public Result<Integer> save(@RequestBody Note node) {
-        return ResultUtil.success(noteService.save(node));
+        return ResultUtils.success(noteService.save(node));
     }
 
     @PutMapping("/{id}")
     public Result update(@RequestBody Note node, @PathVariable Integer id) throws InvocationTargetException, IllegalAccessException {
         noteService.update(node, id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     @GetMapping("/{id}")
     public Result<Note> findById(@PathVariable Integer id) {
-        return ResultUtil.success(noteService.findById(id));
+        return ResultUtils.success(noteService.findById(id));
     }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Integer id) {
         noteService.delete(id);
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 
     /***
@@ -50,6 +50,6 @@ public class NoteController {
     @DeleteMapping
     public Result batchDelete(@RequestBody IdsDto idsDto) {
         noteService.delete(idsDto.getIds());
-        return ResultUtil.success();
+        return ResultUtils.success();
     }
 }
