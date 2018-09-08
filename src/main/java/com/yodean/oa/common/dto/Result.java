@@ -12,6 +12,8 @@ public class Result<T> {
 
     private T data;
 
+    private Boolean success;
+
     public Integer getCode() {
         return code;
     }
@@ -34,6 +36,14 @@ public class Result<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
     }
 
     @Override

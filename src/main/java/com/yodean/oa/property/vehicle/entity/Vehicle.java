@@ -2,7 +2,6 @@ package com.yodean.oa.property.vehicle.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yodean.oa.common.entity.DataEntity;
-import com.yodean.oa.sys.dictionary.core.DictionaryConstraint;
 import com.yodean.oa.sys.dictionary.core.WordJpaConverter;
 import com.yodean.oa.sys.dictionary.entity.Word;
 import org.hibernate.annotations.DynamicUpdate;
